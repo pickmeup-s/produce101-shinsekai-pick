@@ -104,39 +104,22 @@
     }
     .rankBar strong{ color: var(--text); font-weight:900; }
     .rankTitlePad{ padding-left: .5em; display:flex; gap:10px; align-items:baseline; flex-wrap:wrap;}
-    #rankStats{ color: var(--muted); }
-
-    .lockBtn{
-      height:32px;
-      width:40px;
-      padding:0;
-      border-radius:10px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:16px;
-      background: rgba(10,96,255,.06);
-    }
-    .lockBtn.isOn{
-      background: rgba(10,96,255,.16);
-      border-color: rgba(10,96,255,.50);
-      box-shadow: 0 0 0 3px rgba(0,200,255,.16);
-      color: var(--accent);
+    #rankStats{
+      color: var(--muted);
+      font-size: clamp(10px, 2.8vw, 12px);
+      line-height: 1.2;
+      white-space: normal;
+      word-break: break-word;
     }
 
-    /* RINGS (selected vs active) */
-    .card.selected,
-    .slot.selectedRing,
-    .benchItem.selectedRing{
-      box-shadow: 0 0 0 4px var(--ringDark), 0 0 0 8px var(--ringGlow);
+    /* RINGS：薄い青（外側）を消して、太さは枠色と同じ 2px に
+       ※ただし「ランキング/ベンチ」はリング自体を使わん設定にしてる（JS側でクラス付与しない）
+    */
+    .card.selected{
+      box-shadow: 0 0 0 2px var(--ringDark);
     }
-
-    .card.activeRing,
-    .slot.activeRing,
-    .benchItem.activeRing{
-      box-shadow:
-        0 0 0 4px var(--ringDark),
-        0 0 0 10px var(--ringActiveOuter);
+    .card.activeRing{
+      box-shadow: 0 0 0 2px var(--ringDark);
     }
 
     /* Pyramid */
@@ -349,7 +332,8 @@
           <strong>ランキング</strong>
           <span id="rankStats"></span>
         </div>
-        <button id="togglePyramidLock" type="button" class="lockBtn" title="表示固定">▾</button>
+        <!-- ロックボタン：ベンチと同じ arrowBtn、表示は ▾ / ▴ -->
+        <button id="togglePyramidLock" type="button" class="arrowBtn" title="表示固定">▾</button>
       </div>
       <div class="rows" id="pyramid"></div>
     </div>
@@ -699,11 +683,9 @@
         const frameColor = (state.classFrameOn ? getClassColor(p) : "");
         const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
-        // 選択済みは濃青リング、今操作中は薄水色外リング
+        // ランキングは青リング無し（枠色トグルだけ）
         const slotCls = [
           "slot",
-          id ? "selectedRing" : "",
-          state.activeSlotIndex === idx ? "activeRing" : "",
           id ? "" : "empty",
         ].filter(Boolean).join(" ");
 
@@ -744,11 +726,8 @@
       const frameColor = (state.classFrameOn ? getClassColor(p) : "");
       const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
-      const cls = [
-        "benchItem",
-        "selectedRing",
-        (state.activeBenchIndex === i) ? "activeRing" : ""
-      ].filter(Boolean).join(" ");
+      // ベンチも青リング無し（枠色トグルだけ）
+      const cls = ["benchItem"].join(" ");
 
       return `
         <div class="benchItemWrap">
@@ -1114,7 +1093,6 @@
     renderBench();
 
     // gridは作り直さず、テキスト更新が必要なので再描画する
-    // （ここは点滅が嫌ならこのままでもOK。表示項目変えた時だけ再描画にしてる）
     renderGrid();
     applyGridClassFrames();
     updateGridSelectionRings();
@@ -1171,8 +1149,8 @@
   pyramidLockBtn.addEventListener("click", () => {
     state.pyramidLockFull = !state.pyramidLockFull;
 
+    // 表示は ▾ / ▴（ベンチと同じ）
     pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
-    pyramidLockBtn.classList.toggle("isOn", state.pyramidLockFull);
 
     applyPyramidScrollSizing();
     persistSoon();
@@ -1236,8 +1214,8 @@
 
     frameToggleEl.checked = state.classFrameOn;
 
+    // ロックボタン表示を storage 反映
     pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
-    pyramidLockBtn.classList.toggle("isOn", state.pyramidLockFull);
 
     renderToggles();
     updateSlotSize();
