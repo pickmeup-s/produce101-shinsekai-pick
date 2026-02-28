@@ -349,7 +349,7 @@
           <strong>ランキング</strong>
           <span id="rankStats"></span>
         </div>
-        <button id="togglePyramidLock" type="button" class="lockBtn" title="表示固定">🔒</button>
+        <button id="togglePyramidLock" type="button" class="lockBtn" title="表示固定">▾</button>
       </div>
       <div class="rows" id="pyramid"></div>
     </div>
@@ -1171,7 +1171,7 @@
   pyramidLockBtn.addEventListener("click", () => {
     state.pyramidLockFull = !state.pyramidLockFull;
 
-    pyramidLockBtn.textContent = state.pyramidLockFull ? "🔒" : "🔓";
+    pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
     pyramidLockBtn.classList.toggle("isOn", state.pyramidLockFull);
 
     applyPyramidScrollSizing();
@@ -1236,7 +1236,7 @@
 
     frameToggleEl.checked = state.classFrameOn;
 
-    pyramidLockBtn.textContent = state.pyramidLockFull ? "🔒" : "🔓";
+    pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
     pyramidLockBtn.classList.toggle("isOn", state.pyramidLockFull);
 
     renderToggles();
