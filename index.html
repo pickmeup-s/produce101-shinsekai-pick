@@ -4,30 +4,31 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>日プ新世界 ピラミッドメーカー</title>
+
   <style>
-    /* =========================
-       WHITE BASE + BLUE ACCENT
-       ========================= */
     :root{
-      --bg:#ffffff;                 /* ページ背景 */
-      --panel:#f6f8ff;              /* パネル背景 */
-      --card:#ffffff;               /* 121人カード背景 */
-      --text:#0b1020;               /* メイン文字 */
-      --muted:#3b4a77;              /* 補助文字 */
-      --line:rgba(10,35,90,.18);    /* 線 */
+      /* White base + Blue accent */
+      --bg:#ffffff;
+      --panel:#f6f8ff;
+      --card:#ffffff;
+      --text:#0b1020;
+      --muted:#3b4a77;
+      --line:rgba(10,35,90,.18);
       --shadow:0 10px 26px rgba(10,35,90,.10);
       --r:14px;
+
+      --accent:#0a60ff;
+      --accent2:#00c8ff;
 
       --gap:6px;
       --slotSize:72px;
       --slotMax:96px;
       --benchSize: var(--slotSize);
 
-      /* blue neon-ish */
-      --accent:#0a60ff;             /* 青アクセント */
-      --accent2:#00c8ff;            /* シアン */
-      --selectRing: rgba(10,96,255,.92);
-      --selectRingGlow: rgba(0,200,255,.18);
+      /* rings */
+      --ringDark: rgba(10,96,255,.92);
+      --ringGlow: rgba(0,200,255,.10);
+      --ringActiveOuter: rgba(0,200,255,.26);
     }
 
     *{box-sizing:border-box}
@@ -90,7 +91,7 @@
       padding: 8px 6px 10px;
     }
 
-    /* ランキング見出し */
+    /* Ranking header */
     .rankBar{
       display:flex;
       align-items:center;
@@ -102,8 +103,8 @@
       color: var(--muted);
     }
     .rankBar strong{ color: var(--text); font-weight:900; }
-    /* 「ランキング」左寄りすぎ → 1文字分 */
-    .rankTitlePad{ padding-left: .5em; }
+    .rankTitlePad{ padding-left: .5em; display:flex; gap:10px; align-items:baseline; flex-wrap:wrap;}
+    #rankStats{ color: var(--muted); }
 
     .lockBtn{
       height:32px;
@@ -116,7 +117,6 @@
       font-size:16px;
       background: rgba(10,96,255,.06);
     }
-    /* ロックONの時に目立つように（指摘対応） */
     .lockBtn.isOn{
       background: rgba(10,96,255,.16);
       border-color: rgba(10,96,255,.50);
@@ -124,7 +124,22 @@
       color: var(--accent);
     }
 
-    /* pyramid */
+    /* RINGS (selected vs active) */
+    .card.selected,
+    .slot.selectedRing,
+    .benchItem.selectedRing{
+      box-shadow: 0 0 0 4px var(--ringDark), 0 0 0 8px var(--ringGlow);
+    }
+
+    .card.activeRing,
+    .slot.activeRing,
+    .benchItem.activeRing{
+      box-shadow:
+        0 0 0 4px var(--ringDark),
+        0 0 0 10px var(--ringActiveOuter);
+    }
+
+    /* Pyramid */
     .rows{display:flex; flex-direction:column; gap:8px}
     .row{display:flex; justify-content:center; gap: var(--gap); width:100%; flex-wrap:nowrap;}
 
@@ -142,17 +157,12 @@
       border-radius: 999px;
       overflow: hidden;
       background: rgba(10,96,255,.06);
-      border: 2px solid rgba(10,35,90,.16); /* 枠色ONで上書き */
+      border: 2px solid rgba(10,35,90,.16); /* class frame uses border-color inline */
       cursor:pointer;
       touch-action: manipulation;
     }
     .slot img{width:100%;height:100%;object-fit:cover;display:block;border-radius:999px;}
     .slot.empty{background: rgba(10,96,255,.04); border: 1px dashed rgba(10,35,90,.22);}
-
-    /* 選択リング（枠色に被らない外側リング） */
-    .slot.active{
-      box-shadow: 0 0 0 4px var(--selectRing), 0 0 0 8px var(--selectRingGlow);
-    }
 
     .slotInfo{
       width:100%;
@@ -171,7 +181,7 @@
       color: rgba(11,16,32,.92);
     }
 
-    /* bench */
+    /* Bench */
     .benchRow{
       display:flex; gap:10px;
       overflow-x:auto;
@@ -190,10 +200,6 @@
       touch-action: manipulation;
     }
     .benchItem img{width:100%;height:100%;object-fit:cover;display:block;}
-    .benchItem.activeBench{
-      box-shadow: 0 0 0 4px var(--selectRing), 0 0 0 8px var(--selectRingGlow);
-    }
-
     .benchInfo{width:100%;text-align:center;line-height:1.15;display:flex;flex-direction:column;gap:2px;}
     .benchInfo .line{
       white-space: normal;
@@ -207,7 +213,6 @@
     }
 
     .benchCollapsed .benchRow{ display:none; }
-    .benchCollapsed .bar{ margin-bottom:0; }
     .benchCollapsed{ padding-bottom:8px; }
 
     .bar{
@@ -222,7 +227,7 @@
     .bar strong{color:var(--text); font-weight:900}
     .benchTitlePad{ padding-left: .5em; }
 
-    /* ベンチ下のコントロール */
+    /* Controls below bench */
     .belowBenchControls{
       margin-top: 10px;
       display:flex;
@@ -246,7 +251,7 @@
     }
     .chip input{ accent-color: var(--accent); }
 
-    /* options */
+    /* Options */
     .optionsPanel{
       margin-top: 12px;
       background: rgba(255,255,255,.70);
@@ -282,7 +287,7 @@
       outline:none;
     }
 
-    /* grid */
+    /* Grid */
     .gridSection{margin-top:12px}
     .grid{display:grid;gap:10px;grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));}
     @media (max-width:1100px){ .grid{ grid-template-columns: repeat(4, 1fr); } }
@@ -297,7 +302,7 @@
       overflow:hidden;
       cursor:pointer;
       user-select:none;
-      transition: transform .12s ease, border-color .12s ease;
+      transition: transform .12s ease;
     }
     .card:hover{transform: translateY(-2px)}
     .thumb{
@@ -310,11 +315,6 @@
     .meta{padding:8px 8px 10px}
     .name{font-size:13px;font-weight:900;line-height:1.2;margin:0 0 4px;color:var(--text)}
     .sub{font-size:11px;color:var(--muted);margin:0}
-
-    /* 選択リング（枠色と被らない） */
-    .card.selected{
-      box-shadow: 0 0 0 4px var(--selectRing), 0 0 0 8px var(--selectRingGlow), var(--shadow);
-    }
 
     .idx{
       position:absolute;
@@ -345,7 +345,10 @@
   <section class="stickyWrap">
     <div class="panel" id="pyramidPanel">
       <div class="rankBar">
-        <div class="rankTitlePad"><strong>ランキング</strong></div>
+        <div class="rankTitlePad">
+          <strong>ランキング</strong>
+          <span id="rankStats"></span>
+        </div>
         <button id="togglePyramidLock" type="button" class="lockBtn" title="表示固定">🔒</button>
       </div>
       <div class="rows" id="pyramid"></div>
@@ -396,7 +399,7 @@
 
 <script>
   const CSV_PATH = "data/master.csv";
-  const STORAGE_KEY = "pyramid_maker_state_v5";
+  const STORAGE_KEY = "pyramid_maker_state_v6";
 
   const gridEl = document.getElementById("grid");
   const pyramidEl = document.getElementById("pyramid");
@@ -413,6 +416,7 @@
   const frameToggleEl = document.getElementById("frameToggle");
   const benchToggleBtn = document.getElementById("toggleBench");
   const pyramidLockBtn = document.getElementById("togglePyramidLock");
+  const rankStatsEl = document.getElementById("rankStats");
 
   const ROWS = [1,2,3,5];
   const TOTAL = ROWS.reduce((a,b)=>a+b,0);
@@ -433,6 +437,10 @@
     "D":"#080000",
     "F":"#d3d3d3"
   };
+
+  // 年齢・身長列名（ユーザー指定）
+  const YEAR_COL = "年/Year";         // 例: (10)
+  const HEIGHT_COL = "身長/Height";   // 例: 172.3 / 172
 
   const state = {
     header: [],
@@ -460,6 +468,7 @@
   };
 
   let cardElsById = new Map();
+  let gridOrderIds = []; // 現在の並び順（番号表示に使う）
 
   function escapeHtml(s){
     return String(s ?? "")
@@ -553,7 +562,7 @@
     state.slots[slotIndex] = benchId;
 
     if (slotId){
-      state.bench[benchIndex] = slotId;
+      state.bench[benchIndex] = slotId; // 入れ替えだけ（順番を勝手に崩さない）
     } else {
       state.bench.splice(benchIndex, 1);
     }
@@ -571,14 +580,8 @@
       pyramidPanelEl.style.overflow = "";
       return;
     }
-    const top = window.scrollY || document.documentElement.scrollTop || 0;
-    if (top > 0){
-      pyramidPanelEl.style.maxHeight = "50vh";
-      pyramidPanelEl.style.overflow = "auto";
-    } else {
-      pyramidPanelEl.style.maxHeight = "";
-      pyramidPanelEl.style.overflow = "";
-    }
+    pyramidPanelEl.style.maxHeight = "160px"; // ベンチぐらい
+    pyramidPanelEl.style.overflow = "auto";
   }
 
   function updateSlotSize(){
@@ -591,8 +594,10 @@
     const gap = parseFloat(root.getPropertyValue("--gap")) || 6;
     const slotMax = parseFloat(root.getPropertyValue("--slotMax")) || 96;
 
+    // 5人が必ず収まる
     const size = Math.min(slotMax, Math.floor((inner - (4 * gap)) / 5));
     document.documentElement.style.setProperty("--slotSize", Math.max(64, size) + "px");
+    document.documentElement.style.setProperty("--benchSize", Math.max(64, size) + "px");
   }
 
   function buildDisplayKeysFromHeader(header){
@@ -623,34 +628,6 @@
       `;
     }).join("");
   }
-
-  togglesEl.addEventListener("change", (e) => {
-    const cb = e.target.closest("input[type=checkbox]");
-    if (!cb) return;
-    const key = cb.dataset.key;
-
-    const currentlyOn = selectedToggleCount();
-    if (!state.show[key] && cb.checked && currentlyOn >= 3){
-      cb.checked = false;
-      return;
-    }
-
-    state.show[key] = cb.checked;
-
-    renderToggles();
-    renderPyramid();
-    renderBench();
-    renderGrid(true);
-    persistSoon();
-  });
-
-  frameToggleEl.addEventListener("change", () => {
-    state.classFrameOn = frameToggleEl.checked;
-    renderPyramid();
-    renderBench();
-    applyGridClassFrames();
-    persistSoon();
-  });
 
   function buildInfoLines(person){
     if (!person) return [];
@@ -722,10 +699,12 @@
         const frameColor = (state.classFrameOn ? getClassColor(p) : "");
         const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
+        // 選択済みは濃青リング、今操作中は薄水色外リング
         const slotCls = [
           "slot",
+          id ? "selectedRing" : "",
+          state.activeSlotIndex === idx ? "activeRing" : "",
           id ? "" : "empty",
-          state.activeSlotIndex === idx ? "active" : ""
         ].filter(Boolean).join(" ");
 
         items.push(`
@@ -743,6 +722,8 @@
       }
       return `<div class="row">${items.join("")}</div>`;
     }).join("");
+
+    updateRankStats();
   }
 
   function renderBench(){
@@ -763,11 +744,15 @@
       const frameColor = (state.classFrameOn ? getClassColor(p) : "");
       const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
-      const activeCls = (state.activeBenchIndex === i) ? "activeBench" : "";
+      const cls = [
+        "benchItem",
+        "selectedRing",
+        (state.activeBenchIndex === i) ? "activeRing" : ""
+      ].filter(Boolean).join(" ");
 
       return `
         <div class="benchItemWrap">
-          <div class="benchItem ${activeCls}" ${style} data-index="${i}" data-id="${escapeHtml(id)}" role="button" tabindex="0">
+          <div class="${cls}" ${style} data-index="${i}" data-id="${escapeHtml(id)}" role="button" tabindex="0">
             ${imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
           </div>
           ${lines.length ? `
@@ -778,6 +763,8 @@
         </div>
       `;
     }).join("");
+
+    updateRankStats();
   }
 
   function getCardTitleAndSub(person){
@@ -793,20 +780,16 @@
     return { title, sub };
   }
 
-  function renderGrid(forceRebuild=false){
+  function renderGrid(){
     const arr = getSortedPeople();
-
-    if (!forceRebuild && cardElsById.size === arr.length){
-      updateGridSelectionRings();
-      applyGridClassFrames();
-      return;
-    }
+    gridOrderIds = arr.map(p => p.id);
 
     gridEl.innerHTML = arr.map((p, i) => {
       const imgSrc = p.img ? escapeHtml(p.img) : "";
       const { title, sub } = getCardTitleAndSub(p);
       const idx = i + 1;
 
+      // class frame uses border-color inline (doesn't override rings)
       const frameColor = (state.classFrameOn ? getClassColor(p) : "");
       const borderStyle = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
@@ -833,13 +816,6 @@
     });
 
     updateGridSelectionRings();
-    applyGridClassFrames();
-  }
-
-  function updateGridSelectionRings(){
-    cardElsById.forEach((el, id) => {
-      el.classList.toggle("selected", isSelected(id));
-    });
   }
 
   function applyGridClassFrames(){
@@ -854,11 +830,87 @@
     });
   }
 
+  function updateGridSelectionRings(){
+    // “いま操作中”のID
+    let activeId = null;
+    if (state.activeSlotIndex != null){
+      activeId = state.slots[state.activeSlotIndex] || null;
+    } else if (state.activeBenchIndex != null){
+      activeId = state.bench[state.activeBenchIndex] || null;
+    }
+
+    cardElsById.forEach((el, id) => {
+      const selected = isSelected(id);
+      const active = (activeId === id);
+
+      el.classList.toggle("selected", selected);
+      el.classList.toggle("activeRing", active);
+    });
+  }
+
+  // 年齢計算：2026年 기준、(10) なら 26-10 = 16
+  function parseYearParens(v){
+    const s = String(v ?? "").trim();
+    if (!s) return null;
+    const m = s.match(/\((\d{1,2})\)/);
+    if (!m) return null;
+    const yy = Number(m[1]);
+    return Number.isFinite(yy) ? yy : null;
+  }
+
+  function parseHeightCm(v){
+    const s = String(v ?? "").trim();
+    if (!s) return null;
+    const m = s.match(/(\d+(\.\d+)?)/);
+    if (!m) return null;
+    const n = Number(m[1]);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function updateRankStats(){
+    const ids = state.slots.filter(Boolean);
+
+    let ageSum = 0, ageCnt = 0;
+    let hSum = 0, hCnt = 0;
+
+    for (const id of ids){
+      const p = state.byId.get(id);
+      if (!p) continue;
+
+      // Age
+      const yy = parseYearParens(p.raw?.[YEAR_COL]);
+      if (yy != null){
+        const age = 26 - yy;
+        if (Number.isFinite(age)){
+          ageSum += age;
+          ageCnt++;
+        }
+      }
+
+      // Height
+      const h = parseHeightCm(p.raw?.[HEIGHT_COL]);
+      if (h != null){
+        hSum += h;
+        hCnt++;
+      }
+    }
+
+    const ageAvg = ageCnt ? Math.round((ageSum / ageCnt) * 10) / 10 : null;
+    const hAvg   = hCnt ? Math.round((hSum / hCnt) * 10) / 10 : null;
+
+    const ageText = (ageAvg == null) ? "--" : `${ageAvg}歳`;
+    const hText   = (hAvg   == null) ? "--" : `${hAvg}cm`;
+
+    rankStatsEl.textContent = `平均年齢：${ageText}　平均身長：${hText}`;
+  }
+
   function onSlotClick(slotIndex){
     const slotId = state.slots[slotIndex] || null;
 
+    // ベンチ選択中 → スロットと入れ替え
     if (state.activeBenchIndex != null){
       swapSlotWithBench(slotIndex, state.activeBenchIndex);
+
       state.activeBenchIndex = null;
       state.activeSlotIndex = null;
       state.lastTappedId = null;
@@ -870,41 +922,46 @@
       return;
     }
 
+    // 同じスロットをもう一回 → 中身削除
     if (state.activeSlotIndex === slotIndex){
       if (slotId) state.slots[slotIndex] = null;
+
       state.activeSlotIndex = null;
       state.lastTappedId = null;
 
       renderPyramid();
-      renderBench();
       updateGridSelectionRings();
       persistSoon();
       return;
     }
 
+    // 既に別スロット選択中 → スロット同士入れ替え
     if (state.activeSlotIndex != null && state.activeSlotIndex !== slotIndex){
       swapSlots(state.activeSlotIndex, slotIndex);
+
       state.activeSlotIndex = null;
       state.lastTappedId = null;
 
       renderPyramid();
-      renderBench();
       updateGridSelectionRings();
       persistSoon();
       return;
     }
 
+    // スロット選択開始
     state.activeSlotIndex = slotIndex;
     state.activeBenchIndex = null;
     state.lastTappedId = slotId;
 
     renderPyramid();
-    renderBench();
+    updateGridSelectionRings();
   }
 
   function onPickId(id, fromBench=false, benchIndex=null){
+    // 2回連続タップ削除（どこでも共通）
     if (state.lastTappedId === id && isSelected(id)){
       removeIdEverywhere(id);
+
       state.lastTappedId = null;
       state.activeBenchIndex = null;
       state.activeSlotIndex = null;
@@ -916,10 +973,12 @@
       return;
     }
 
+    // スロット選択中なら：差し替え（ベンチでも121でもOK）
     if (state.activeSlotIndex != null){
       if (fromBench && benchIndex != null){
         swapSlotWithBench(state.activeSlotIndex, benchIndex);
       } else {
+        // 121側から選んだ：スロットの中身をベンチへ（順番崩さず末尾追加）
         const bi = state.bench.indexOf(id);
         if (bi >= 0){
           swapSlotWithBench(state.activeSlotIndex, bi);
@@ -941,8 +1000,10 @@
       return;
     }
 
+    // 2回タップ判定用
     state.lastTappedId = id;
 
+    // 未選択なら：空きがあればランキング、なければベンチへ
     if (!isSelected(id)){
       const empty = firstEmptySlot();
       if (empty >= 0) state.slots[empty] = id;
@@ -958,25 +1019,35 @@
       return;
     }
 
+    // 既に選択済み：ベンチ同士の入れ替え
     if (fromBench && benchIndex != null){
       if (state.activeBenchIndex != null && state.activeBenchIndex !== benchIndex){
         swapBench(state.activeBenchIndex, benchIndex);
+
         state.activeBenchIndex = null;
         state.lastTappedId = null;
 
         renderBench();
+        updateGridSelectionRings();
         persistSoon();
         return;
       }
 
       state.activeBenchIndex = benchIndex;
+      state.activeSlotIndex = null;
+
       renderBench();
+      updateGridSelectionRings();
       return;
     }
 
+    // 121側で選択済みを押した場合：その人がベンチにいるなら選択対象へ
     const bi = state.bench.indexOf(id);
     state.activeBenchIndex = (bi >= 0) ? bi : null;
+    state.activeSlotIndex = null;
+
     renderBench();
+    updateGridSelectionRings();
   }
 
   let persistTimer = null;
@@ -1005,7 +1076,9 @@
       if (!raw) return;
       const p = JSON.parse(raw);
 
-      if (Array.isArray(p.slots)) state.slots = p.slots.slice(0, TOTAL).concat(Array(Math.max(0, TOTAL - p.slots.length)).fill(null)).slice(0, TOTAL);
+      if (Array.isArray(p.slots)){
+        state.slots = p.slots.slice(0, TOTAL).concat(Array(Math.max(0, TOTAL - p.slots.length)).fill(null)).slice(0, TOTAL);
+      }
       if (Array.isArray(p.bench)) state.bench = p.bench.slice();
 
       if (p && typeof p.show === "object" && p.show){
@@ -1022,75 +1095,56 @@
     }catch(_){}
   }
 
-  async function loadData(){
-    restoreFromStorage();
+  // Events (toggles / sort / etc)
+  togglesEl.addEventListener("change", (e) => {
+    const cb = e.target.closest("input[type=checkbox]");
+    if (!cb) return;
+    const key = cb.dataset.key;
 
-    const res = await fetch(CSV_PATH, { cache: "no-store" });
-    const text = await res.text();
-    const { header, rows } = parseCsvWithHeader(text);
-
-    state.header = header;
-
-    state.displayKeys = buildDisplayKeysFromHeader(header);
-    for (const k of state.displayKeys){
-      if (!(k in state.show)) state.show[k] = false;
-    }
-    for (const k of Object.keys(state.show)){
-      if (!state.displayKeys.includes(k)) delete state.show[k];
+    const currentlyOn = selectedToggleCount();
+    if (!state.show[key] && cb.checked && currentlyOn >= 3){
+      cb.checked = false;
+      return;
     }
 
-    state.sortKeys = buildSortKeys(header);
-
-    state.people = normalizePeople(rows);
-    state.byId = new Map(state.people.map(p => [p.id, p]));
-
-    state.slots = state.slots.map(id => (id && state.byId.has(id)) ? id : null);
-    state.bench = state.bench.filter(id => state.byId.has(id));
-
-    renderSortSelect();
-    if (state._savedSortKey && state.sortKeys.includes(state._savedSortKey)){
-      sortKeyEl.value = state._savedSortKey;
-    }
-    state._savedSortKey = null;
-
-    frameToggleEl.checked = state.classFrameOn;
-
-    // ロック表示＋色（指摘対応）
-    pyramidLockBtn.textContent = state.pyramidLockFull ? "🔒" : "🔓";
-    pyramidLockBtn.classList.toggle("isOn", state.pyramidLockFull);
+    state.show[key] = cb.checked;
 
     renderToggles();
-    updateSlotSize();
     renderPyramid();
     renderBench();
-    renderGrid(true);
-    applyPyramidScrollSizing();
+
+    // gridは作り直さず、テキスト更新が必要なので再描画する
+    // （ここは点滅が嫌ならこのままでもOK。表示項目変えた時だけ再描画にしてる）
+    renderGrid();
+    applyGridClassFrames();
+    updateGridSelectionRings();
 
     persistSoon();
-  }
-
-  pyramidEl.addEventListener("click", (e) => {
-    const slot = e.target.closest(".slot");
-    if (!slot) return;
-    onSlotClick(Number(slot.dataset.slot));
   });
 
-  benchEl.addEventListener("click", (e) => {
-    const item = e.target.closest(".benchItem");
-    if (!item) return;
-    onPickId(item.dataset.id, true, Number(item.dataset.index));
+  frameToggleEl.addEventListener("change", () => {
+    state.classFrameOn = frameToggleEl.checked;
+
+    renderPyramid();
+    renderBench();
+    applyGridClassFrames();
     updateGridSelectionRings();
+
+    persistSoon();
   });
 
-  gridEl.addEventListener("click", (e) => {
-    const card = e.target.closest(".card");
-    if (!card) return;
-    onPickId(card.dataset.id, false, null);
+  sortKeyEl.addEventListener("change", () => {
+    renderGrid();
+    applyGridClassFrames();
     updateGridSelectionRings();
+    persistSoon();
   });
-
-  sortKeyEl.addEventListener("change", () => { renderGrid(true); persistSoon(); });
-  sortDirEl.addEventListener("change", () => { renderGrid(true); persistSoon(); });
+  sortDirEl.addEventListener("change", () => {
+    renderGrid();
+    applyGridClassFrames();
+    updateGridSelectionRings();
+    persistSoon();
+  });
 
   clearBtn.addEventListener("click", () => {
     const ok = confirm("選択を解除しますか？");
@@ -1124,15 +1178,79 @@
     persistSoon();
   });
 
+  pyramidEl.addEventListener("click", (e) => {
+    const slot = e.target.closest(".slot");
+    if (!slot) return;
+    onSlotClick(Number(slot.dataset.slot));
+  });
+
+  benchEl.addEventListener("click", (e) => {
+    const item = e.target.closest(".benchItem");
+    if (!item) return;
+    onPickId(item.dataset.id, true, Number(item.dataset.index));
+  });
+
+  gridEl.addEventListener("click", (e) => {
+    const card = e.target.closest(".card");
+    if (!card) return;
+    onPickId(card.dataset.id, false, null);
+  });
+
   window.addEventListener("resize", () => {
     updateSlotSize();
     renderPyramid();
     renderBench();
   });
 
-  window.addEventListener("scroll", () => {
+  async function loadData(){
+    restoreFromStorage();
+
+    const res = await fetch(CSV_PATH, { cache: "no-store" });
+    const text = await res.text();
+    const { header, rows } = parseCsvWithHeader(text);
+
+    state.header = header;
+
+    state.displayKeys = buildDisplayKeysFromHeader(header);
+    for (const k of state.displayKeys){
+      if (!(k in state.show)) state.show[k] = false;
+    }
+    for (const k of Object.keys(state.show)){
+      if (!state.displayKeys.includes(k)) delete state.show[k];
+    }
+
+    state.sortKeys = buildSortKeys(header);
+
+    state.people = normalizePeople(rows);
+    state.byId = new Map(state.people.map(p => [p.id, p]));
+
+    // 存在しないIDは消す
+    state.slots = state.slots.map(id => (id && state.byId.has(id)) ? id : null);
+    state.bench = state.bench.filter(id => state.byId.has(id));
+
+    renderSortSelect();
+    if (state._savedSortKey && state.sortKeys.includes(state._savedSortKey)){
+      sortKeyEl.value = state._savedSortKey;
+    }
+    state._savedSortKey = null;
+
+    frameToggleEl.checked = state.classFrameOn;
+
+    pyramidLockBtn.textContent = state.pyramidLockFull ? "🔒" : "🔓";
+    pyramidLockBtn.classList.toggle("isOn", state.pyramidLockFull);
+
+    renderToggles();
+    updateSlotSize();
+
+    renderPyramid();
+    renderBench();
+    renderGrid();
+    applyGridClassFrames();
+    updateGridSelectionRings();
+
     applyPyramidScrollSizing();
-  }, { passive:true });
+    persistSoon();
+  }
 
   loadData();
 </script>
