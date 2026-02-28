@@ -5,24 +5,29 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Produce101 11人ピラミッドメーカー</title>
   <style>
-    :root{
-      --bg:#0b0f1a;
-      --panel:#121a2b; /* 透けない */
+:root{
+  --bg:#0b0f1a;
+  --panel:#121a2b;
 
-      --text:#e8eefc;
-      --muted:#a9b6d6;
-      --line:rgba(255,255,255,.12);
-      --shadow:0 10px 30px rgba(0,0,0,.35);
-      --r:14px;
+  --text:#e8eefc;
+  --muted:#a9b6d6;
+  --line:rgba(255,255,255,.12);
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+  --r:14px;
 
-      --gap:6px;
+  /* 余白と間隔を詰める（=顔を大きくできる） */
+  --gap:4px;
 
-      /* ★顔サイズは「5人が横に収まる」計算で固定。トグルが増えても変えない */
-      --slotMax: 56px;
-      --slotSize: min(var(--slotMax), calc((100% - (4 * var(--gap))) / 5));
+  /* ★顔サイズの上限を上げる */
+  --slotMax: 86px;
 
-      --benchSize: 46px;
-    }
+  /* ★計算の基準を「画面幅」に寄せる（豆粒化しにくい） */
+  --pyrWidth: min(520px, calc(100vw - 24px));  /* 24pxは左右の余白ぶん */
+  --slotSize: min(var(--slotMax), calc((var(--pyrWidth) - (4 * var(--gap))) / 5));
+
+  /* ベンチも見やすく */
+  --benchSize: 62px;
+}
     *{box-sizing:border-box}
     body{
       margin:0;
