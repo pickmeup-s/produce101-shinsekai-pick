@@ -60,7 +60,7 @@
 
     main{max-width:1100px;margin:0 auto;padding:10px 16px 60px}
 
-    /* ===== ピラミッド + ベンチ：まとめて sticky ===== */
+    /* sticky */
     .stickyWrap{
       position: sticky;
       top: 0;
@@ -98,12 +98,15 @@
       color: var(--text);
     }
 
-    /* ===== 表示項目トグル ===== */
+    /* 自動生成される表示列トグル */
     .toggles{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
       margin: 6px 0 2px;
+      max-height: 92px;
+      overflow:auto;
+      padding-right:4px;
     }
     .chip{
       display:inline-flex;
@@ -116,10 +119,11 @@
       color: var(--text);
       font-size: 12px;
       user-select:none;
+      white-space:nowrap;
     }
     .chip input{ accent-color: #7fb6ff; }
 
-    /* ===== ピラミッド ===== */
+    /* pyramid */
     .rows{display:flex; flex-direction:column; gap:6px}
     .row{
       display:flex;
@@ -128,7 +132,6 @@
       flex-wrap: nowrap;
       width: 100%;
     }
-
     .slotWrap{
       display:flex;
       flex-direction:column;
@@ -165,8 +168,7 @@
       border: 1px dashed rgba(255,255,255,.14);
     }
 
-    /* ピラミッドに出すテキスト（ONの時だけ描画） */
-    .slotInfo{
+    .slotInfo, .benchInfo{
       width: 100%;
       text-align:center;
       font-size: 10px;
@@ -176,13 +178,13 @@
       flex-direction:column;
       gap:2px;
     }
-    .slotInfo .line{
+    .slotInfo .line, .benchInfo .line{
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
     }
 
-    /* ===== ベンチ ===== */
+    /* bench */
     .benchRow{
       display:flex;
       gap: 8px;
@@ -206,7 +208,6 @@
       background: rgba(255,255,255,.05);
       border: 1px solid rgba(255,255,255,.10);
       cursor:pointer;
-      position:relative;
       touch-action: manipulation;
     }
     .benchItem img{
@@ -216,23 +217,7 @@
       display:block;
     }
 
-    .benchInfo{
-      width:100%;
-      text-align:center;
-      font-size: 10px;
-      color: rgba(232,238,252,.9);
-      line-height: 1.1;
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .benchInfo .line{
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-
-    /* ===== 一覧 ===== */
+    /* grid */
     .gridSection{margin-top: 12px}
     .grid{
       display:grid;
@@ -296,492 +281,504 @@
 </head>
 
 <body>
-  <header>
-    <div class="wrap">
-      <div class="top">
-        <h1>Produce101 11人ピラミッドメーカー</h1>
-        <div class="controls">
-          <select id="sort">
-            <option value="registered">登録順</option>
-            <option value="name_asc">名前 A→Z</option>
-            <option value="name_desc">名前 Z→A</option>
-
-            <!-- ★追加：スロット順（ピラミッド順） -->
-            <option value="slot_order">スロット順</option>
-          </select>
-          <button id="reload" type="button">データ再読込</button>
-        </div>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <h1>Produce101 11人ピラミッドメーカー</h1>
+      <div class="controls">
+        <select id="sort">
+          <option value="registered">登録順</option>
+          <option value="name_asc">名前 A→Z</option>
+          <option value="name_desc">名前 Z→A</option>
+          <option value="slot_order">スロット順</option>
+        </select>
+        <button id="reload" type="button">データ再読込</button>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main>
-    <section class="stickyWrap">
-      <div class="panel">
-        <div class="bar">
-          <div id="count"></div>
-          <button class="mini" id="clear" type="button">全解除</button>
-        </div>
-
-        <!-- ★追加：ピラミッド/ベンチに出す項目 -->
-        <div class="toggles" id="toggles"></div>
-
-        <div class="rows" id="pyramid"></div>
+<main>
+  <section class="stickyWrap">
+    <div class="panel">
+      <div class="bar">
+        <div id="count"></div>
+        <button class="mini" id="clear" type="button">全解除</button>
       </div>
 
-      <div class="panel">
-        <div class="bar">
-          <div><strong>ベンチ</strong> <span id="benchCount"></span></div>
-          <div></div>
-        </div>
-        <div class="benchRow" id="bench"></div>
+      <div class="toggles" id="toggles"></div>
+
+      <div class="rows" id="pyramid"></div>
+    </div>
+
+    <div class="panel">
+      <div class="bar">
+        <div><strong>ベンチ</strong> <span id="benchCount"></span></div>
+        <div></div>
       </div>
-    </section>
+      <div class="benchRow" id="bench"></div>
+    </div>
+  </section>
 
-    <section class="gridSection">
-      <div class="grid" id="grid"></div>
-    </section>
-  </main>
+  <section class="gridSection">
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
 
-  <script>
-    const CSV_PATH = "data/master.csv";
+<script>
+  const CSV_PATH = "data/master.csv";
 
-    const gridEl = document.getElementById("grid");
-    const sortEl = document.getElementById("sort");
-    const countEl = document.getElementById("count");
-    const pyramidEl = document.getElementById("pyramid");
-    const benchEl = document.getElementById("bench");
-    const benchCountEl = document.getElementById("benchCount");
-    const togglesEl = document.getElementById("toggles");
+  const gridEl = document.getElementById("grid");
+  const sortEl = document.getElementById("sort");
+  const countEl = document.getElementById("count");
+  const pyramidEl = document.getElementById("pyramid");
+  const benchEl = document.getElementById("bench");
+  const benchCountEl = document.getElementById("benchCount");
+  const togglesEl = document.getElementById("toggles");
 
-    const ROWS = [1,2,3,5];
-    const TOTAL = ROWS.reduce((a,b)=>a+b,0);
+  const ROWS = [1,2,3,5];
+  const TOTAL = ROWS.reduce((a,b)=>a+b,0);
 
-    // ★表示可能フィールド（CSV列名が無くても空なら出ない）
-    // ここに増やせば増やせる（例：weight, blood, team…）
-    const DISPLAY_FIELDS = [
-      { key: "name",    label: "名前" },
-      { key: "birth",   label: "生年/生年月日" },
-      { key: "origin",  label: "出身地" },
-      { key: "height",  label: "身長" },
-      { key: "romaji",  label: "ローマ字" },
-    ];
+  // ★絶対に表示候補に入れない列（増やしたければここに足すだけ）
+  // id, 画像系, 並び替え用に使う系は基本ここに入れる
+  const EXCLUDE_KEYS = new Set([
+    "id","ID","Id",
+    "img","image","Image","画像","photo","Photo",
+    "__idx"
+  ]);
 
-    const state = {
-      people: [],
-      byId: new Map(),
-      lastSortedIds: [],
-      slots: Array(TOTAL).fill(null),
-      bench: [],
-      activeSlotIndex: null,
+  const state = {
+    people: [],
+    byId: new Map(),
+    slots: Array(TOTAL).fill(null),
+    bench: [],
+    activeSlotIndex: null,
 
-      // ★表示ON/OFF（初期は全部OFF：顔だけ）
-      show: {
-        name:false,
-        birth:false,
-        origin:false,
-        height:false,
-        romaji:false,
-      },
-    };
+    // CSVヘッダ由来の表示候補キー
+    displayKeys: [],     // ["name","birth",...]
+    show: {},            // {name:true, ...}
+  };
 
-    function escapeHtml(s){
-      return String(s ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#39;");
-    }
+  function escapeHtml(s){
+    return String(s ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
 
-    function splitCsvLine(line){
-      const out = [];
-      let cur = "";
-      let inQ = false;
-      for (let i=0;i<line.length;i++){
-        const c = line[i];
-        if (c === '"'){
-          if (inQ && line[i+1] === '"'){ cur += '"'; i++; }
-          else inQ = !inQ;
-        } else if (c === "," && !inQ){
-          out.push(cur); cur = "";
-        } else {
-          cur += c;
-        }
+  function splitCsvLine(line){
+    const out = [];
+    let cur = "";
+    let inQ = false;
+    for (let i=0;i<line.length;i++){
+      const c = line[i];
+      if (c === '"'){
+        if (inQ && line[i+1] === '"'){ cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (c === "," && !inQ){
+        out.push(cur); cur = "";
+      } else {
+        cur += c;
       }
-      out.push(cur);
-      return out;
     }
+    out.push(cur);
+    return out;
+  }
 
-    function parseCsv(text){
-      const lines = text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").filter(l => l.trim() !== "");
-      if (!lines.length) return [];
-      const header = splitCsvLine(lines[0]).map(h => h.trim());
-      const rows = [];
-      for (let i=1;i<lines.length;i++){
-        const cols = splitCsvLine(lines[i]);
-        const obj = {};
-        for (let j=0;j<header.length;j++){
-          obj[header[j]] = (cols[j] ?? "").trim();
-        }
-        rows.push(obj);
+  function parseCsvWithHeader(text){
+    const lines = text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").filter(l => l.trim() !== "");
+    if (!lines.length) return { header: [], rows: [] };
+    const header = splitCsvLine(lines[0]).map(h => h.trim());
+    const rows = [];
+    for (let i=1;i<lines.length;i++){
+      const cols = splitCsvLine(lines[i]);
+      const obj = {};
+      for (let j=0;j<header.length;j++){
+        obj[header[j]] = (cols[j] ?? "").trim();
       }
-      return rows;
+      rows.push(obj);
+    }
+    return { header, rows };
+  }
+
+  function pickField(obj, keys){
+    for (const k of keys){
+      if (obj[k] != null && String(obj[k]).trim() !== "") return String(obj[k]).trim();
+    }
+    return "";
+  }
+
+  // ★CSVの行を「そのまま」保持しつつ、id/imgだけは確実に取る
+  function normalizePeople(rows){
+    return rows.map((r, idx) => {
+      const id = pickField(r, ["id","ID","Id"]) || String(idx+1);
+      const img  = pickField(r, ["img","image","Image","画像","photo","Photo"]);
+      // それ以外の列は r をそのまま持たせる（表示もここから取る）
+      return { id, img, raw: r, __idx: idx };
+    });
+  }
+
+  function slotCount(){ return state.slots.filter(Boolean).length; }
+  function isInSlots(id){ return state.slots.includes(id); }
+  function isInBench(id){ return state.bench.includes(id); }
+  function isSelected(id){ return isInSlots(id) || isInBench(id); }
+
+  function removeIdEverywhere(id){
+    const si = state.slots.indexOf(id);
+    if (si >= 0) state.slots[si] = null;
+    const bi = state.bench.indexOf(id);
+    if (bi >= 0) state.bench.splice(bi, 1);
+  }
+  function firstEmptySlot(){ return state.slots.findIndex(x => !x); }
+  function swapSlots(a, b){
+    const tmp = state.slots[a];
+    state.slots[a] = state.slots[b];
+    state.slots[b] = tmp;
+  }
+
+  function placeIdIntoSlot(id, slotIndex){
+    if (state.slots[slotIndex] === id) return;
+
+    const from = state.slots.indexOf(id);
+    if (from >= 0){
+      swapSlots(from, slotIndex);
+      return;
     }
 
-    function pickField(obj, keys){
-      for (const k of keys){
-        if (obj[k] != null && String(obj[k]).trim() !== "") return String(obj[k]).trim();
-      }
-      return "";
-    }
-
-    function normalizePeople(rows){
-      return rows.map((r, idx) => {
-        const id = pickField(r, ["id","ID","Id"]) || String(idx+1);
-        const name = pickField(r, ["name","Name","名前","氏名"]);
-        const romaji = pickField(r, ["romaji","Romaji","roman","ローマ字"]);
-        const birth = pickField(r, ["birth","birthYear","year","生年","生年月日","誕生日","生年月日(西暦)"]);
-        const origin = pickField(r, ["origin","出身地","出身","city","pref","prefecture"]);
-        const height = pickField(r, ["height","身長","height_cm","身長(cm)"]);
-        const img  = pickField(r, ["img","image","Image","画像","photo","Photo"]);
-        return { id, name, romaji, birth, origin, height, img, __idx: idx };
-      });
-    }
-
-    function slotCount(){ return state.slots.filter(Boolean).length; }
-    function isInSlots(id){ return state.slots.includes(id); }
-    function isInBench(id){ return state.bench.includes(id); }
-    function isSelected(id){ return isInSlots(id) || isInBench(id); }
-
-    function removeIdEverywhere(id){
-      const si = state.slots.indexOf(id);
-      if (si >= 0) state.slots[si] = null;
-      const bi = state.bench.indexOf(id);
-      if (bi >= 0) state.bench.splice(bi, 1);
-    }
-    function firstEmptySlot(){ return state.slots.findIndex(x => !x); }
-    function swapSlots(a, b){
-      const tmp = state.slots[a];
-      state.slots[a] = state.slots[b];
-      state.slots[b] = tmp;
-    }
-
-    function placeIdIntoSlot(id, slotIndex){
-      if (state.slots[slotIndex] === id) return;
-
-      const from = state.slots.indexOf(id);
-      if (from >= 0){
-        swapSlots(from, slotIndex);
-        return;
-      }
-
-      const bi = state.bench.indexOf(id);
-      if (bi >= 0){
-        const occupant = state.slots[slotIndex];
-        state.slots[slotIndex] = id;
-        state.bench.splice(bi, 1);
-        if (occupant) state.bench.unshift(occupant);
-        return;
-      }
-
+    const bi = state.bench.indexOf(id);
+    if (bi >= 0){
       const occupant = state.slots[slotIndex];
       state.slots[slotIndex] = id;
+      state.bench.splice(bi, 1);
       if (occupant) state.bench.unshift(occupant);
+      return;
     }
 
-    // ===== 表示トグルUI =====
-    function renderToggles(){
-      togglesEl.innerHTML = DISPLAY_FIELDS.map(f => {
-        const checked = state.show[f.key] ? "checked" : "";
-        return `
-          <label class="chip">
-            <input type="checkbox" data-key="${escapeHtml(f.key)}" ${checked}>
-            ${escapeHtml(f.label)}
-          </label>
-        `;
-      }).join("");
+    const occupant = state.slots[slotIndex];
+    state.slots[slotIndex] = id;
+    if (occupant) state.bench.unshift(occupant);
+  }
+
+  // ===== 表示候補キーをCSVヘッダから自動生成 =====
+  function buildDisplayKeysFromHeader(header){
+    // headerをそのまま使う（列名が日本語でもOK）
+    const keys = header.filter(h => h && !EXCLUDE_KEYS.has(h));
+    // 安定させたいならソート（ここはCSV順のまま）
+    return keys;
+  }
+
+  function renderToggles(){
+    // 初期のshowは「全部OFF」のまま。好きにONにしていく。
+    togglesEl.innerHTML = state.displayKeys.map(key => {
+      const checked = state.show[key] ? "checked" : "";
+      return `
+        <label class="chip">
+          <input type="checkbox" data-key="${escapeHtml(key)}" ${checked}>
+          ${escapeHtml(key)}
+        </label>
+      `;
+    }).join("");
+  }
+
+  togglesEl.addEventListener("change", (e) => {
+    const cb = e.target.closest("input[type=checkbox]");
+    if (!cb) return;
+    const key = cb.dataset.key;
+    state.show[key] = cb.checked;
+    renderPyramid();
+    renderBench();
+  });
+
+  // ===== ピラミッド/ベンチに出す表示行 =====
+  function buildInfoLines(person){
+    if (!person) return [];
+    const r = person.raw || {};
+    const lines = [];
+    for (const key of state.displayKeys){
+      if (!state.show[key]) continue;
+      const v = (r[key] ?? "").trim();
+      if (!v) continue;
+      lines.push(v);
     }
+    return lines;
+  }
 
-    togglesEl.addEventListener("change", (e) => {
-      const cb = e.target.closest("input[type=checkbox]");
-      if (!cb) return;
-      const key = cb.dataset.key;
-      state.show[key] = cb.checked;
+  function setBar(){
+    const n = slotCount();
+    countEl.innerHTML = n ? `<strong>${n}</strong> / ${TOTAL}` : "";
+    benchCountEl.textContent = state.bench.length ? `（${state.bench.length}）` : "";
+  }
 
-      // ピラミッド/ベンチの表示だけ更新（一覧はそのまま）
-      renderPyramid();
-      renderBench();
-    });
-
-    // ===== ピラミッド/ベンチに出す行を生成 =====
-    function buildInfoLines(p){
-      if (!p) return [];
-      const lines = [];
-      for (const f of DISPLAY_FIELDS){
-        if (!state.show[f.key]) continue;
-        const val = p[f.key];
-        if (!val) continue;
-        lines.push(val);
-      }
-      return lines;
-    }
-
-    function setBar(){
-      const n = slotCount();
-      countEl.innerHTML = n ? `<strong>${n}</strong> / ${TOTAL}` : "";
-      benchCountEl.textContent = state.bench.length ? `（${state.bench.length}）` : "";
-    }
-
-    function renderPyramid(){
-      let cursor = 0;
-      const rowsHtml = ROWS.map(n => {
-        const items = [];
-        for (let i=0;i<n;i++){
-          const idx = cursor++;
-          const id = state.slots[idx];
-          const p = id ? state.byId.get(id) : null;
-          const imgSrc = p?.img ? escapeHtml(p.img) : "";
-          const lines = buildInfoLines(p);
-
-          const slotCls = [
-            "slot",
-            id ? "" : "empty",
-            state.activeSlotIndex === idx ? "active" : ""
-          ].filter(Boolean).join(" ");
-
-          items.push(`
-            <div class="slotWrap">
-              <div class="${slotCls}" data-slot="${idx}" role="button" tabindex="0">
-                ${id && imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
-              </div>
-              ${lines.length ? `
-                <div class="slotInfo">
-                  ${lines.slice(0,3).map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")}
-                </div>
-              ` : ``}
-            </div>
-          `);
-        }
-        return `<div class="row">${items.join("")}</div>`;
-      }).join("");
-
-      pyramidEl.innerHTML = rowsHtml;
-      setBar();
-    }
-
-    function renderBench(){
-      const html = state.bench.map(id => {
-        const p = state.byId.get(id);
+  function renderPyramid(){
+    let cursor = 0;
+    const rowsHtml = ROWS.map(n => {
+      const items = [];
+      for (let i=0;i<n;i++){
+        const idx = cursor++;
+        const id = state.slots[idx];
+        const p = id ? state.byId.get(id) : null;
         const imgSrc = p?.img ? escapeHtml(p.img) : "";
         const lines = buildInfoLines(p);
 
-        return `
-          <div class="benchItemWrap">
-            <div class="benchItem" data-id="${escapeHtml(id)}" role="button" tabindex="0" title="${escapeHtml(p?.name || "")}">
-              ${imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
+        const slotCls = [
+          "slot",
+          id ? "" : "empty",
+          state.activeSlotIndex === idx ? "active" : ""
+        ].filter(Boolean).join(" ");
+
+        items.push(`
+          <div class="slotWrap">
+            <div class="${slotCls}" data-slot="${idx}" role="button" tabindex="0">
+              ${id && imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
             </div>
             ${lines.length ? `
-              <div class="benchInfo">
-                ${lines.slice(0,2).map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")}
+              <div class="slotInfo">
+                ${lines.slice(0,3).map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")}
               </div>
             ` : ``}
           </div>
-        `;
-      }).join("");
-
-      benchEl.innerHTML = html;
-      setBar();
-    }
-
-    // ===== 並び替え =====
-    // 追加：スロット順（= ピラミッドの並びを最上位に）
-    // - ピラミッド枠にいる子 → 上から順に先頭に来る
-    // - ベンチにいる子 → bench配列の順
-    // - 未選択 → その後（登録順）
-    function getSlotOrderRankMap(){
-      const map = new Map();
-      let r = 0;
-      for (const id of state.slots){
-        if (!id) continue;
-        if (!map.has(id)) map.set(id, r++);
+        `);
       }
-      for (const id of state.bench){
-        if (!map.has(id)) map.set(id, r++);
-      }
-      return map;
-    }
+      return `<div class="row">${items.join("")}</div>`;
+    }).join("");
 
-    function getSortedPeople(){
-      const arr = [...state.people];
-      const mode = sortEl.value;
+    pyramidEl.innerHTML = rowsHtml;
+    setBar();
+  }
 
-      if (mode === "registered"){
-        arr.sort((a,b) => a.__idx - b.__idx);
-      } else if (mode === "name_asc"){
-        arr.sort((a,b) => (a.name || "").localeCompare(b.name || "", "ja"));
-      } else if (mode === "name_desc"){
-        arr.sort((a,b) => (b.name || "").localeCompare(a.name || "", "ja"));
-      } else if (mode === "slot_order"){
-        const rank = getSlotOrderRankMap();
-        arr.sort((a,b) => {
-          const ra = rank.has(a.id) ? rank.get(a.id) : 1e9 + a.__idx;
-          const rb = rank.has(b.id) ? rank.get(b.id) : 1e9 + b.__idx;
-          return ra - rb;
-        });
-      }
+  function renderBench(){
+    const html = state.bench.map(id => {
+      const p = state.byId.get(id);
+      const imgSrc = p?.img ? escapeHtml(p.img) : "";
+      const lines = buildInfoLines(p);
 
-      state.lastSortedIds = arr.map(p => p.id);
-      return arr;
-    }
-
-    function renderGrid(){
-      const arr = getSortedPeople();
-      const active = state.activeSlotIndex != null;
-
-      const html = arr.map((p, i) => {
-        const selected = isSelected(p.id) ? "selected" : "";
-        const pickTarget = active ? "pickTarget" : "";
-        const imgSrc = p.img ? escapeHtml(p.img) : "";
-        const name = escapeHtml(p.name || "");
-        const sub = escapeHtml([p.romaji, p.birth, p.origin, p.height].filter(Boolean).join(" / "));
-        const idx = i + 1;
-
-        return `
-          <div class="card ${selected} ${pickTarget}" data-id="${escapeHtml(p.id)}" role="button" tabindex="0" aria-label="${name}">
-            <span class="idx">${idx}</span>
-            ${imgSrc
-              ? `<img class="thumb" src="${imgSrc}" alt="${name}" loading="lazy"
-                   onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div style=&quot;aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block&quot;></div>')" />`
-              : `<div style="aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block"></div>`
-            }
-            <div class="meta">
-              <p class="name">${name}</p>
-              <p class="sub">${sub}</p>
-            </div>
+      return `
+        <div class="benchItemWrap">
+          <div class="benchItem" data-id="${escapeHtml(id)}" role="button" tabindex="0" title="">
+            ${imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
           </div>
-        `;
-      }).join("");
+          ${lines.length ? `
+            <div class="benchInfo">
+              ${lines.slice(0,2).map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")}
+            </div>
+          ` : ``}
+        </div>
+      `;
+    }).join("");
 
-      gridEl.innerHTML = html;
-      setBar();
+    benchEl.innerHTML = html;
+    setBar();
+  }
+
+  // ===== スロット順並び替え =====
+  function getSlotOrderRankMap(){
+    const map = new Map();
+    let r = 0;
+    for (const id of state.slots){
+      if (!id) continue;
+      if (!map.has(id)) map.set(id, r++);
+    }
+    for (const id of state.bench){
+      if (!map.has(id)) map.set(id, r++);
+    }
+    return map;
+  }
+
+  function getSortedPeople(){
+    const arr = [...state.people];
+    const mode = sortEl.value;
+
+    if (mode === "registered"){
+      arr.sort((a,b) => a.__idx - b.__idx);
+    } else if (mode === "name_asc"){
+      // 名前列が何て列名か分からんので、候補で探す（無ければ登録順）
+      const nameKey = ["name","Name","名前","氏名"].find(k => state.displayKeys.includes(k)) || null;
+      if (nameKey){
+        arr.sort((a,b) => ((a.raw[nameKey]||"").localeCompare((b.raw[nameKey]||""), "ja")));
+      } else {
+        arr.sort((a,b) => a.__idx - b.__idx);
+      }
+    } else if (mode === "name_desc"){
+      const nameKey = ["name","Name","名前","氏名"].find(k => state.displayKeys.includes(k)) || null;
+      if (nameKey){
+        arr.sort((a,b) => ((b.raw[nameKey]||"").localeCompare((a.raw[nameKey]||""), "ja")));
+      } else {
+        arr.sort((a,b) => a.__idx - b.__idx);
+      }
+    } else if (mode === "slot_order"){
+      const rank = getSlotOrderRankMap();
+      arr.sort((a,b) => {
+        const ra = rank.has(a.id) ? rank.get(a.id) : 1e9 + a.__idx;
+        const rb = rank.has(b.id) ? rank.get(b.id) : 1e9 + b.__idx;
+        return ra - rb;
+      });
+    }
+    return arr;
+  }
+
+  function renderGrid(){
+    const arr = getSortedPeople();
+    const active = state.activeSlotIndex != null;
+
+    // 一覧のサブ行は「よく使いそうな列」を自動で拾って表示（無くてもOK）
+    const subKeysPref = ["romaji","ローマ字","birth","生年","生年月日","origin","出身地","height","身長"];
+    const subKeys = subKeysPref.filter(k => state.displayKeys.includes(k)).slice(0,4);
+
+    const html = arr.map((p, i) => {
+      const selected = isSelected(p.id) ? "selected" : "";
+      const pickTarget = active ? "pickTarget" : "";
+      const imgSrc = p.img ? escapeHtml(p.img) : "";
+
+      const nameKey = ["name","Name","名前","氏名"].find(k => state.displayKeys.includes(k)) || null;
+      const name = escapeHtml(nameKey ? (p.raw[nameKey] || "") : "");
+
+      const sub = escapeHtml(subKeys.map(k => p.raw[k]).filter(Boolean).join(" / "));
+      const idx = i + 1;
+
+      return `
+        <div class="card ${selected} ${pickTarget}" data-id="${escapeHtml(p.id)}" role="button" tabindex="0">
+          <span class="idx">${idx}</span>
+          ${imgSrc
+            ? `<img class="thumb" src="${imgSrc}" alt="${name}" loading="lazy"
+                 onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div style=&quot;aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block&quot;></div>')" />`
+            : `<div style="aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block"></div>`
+          }
+          <div class="meta">
+            <p class="name">${name}</p>
+            <p class="sub">${sub}</p>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    gridEl.innerHTML = html;
+    setBar();
+  }
+
+  // ===== 操作 =====
+  function onSlotClick(slotIndex){
+    const id = state.slots[slotIndex];
+
+    if (state.activeSlotIndex == null){
+      state.activeSlotIndex = slotIndex;
+      renderPyramid(); renderBench(); renderGrid();
+      return;
     }
 
-    // ===== 操作 =====
-    function onSlotClick(slotIndex){
-      const id = state.slots[slotIndex];
-
-      if (state.activeSlotIndex == null){
-        state.activeSlotIndex = slotIndex;
-        renderPyramid(); renderBench(); renderGrid();
-        return;
-      }
-
-      if (state.activeSlotIndex === slotIndex){
-        if (id) state.slots[slotIndex] = null;
-        state.activeSlotIndex = null;
-        renderPyramid(); renderBench(); renderGrid();
-        return;
-      }
-
-      swapSlots(state.activeSlotIndex, slotIndex);
+    if (state.activeSlotIndex === slotIndex){
+      if (id) state.slots[slotIndex] = null;
       state.activeSlotIndex = null;
       renderPyramid(); renderBench(); renderGrid();
+      return;
     }
 
-    function onPickId(id){
-      if (state.activeSlotIndex != null){
-        placeIdIntoSlot(id, state.activeSlotIndex);
-        state.activeSlotIndex = null;
-        renderPyramid(); renderBench(); renderGrid();
-        return;
-      }
+    swapSlots(state.activeSlotIndex, slotIndex);
+    state.activeSlotIndex = null;
+    renderPyramid(); renderBench(); renderGrid();
+  }
 
-      if (isSelected(id)){
-        removeIdEverywhere(id);
-        renderPyramid(); renderBench(); renderGrid();
-        return;
-      }
-
-      const empty = firstEmptySlot();
-      if (empty >= 0) state.slots[empty] = id;
-      else state.bench.unshift(id);
-
-      renderPyramid(); renderBench(); renderGrid();
-    }
-
-    // ===== CSV読み込み =====
-    async function loadData(){
-      const res = await fetch(CSV_PATH, { cache: "no-store" });
-      const text = await res.text();
-      const rows = parseCsv(text);
-
-      state.people = normalizePeople(rows);
-      state.byId = new Map(state.people.map(p => [p.id, p]));
-
-      state.slots = state.slots.map(id => (id && state.byId.has(id)) ? id : null);
-      state.bench = state.bench.filter(id => state.byId.has(id));
-      state.activeSlotIndex = null;
-
-      renderToggles();
-      renderPyramid(); renderBench(); renderGrid();
-    }
-
-    // ===== Events =====
-    pyramidEl.addEventListener("click", (e) => {
-      const slot = e.target.closest(".slot");
-      if (!slot) return;
-      onSlotClick(Number(slot.dataset.slot));
-    });
-    pyramidEl.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      const slot = e.target.closest(".slot");
-      if (!slot) return;
-      e.preventDefault();
-      onSlotClick(Number(slot.dataset.slot));
-    });
-
-    benchEl.addEventListener("click", (e) => {
-      const item = e.target.closest(".benchItem");
-      if (!item) return;
-      onPickId(item.dataset.id);
-    });
-    benchEl.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      const item = e.target.closest(".benchItem");
-      if (!item) return;
-      e.preventDefault();
-      onPickId(item.dataset.id);
-    });
-
-    gridEl.addEventListener("click", (e) => {
-      const card = e.target.closest(".card");
-      if (!card) return;
-      onPickId(card.dataset.id);
-    });
-    gridEl.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      const card = e.target.closest(".card");
-      if (!card) return;
-      e.preventDefault();
-      onPickId(card.dataset.id);
-    });
-
-    sortEl.addEventListener("change", renderGrid);
-    document.getElementById("reload").addEventListener("click", loadData);
-
-    document.getElementById("clear").addEventListener("click", () => {
-      state.slots = Array(TOTAL).fill(null);
-      state.bench = [];
+  function onPickId(id){
+    if (state.activeSlotIndex != null){
+      placeIdIntoSlot(id, state.activeSlotIndex);
       state.activeSlotIndex = null;
       renderPyramid(); renderBench(); renderGrid();
-    });
+      return;
+    }
 
-    // init
+    if (isSelected(id)){
+      removeIdEverywhere(id);
+      renderPyramid(); renderBench(); renderGrid();
+      return;
+    }
+
+    const empty = firstEmptySlot();
+    if (empty >= 0) state.slots[empty] = id;
+    else state.bench.unshift(id);
+
+    renderPyramid(); renderBench(); renderGrid();
+  }
+
+  async function loadData(){
+    const res = await fetch(CSV_PATH, { cache: "no-store" });
+    const text = await res.text();
+    const { header, rows } = parseCsvWithHeader(text);
+
+    state.displayKeys = buildDisplayKeysFromHeader(header);
+
+    // 既存のshow設定は維持。新しく増えた列は初期OFFで追加。
+    for (const k of state.displayKeys){
+      if (!(k in state.show)) state.show[k] = false;
+    }
+    // 消えた列はshowから消す（見た目整理）
+    for (const k of Object.keys(state.show)){
+      if (!state.displayKeys.includes(k)) delete state.show[k];
+    }
+
+    state.people = normalizePeople(rows);
+    state.byId = new Map(state.people.map(p => [p.id, p]));
+
+    state.slots = state.slots.map(id => (id && state.byId.has(id)) ? id : null);
+    state.bench = state.bench.filter(id => state.byId.has(id));
+    state.activeSlotIndex = null;
+
     renderToggles();
-    renderPyramid();
-    renderBench();
-    loadData();
-  </script>
+    renderPyramid(); renderBench(); renderGrid();
+  }
+
+  // events
+  pyramidEl.addEventListener("click", (e) => {
+    const slot = e.target.closest(".slot");
+    if (!slot) return;
+    onSlotClick(Number(slot.dataset.slot));
+  });
+  pyramidEl.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const slot = e.target.closest(".slot");
+    if (!slot) return;
+    e.preventDefault();
+    onSlotClick(Number(slot.dataset.slot));
+  });
+
+  benchEl.addEventListener("click", (e) => {
+    const item = e.target.closest(".benchItem");
+    if (!item) return;
+    onPickId(item.dataset.id);
+  });
+  benchEl.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const item = e.target.closest(".benchItem");
+    if (!item) return;
+    e.preventDefault();
+    onPickId(item.dataset.id);
+  });
+
+  gridEl.addEventListener("click", (e) => {
+    const card = e.target.closest(".card");
+    if (!card) return;
+    onPickId(card.dataset.id);
+  });
+  gridEl.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const card = e.target.closest(".card");
+    if (!card) return;
+    e.preventDefault();
+    onPickId(card.dataset.id);
+  });
+
+  sortEl.addEventListener("change", renderGrid);
+  document.getElementById("reload").addEventListener("click", loadData);
+
+  document.getElementById("clear").addEventListener("click", () => {
+    state.slots = Array(TOTAL).fill(null);
+    state.bench = [];
+    state.activeSlotIndex = null;
+    renderPyramid(); renderBench(); renderGrid();
+  });
+
+  // init
+  loadData();
+</script>
 </body>
 </html>
