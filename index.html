@@ -7,7 +7,8 @@
   <style>
     :root{
       --bg:#0b0f1a;
-      --panel: rgba(18,26,43,.70);
+      --panel:#121a2b; /* 透けない */
+
       --text:#e8eefc;
       --muted:#a9b6d6;
       --line:rgba(255,255,255,.12);
@@ -15,9 +16,12 @@
       --r:14px;
 
       --gap:6px;
-      --slotMax: 52px;
+
+      /* ★顔サイズは「5人が横に収まる」計算で固定。トグルが増えても変えない */
+      --slotMax: 56px;
       --slotSize: min(var(--slotMax), calc((100% - (4 * var(--gap))) / 5));
-      --benchSize: 44px;
+
+      --benchSize: 46px;
     }
     *{box-sizing:border-box}
     body{
@@ -30,7 +34,6 @@
     }
 
     header{
-      position:relative;
       background: rgba(11,15,26,.72);
       border-bottom:1px solid var(--line);
     }
@@ -45,7 +48,7 @@
       height:36px;
       border-radius:10px;
       border:1px solid var(--line);
-      background: rgba(18,26,43,.9);
+      background: rgba(18,26,43,.95);
       color:var(--text);
       padding:0 12px;
       outline:none;
@@ -60,7 +63,7 @@
 
     main{max-width:1100px;margin:0 auto;padding:10px 16px 60px}
 
-    /* sticky */
+    /* ===== sticky: ピラミッド＋ベンチだけ固定 ===== */
     .stickyWrap{
       position: sticky;
       top: 0;
@@ -93,52 +96,26 @@
       border-radius:10px;
       background: rgba(255,255,255,.06);
       border:1px solid var(--line);
-      box-shadow:none;
       cursor:pointer;
       color: var(--text);
     }
 
-    /* 自動生成される表示列トグル */
-    .toggles{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin: 6px 0 2px;
-      max-height: 92px;
-      overflow:auto;
-      padding-right:4px;
-    }
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      font-size: 12px;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .chip input{ accent-color: #7fb6ff; }
-
-    /* pyramid */
+    /* ===== ピラミッド ===== */
     .rows{display:flex; flex-direction:column; gap:6px}
     .row{
       display:flex;
       justify-content:center;
       gap: var(--gap);
-      flex-wrap: nowrap;
       width: 100%;
+      flex-wrap: nowrap;
     }
     .slotWrap{
+      width: var(--slotSize);
+      flex: 0 0 auto;
       display:flex;
       flex-direction:column;
       align-items:center;
       gap:4px;
-      width: var(--slotSize);
-      flex: 0 0 auto;
     }
     .slot{
       width: var(--slotSize);
@@ -147,10 +124,8 @@
       overflow: hidden;
       background: rgba(255,255,255,.05);
       border: none;
-      box-shadow: none;
-      position: relative;
-      touch-action: manipulation;
       cursor:pointer;
+      touch-action: manipulation;
     }
     .slot img{
       width:100%;
@@ -168,6 +143,7 @@
       border: 1px dashed rgba(255,255,255,.14);
     }
 
+    /* ★テキストは写真サイズに影響させない（下に出すだけ） */
     .slotInfo, .benchInfo{
       width: 100%;
       text-align:center;
@@ -184,7 +160,7 @@
       white-space:nowrap;
     }
 
-    /* bench */
+    /* ===== ベンチ ===== */
     .benchRow{
       display:flex;
       gap: 8px;
@@ -217,7 +193,43 @@
       display:block;
     }
 
-    /* grid */
+    /* ===== 表示項目トグル：stickyに入れない。スクロールで流れる場所 ===== */
+    .optionsPanel{
+      margin-top: 12px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 10px;
+    }
+    .optionsTitle{
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+    .toggles{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      max-height: 120px; /* ここでスクロール */
+      overflow:auto;
+      padding-right:4px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-size: 12px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .chip input{ accent-color: #7fb6ff; }
+
+    /* ===== 一覧 ===== */
     .gridSection{margin-top: 12px}
     .grid{
       display:grid;
@@ -232,7 +244,7 @@
     }
     .card{
       position:relative;
-      background: linear-gradient(180deg, rgba(18,26,43,.9), rgba(15,22,38,.92));
+      background: linear-gradient(180deg, rgba(18,26,43,.95), rgba(15,22,38,.96));
       border:1px solid var(--line);
       border-radius: 14px;
       box-shadow: var(--shadow);
@@ -299,15 +311,13 @@
 </header>
 
 <main>
+  <!-- ★固定されるのはピラミッド＋ベンチだけ -->
   <section class="stickyWrap">
     <div class="panel">
       <div class="bar">
         <div id="count"></div>
         <button class="mini" id="clear" type="button">全解除</button>
       </div>
-
-      <div class="toggles" id="toggles"></div>
-
       <div class="rows" id="pyramid"></div>
     </div>
 
@@ -318,6 +328,12 @@
       </div>
       <div class="benchRow" id="bench"></div>
     </div>
+  </section>
+
+  <!-- ★表示スロット（トグル）はここに移動：スクロールで流れる -->
+  <section class="optionsPanel">
+    <p class="optionsTitle">表示する項目（CSVの列から自動生成）</p>
+    <div class="toggles" id="toggles"></div>
   </section>
 
   <section class="gridSection">
@@ -339,8 +355,6 @@
   const ROWS = [1,2,3,5];
   const TOTAL = ROWS.reduce((a,b)=>a+b,0);
 
-  // ★絶対に表示候補に入れない列（増やしたければここに足すだけ）
-  // id, 画像系, 並び替え用に使う系は基本ここに入れる
   const EXCLUDE_KEYS = new Set([
     "id","ID","Id",
     "img","image","Image","画像","photo","Photo",
@@ -353,10 +367,8 @@
     slots: Array(TOTAL).fill(null),
     bench: [],
     activeSlotIndex: null,
-
-    // CSVヘッダ由来の表示候補キー
-    displayKeys: [],     // ["name","birth",...]
-    show: {},            // {name:true, ...}
+    displayKeys: [],
+    show: {},
   };
 
   function escapeHtml(s){
@@ -410,12 +422,10 @@
     return "";
   }
 
-  // ★CSVの行を「そのまま」保持しつつ、id/imgだけは確実に取る
   function normalizePeople(rows){
     return rows.map((r, idx) => {
       const id = pickField(r, ["id","ID","Id"]) || String(idx+1);
       const img  = pickField(r, ["img","image","Image","画像","photo","Photo"]);
-      // それ以外の列は r をそのまま持たせる（表示もここから取る）
       return { id, img, raw: r, __idx: idx };
     });
   }
@@ -461,16 +471,11 @@
     if (occupant) state.bench.unshift(occupant);
   }
 
-  // ===== 表示候補キーをCSVヘッダから自動生成 =====
   function buildDisplayKeysFromHeader(header){
-    // headerをそのまま使う（列名が日本語でもOK）
-    const keys = header.filter(h => h && !EXCLUDE_KEYS.has(h));
-    // 安定させたいならソート（ここはCSV順のまま）
-    return keys;
+    return header.filter(h => h && !EXCLUDE_KEYS.has(h));
   }
 
   function renderToggles(){
-    // 初期のshowは「全部OFF」のまま。好きにONにしていく。
     togglesEl.innerHTML = state.displayKeys.map(key => {
       const checked = state.show[key] ? "checked" : "";
       return `
@@ -491,7 +496,6 @@
     renderBench();
   });
 
-  // ===== ピラミッド/ベンチに出す表示行 =====
   function buildInfoLines(person){
     if (!person) return [];
     const r = person.raw || {};
@@ -556,7 +560,7 @@
 
       return `
         <div class="benchItemWrap">
-          <div class="benchItem" data-id="${escapeHtml(id)}" role="button" tabindex="0" title="">
+          <div class="benchItem" data-id="${escapeHtml(id)}" role="button" tabindex="0">
             ${imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
           </div>
           ${lines.length ? `
@@ -572,7 +576,6 @@
     setBar();
   }
 
-  // ===== スロット順並び替え =====
   function getSlotOrderRankMap(){
     const map = new Map();
     let r = 0;
@@ -592,18 +595,11 @@
 
     if (mode === "registered"){
       arr.sort((a,b) => a.__idx - b.__idx);
-    } else if (mode === "name_asc"){
-      // 名前列が何て列名か分からんので、候補で探す（無ければ登録順）
+    } else if (mode === "name_asc" || mode === "name_desc"){
       const nameKey = ["name","Name","名前","氏名"].find(k => state.displayKeys.includes(k)) || null;
       if (nameKey){
         arr.sort((a,b) => ((a.raw[nameKey]||"").localeCompare((b.raw[nameKey]||""), "ja")));
-      } else {
-        arr.sort((a,b) => a.__idx - b.__idx);
-      }
-    } else if (mode === "name_desc"){
-      const nameKey = ["name","Name","名前","氏名"].find(k => state.displayKeys.includes(k)) || null;
-      if (nameKey){
-        arr.sort((a,b) => ((b.raw[nameKey]||"").localeCompare((a.raw[nameKey]||""), "ja")));
+        if (mode === "name_desc") arr.reverse();
       } else {
         arr.sort((a,b) => a.__idx - b.__idx);
       }
@@ -622,7 +618,6 @@
     const arr = getSortedPeople();
     const active = state.activeSlotIndex != null;
 
-    // 一覧のサブ行は「よく使いそうな列」を自動で拾って表示（無くてもOK）
     const subKeysPref = ["romaji","ローマ字","birth","生年","生年月日","origin","出身地","height","身長"];
     const subKeys = subKeysPref.filter(k => state.displayKeys.includes(k)).slice(0,4);
 
@@ -657,7 +652,6 @@
     setBar();
   }
 
-  // ===== 操作 =====
   function onSlotClick(slotIndex){
     const id = state.slots[slotIndex];
 
@@ -707,11 +701,9 @@
 
     state.displayKeys = buildDisplayKeysFromHeader(header);
 
-    // 既存のshow設定は維持。新しく増えた列は初期OFFで追加。
     for (const k of state.displayKeys){
       if (!(k in state.show)) state.show[k] = false;
     }
-    // 消えた列はshowから消す（見た目整理）
     for (const k of Object.keys(state.show)){
       if (!state.displayKeys.includes(k)) delete state.show[k];
     }
@@ -777,7 +769,6 @@
     renderPyramid(); renderBench(); renderGrid();
   });
 
-  // init
   loadData();
 </script>
 </body>
