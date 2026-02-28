@@ -1,122 +1,122 @@
-id,名前,Name,年/Year,身長/Height,出身地,img
-01,アダム・ナガイ,ADAM, (07) ,172,ホノルル,./img/trainees/imgi_4_adamnagai.jpg
-02,中丸 晏寿,AJU, (08) ,170,広島県,./img/trainees/imgi_5_nakamaruaju.jpg
-03,オム・スアンカワーテン,AOM, (03) ,174,バンコク,./img/trainees/imgi_6_aomsuungkavathin.jpg
-04,アーチャー・ウイ,ARCHER, (10) ,175,LA,./img/trainees/imgi_7_archeruy.jpg
-05,篠ヶ谷 歩夢,S.AYUMU, (01) ,175,静岡県,./img/trainees/imgi_8_shinogayaayumu.jpg
-06,小林 千悟,CHISATO, (04) ,173,東京都,./img/trainees/imgi_9_kobayashichisato.jpg
-07,加藤 大樹,K.DAIKI, (04) ,178,愛知県,./img/trainees/imgi_10_katodaiki.jpg
-08,カク・ドンミン,DONGMIN, (05) ,176,キョンギド,./img/trainees/imgi_11_kwakdongmin.jpg
-09,末川 瑛太,EITA, (07) ,174,沖縄県,./img/trainees/imgi_12_suekawaeita.jpg
-10,保里 瑛都,H.EITO, (06) ,171,大阪府,./img/trainees/imgi_13_horieito.jpg
-11,金田 栄都,K.EITO, (04) ,179,神奈川県,./img/trainees/imgi_14_kanedaeito.jpg
-12,櫻井 楓真,FUMA, (06) ,179,群馬県,./img/trainees/imgi_15_sakuraifuma.jpg
-13,小笠原 ジュゼッペ 慧,GIUSEPPE, (06) ,182,東京都,./img/trainees/imgi_16_ogasawaragiuseppekei.jpg
-14,倉橋 吾槙,GOTEN, (04) ,172,愛知県,./img/trainees/imgi_17_kurahashigoten.jpg
-15,堀尾 聖,HIJIRI, (03) ,171,愛知県,./img/trainees/imgi_18_horiohijiri.jpg
-16,瑞慶覧 太都,HIROTO, (03) ,178,沖縄県,./img/trainees/imgi_19_zukeranhiroto.jpg
-17,ユ・ヒョンスン,HYEONSEUNG, (04) ,177,ソウル,./img/trainees/imgi_20_yoohyeonseung.jpg
-18,岡田 彪吾,HYUGO, (08) ,179,兵庫県,./img/trainees/imgi_21_okadahyugo.jpg
-19,柳谷 伊冴,ISSA, (05) ,177,群馬県,./img/trainees/imgi_22_yanagiyaissa.jpg
-20,ユン・ジェヨン,JAEYONG, (05) ,177,インチョン,./img/trainees/imgi_23_yoonjaeyong.jpg
-21,ジュアン・ジェイ,JAY, (06) ,186,台南,./img/trainees/imgi_24_chuangjay.jpg
-22,丸尾 尋一郎,JINICHIRO, (07) ,170,大阪府,./img/trainees/imgi_25_maruojinichiro.jpg
-23,河邊 晟,JOE, (07) ,177,東京都,./img/trainees/imgi_26_kawabejoe.jpg
-24,シン・ジョンウク,JUNGUK, (07) ,177,トロント,./img/trainees/imgi_27_shinjunguk.jpg
-25,金安 純正,JUNSEI, (04) ,183,東京都,./img/trainees/imgi_28_kaneyasujunsei.jpg
-26,宇野 海夢,KAIMU, (03) ,177,京都府,./img/trainees/imgi_29_unokaimu.jpg
-27,多比 奏聖,KANADE, (07) ,173,神奈川県,./img/trainees/imgi_30_tabikanade.jpg
-28,横山 奏夢,KANAME, (03) ,172,石川県,./img/trainees/imgi_31_yokoyamakaname.jpg
-29,関 敬次郎,KEIJIRO, (09) ,176,愛知県,./img/trainees/imgi_32_sekikeijiro.jpg
-30,髙松 敬祐,KEISUKE, (08) ,174,岐阜県,./img/trainees/imgi_33_takamatsukeisuke.jpg
-31,小野 慶人,KEITO, (00) ,172,高知県,./img/trainees/imgi_34_onokeito.jpg
-32,西山 賢人,KENTO, (07) ,169,東京都,./img/trainees/imgi_35_nishiyamakento.jpg
-33,河合 晃誠,KOSEI, (10) ,172,愛知県,./img/trainees/imgi_36_kawaikosei.jpg
-34,照井 康祐,KOSUKE, (07) ,174,千葉県,./img/trainees/imgi_37_teruikosuke.jpg
-35,浅香 孝太郎,KOTARO, (03) ,177,大阪府,./img/trainees/imgi_38_asakakotaro.jpg
-36,髙谷 京平,KYOHEI, (05) ,171,宮城県,./img/trainees/imgi_39_takayakyohei.jpg
-37,田中 蒔,MAKI, (04) ,173,静岡県,./img/trainees/imgi_40_tanakamaki.jpg
-38,山根 武蔵,MUSASHI, (05) ,179,メルボルン,./img/trainees/imgi_41_yamanemusashi.jpg
-39,土田 央修,OSUKE, (03) ,164,愛知県,./img/trainees/imgi_42_tsuchidaosuke.jpg
-40,堀野 蓮,H.REN, (07) ,171,神奈川県,./img/trainees/imgi_43_horinoren.jpg
-41,小清水 蓮,KO.REN, (06) ,170,宮崎県,./img/trainees/imgi_44_koshimizuren.jpg
-42,チェン・リッキー,RICKEY, (06) ,178,新竹,./img/trainees/imgi_45_chenrickey.jpg
-43,神元 理丘,RIKU, (03) ,176,京都府,./img/trainees/imgi_46_kamimotoriku.jpg
-44,鳩場 陸人,H.RIKUTO, (09) ,182,滋賀県,./img/trainees/imgi_47_hatobarikuto.jpg
-45,今江 陸斗,I.RIKUTO, (05) ,178,東京都,./img/trainees/imgi_48_imaerikuto.jpg
-46,甲斐 陸也,RIKUYA, (08) ,172,東京都,./img/trainees/imgi_49_kairikuya.jpg
-47,大瀬 凜和,RINTO, (05) ,177,熊本県,./img/trainees/imgi_50_ohserinto.jpg
-48,上野 琉偉,U.RUI, (06) ,174,福岡県,./img/trainees/imgi_51_uenorui.jpg
-49,飯塚 亮賀,RYOGA, (05) ,175,群馬県,./img/trainees/imgi_52_iizukaryoga.jpg
-50,石田 亮太,RYOTA, (03) ,170,神奈川県,./img/trainees/imgi_53_ishidaryota.jpg
-51,岡戸 竜芽,RYUGA, (06) ,171,埼玉県,./img/trainees/imgi_54_okadoryuga.jpg
-52,杉山 竜司,RYUJI, (06) ,182,埼玉県,./img/trainees/imgi_55_sugiyamaryuji.jpg
-53,香月 誠太,SEITA, (09) ,171,京都府,./img/trainees/imgi_56_katsukiseita.jpg
-54,澤井 星名,SENA, (06) ,180,静岡県,./img/trainees/imgi_57_sawaisena.jpg
-55,オ・シンヘン,SHINHAENG, (04) ,177,モクポ,./img/trainees/imgi_58_ohshinhaeng.jpg
-56,岩城 慎二,SHINJI, (03) ,180,東京都,./img/trainees/imgi_59_iwakishinji.jpg
-57,宮崎 真佑,SHINSUKE, (07) ,179,岐阜県,./img/trainees/imgi_60_miyazakishinsuke.jpg
-58,西﨑 柊,N.SHU, (02) ,180,東京都,./img/trainees/imgi_61_nishizakishu.jpg
-59,山下 柊,Y.SHU, (06) ,173,神奈川県,./img/trainees/imgi_62_yamashitashu.jpg
-60,パク・シヨン,SIYOUNG, (03) ,178,キョンギド,./img/trainees/imgi_63_parksiyoung.jpg
-61,佐藤 碧空,S.SORA, (03) ,170,長野県,./img/trainees/imgi_64_satosora.jpg
-62,東野 蒼汰,SOTA, (08) ,179,奈良県,./img/trainees/imgi_65_tonosota.jpg
-63,藤牧 大雅,F.TAIGA, (05) ,181,東京都,./img/trainees/imgi_66_fujimakitaiga.jpg
-64,松田 太雅,M.TAIGA, (04) ,178,愛知県,./img/trainees/imgi_67_matsudataiga.jpg
-65,金倉 拓未,TAKUMI, (07) ,175,北海道,./img/trainees/imgi_68_kanakuratakumi.jpg
-66,熊部 拓斗,K.TAKUTO, (04) ,182,大阪府,./img/trainees/imgi_69_kumabetakuto.jpg
-67,宮里 拓利,M.TAKUTO, (05) ,174,福岡県,./img/trainees/imgi_70_miyazatotakuto.jpg
-68,南平 達矢,TATSUYA, (04) ,180,東京都,./img/trainees/imgi_71_minamihiratatsuya.jpg
-69,森井 輝,TERU, (03) ,171,神奈川県,./img/trainees/imgi_72_moriiteru.jpg
-70,北林 天虎,TETORA, (03) ,172,秋田県,./img/trainees/imgi_73_kitabayashitetora.jpg
-71,藤芳 辰弥,TOKIYA, (07) ,168,福岡県,./img/trainees/imgi_74_fujiyoshitokiya.jpg
-72,増田 倫希,TOMOKI, (08) ,182,千葉県,./img/trainees/imgi_75_masudatomoki.jpg
-73,濱田 永遠,TOWA, (07) ,175,兵庫県,./img/trainees/imgi_76_hamadatowa.jpg
-74,アギナルド・トリスタン・ジェームス,TRISTAN, (03) ,175,リパ,./img/trainees/imgi_77_aguinaldotristanjames.jpg
-75,リー・ウェイゼ,WEIZE, (03) ,178,北京,./img/trainees/imgi_78_liweize.jpg
-76,ヨハン・エマニュエル,YOHAN, (05) ,178,マニラ,./img/trainees/imgi_79_yohanemmanuel.jpg
-77,矢田 佳暉,YOSHIKI, (04) ,177,奈良県,./img/trainees/imgi_80_yadayoshiki.jpg
-78,後藤 結,YUKI, (07) ,180,神奈川県,./img/trainees/imgi_81_gotoyuki.jpg
-79,岡田 侑磨,YUMA, (06) ,177,埼玉県,./img/trainees/imgi_82_okadayuma.jpg
-80,安部 結蘭,YURA, (05) ,175,茨城県,./img/trainees/imgi_83_abeyura.jpg
-81,大林 悠成,O.YUSEI, (01) ,177,京都府,./img/trainees/imgi_84_obayashiyusei.jpg
-82,佐野 由征,S.YUSEI, (04) ,170,徳島県,./img/trainees/imgi_85_sanoyusei.jpg
-83,板倉 悠太,YUTA, (08) ,167,アムステルフェーン,./img/trainees/imgi_86_itakurayuta.jpg
-84,本荘 晃,AKIRA, (10) ,168,大阪府,./img/trainees/imgi_87_honjoakira.jpg
-85,児島 歩夢,K.AYUMU, (01) ,177,埼玉県,./img/trainees/imgi_88_kojimaayumu.jpg
-86,市川 大輝,I.DAIKI, (04) ,183,愛知県,./img/trainees/imgi_89_ichikawadaiki.jpg
-87,川村 珀斗,HAKUTO, (07) ,176,長崎県,./img/trainees/imgi_90_kawamurahakuto.jpg
-88,村松 遼空,HARUKU, (10) ,166,埼玉県,./img/trainees/imgi_91_muramatsuharuku.jpg
-89,髙城 暖人,HARUTO, (03) ,176,東京都,./img/trainees/imgi_92_takagiharuto.jpg
-90,平島 輝,H.HIKARU, (09) ,171,福岡県,./img/trainees/imgi_93_hirashimahikaru.jpg
-91,櫻井 輝,S.HIKARU, (05) ,173,宮城県,./img/trainees/imgi_94_sakuraihikaru.jpg
-92,佐川 太一,HIROKAZU, (05) ,172,北海道,./img/trainees/imgi_95_sagawahirokazu.jpg
-93,イ・ヒョンジェ,HYUNJAE, (08) ,171,ソウル,./img/trainees/imgi_96_leehyunjae.jpg
-94,阿部 樹,ITSUKI, (08) ,175,北海道,./img/trainees/imgi_97_abeitsuki.jpg
-95,イ・ジュンフン,JOONGHOON, (09) ,181,ソウル,./img/trainees/imgi_98_leejoonghoon.jpg
-96,リュウ・カイチ,KAICHI, (04) ,184,愛知県,./img/trainees/imgi_99_liukaichi.jpg
-97,黒﨑 貫汰,KANTA, (07) ,172,熊本県,./img/trainees/imgi_100_kurosakikanta.jpg
-98,黄 敬眞,KEISHIN, (04) ,178,神奈川県,./img/trainees/imgi_101_kokeishin.jpg
-99,釼持 吉成,KINARI, (02) ,180,福井県,./img/trainees/imgi_102_kenmotsukinari.jpg
-100,小澤 昂心,KOSHIN, (04) ,176,埼玉県,./img/trainees/imgi_103_ozawakoshin.jpg
-101,青沼 昂史朗,KOSHIRO, (06) ,179,北海道,./img/trainees/imgi_104_aonumakoshiro.jpg
-102,小林 廣,KOU, (06) ,180,大阪府,./img/trainees/imgi_105_kobayashikou.jpg
-103,森 明育,MEI, (05) ,177,宮城県,./img/trainees/imgi_106_morimei.jpg
-104,マイケル ミン・マカフリ,MICHAEL MINH, (06) ,187,LA,./img/trainees/imgi_107_michaelminhmccaffrey.jpg
-105,パトリックファン・レ,PATRICK, (06) ,182,LA,./img/trainees/imgi_108_patrickphanle.jpg
-106,笠原 蓮,KA.REN, (04) ,170,群馬県,./img/trainees/imgi_109_kasahararen.jpg
-107,江口 蓮翔,E.RENTO, (06) ,168,東京都,./img/trainees/imgi_110_eguchirento.jpg
-108,小林 蓮翔,K.RENTO, (07) ,178,埼玉県,./img/trainees/imgi_111_kobayashirento.jpg
-109,落合 利温,RIO, (04) ,174,熊本県,./img/trainees/imgi_112_ochiairio.jpg
-110,水上 琉偉,M.RUI, (07) ,172,北海道,./img/trainees/imgi_113_mizugamirui.jpg
-111,小谷内 瑠嘉,RUKA, (05) ,174,東京都,./img/trainees/imgi_114_koyauchiruka.jpg
-112,齊藤 惺,SEI, (05) ,172,兵庫県,./img/trainees/imgi_115_saitosei.jpg
-113,藤本 真成,SHINSEI, (03) ,178,大阪府,./img/trainees/imgi_116_fujimotoshinsei.jpg
-114,飯田 柊馬,SHUMA, (02) ,177,福井県,./img/trainees/imgi_117_iidashuma.jpg
-115,松田 颯吾,SOGO, (05) ,177,神奈川県,./img/trainees/imgi_118_matsudasogo.jpg
-116,髙橋 空良,T.SORA, (05) ,178,福井県,./img/trainees/imgi_119_takahashisora.jpg
-117,西田 颯梓,SOSHI, (06) ,168,大阪府,./img/trainees/imgi_120_nishidasoshi.jpg
-118,岡本 拓士,O.TAKUTO, (03) ,185,大阪府,./img/trainees/imgi_121_okamototakuto.jpg
-119,大澤 佑冴,YUGO, (06) ,174,北海道,./img/trainees/imgi_122_osawayugo.jpg
-120,藤井 雄聖,F.YUSEI, (04) ,175,兵庫県,./img/trainees/imgi_123_fujiiyusei.jpg
-121,岡本 佑斗,YUTO, (07) ,174,北海道,./img/trainees/imgi_124_okamotoyuto.jpg
+No.,名前,Name,シグナルソングクラス,練習生/候補,年/Year,身長/Height,出身地,img
+01,アダム・ナガイ,ADAM,A,練習生, (07) ,172,ホノルル,./img/trainees/imgi_4_adamnagai.jpg
+02,中丸 晏寿,AJU,B,練習生, (08) ,170,広島県,./img/trainees/imgi_5_nakamaruaju.jpg
+03,オム・スアンカワーテン,AOM,C,練習生, (03) ,174,バンコク,./img/trainees/imgi_6_aomsuungkavathin.jpg
+04,アーチャー・ウイ,ARCHER,B,練習生, (10) ,175,LA,./img/trainees/imgi_7_archeruy.jpg
+05,篠ヶ谷 歩夢,S.AYUMU,B,練習生, (01) ,175,静岡県,./img/trainees/imgi_8_shinogayaayumu.jpg
+06,小林 千悟,CHISATO,B,練習生, (04) ,173,東京都,./img/trainees/imgi_9_kobayashichisato.jpg
+07,加藤 大樹,K.DAIKI,A,練習生, (04) ,178,愛知県,./img/trainees/imgi_10_katodaiki.jpg
+08,カク・ドンミン,DONGMIN,B,練習生, (05) ,176,キョンギド,./img/trainees/imgi_11_kwakdongmin.jpg
+09,末川 瑛太,EITA,C,練習生, (07) ,174,沖縄県,./img/trainees/imgi_12_suekawaeita.jpg
+10,保里 瑛都,H.EITO,-,練習生, (06) ,171,大阪府,./img/trainees/imgi_13_horieito.jpg
+11,金田 栄都,K.EITO,D,練習生, (04) ,179,神奈川県,./img/trainees/imgi_14_kanedaeito.jpg
+12,櫻井 楓真,FUMA,C,練習生, (06) ,179,群馬県,./img/trainees/imgi_15_sakuraifuma.jpg
+13,小笠原 ジュゼッペ 慧,GIUSEPPE,B,練習生, (06) ,182,東京都,./img/trainees/imgi_16_ogasawaragiuseppekei.jpg
+14,倉橋 吾槙,GOTEN,F,練習生, (04) ,172,愛知県,./img/trainees/imgi_17_kurahashigoten.jpg
+15,堀尾 聖,HIJIRI,B,練習生, (03) ,171,愛知県,./img/trainees/imgi_18_horiohijiri.jpg
+16,瑞慶覧 太都,HIROTO,D,練習生, (03) ,178,沖縄県,./img/trainees/imgi_19_zukeranhiroto.jpg
+17,ユ・ヒョンスン,HYEONSEUNG,A,練習生, (04) ,177,ソウル,./img/trainees/imgi_20_yoohyeonseung.jpg
+18,岡田 彪吾,HYUGO,A,練習生, (08) ,179,兵庫県,./img/trainees/imgi_21_okadahyugo.jpg
+19,柳谷 伊冴,ISSA,C,練習生, (05) ,177,群馬県,./img/trainees/imgi_22_yanagiyaissa.jpg
+20,ユン・ジェヨン,JAEYONG,A,練習生, (05) ,177,インチョン,./img/trainees/imgi_23_yoonjaeyong.jpg
+21,ジュアン・ジェイ,JAY,B,練習生, (06) ,186,台南,./img/trainees/imgi_24_chuangjay.jpg
+22,丸尾 尋一郎,JINICHIRO,D,練習生, (07) ,170,大阪府,./img/trainees/imgi_25_maruojinichiro.jpg
+23,河邊 晟,JOE,D,練習生, (07) ,177,東京都,./img/trainees/imgi_26_kawabejoe.jpg
+24,シン・ジョンウク,JUNGUK,C,練習生, (07) ,177,トロント,./img/trainees/imgi_27_shinjunguk.jpg
+25,金安 純正,JUNSEI,D,練習生, (04) ,183,東京都,./img/trainees/imgi_28_kaneyasujunsei.jpg
+26,宇野 海夢,KAIMU,D,練習生, (03) ,177,京都府,./img/trainees/imgi_29_unokaimu.jpg
+27,多比 奏聖,KANADE,B,練習生, (07) ,173,神奈川県,./img/trainees/imgi_30_tabikanade.jpg
+28,横山 奏夢,KANAME,C,練習生, (03) ,172,石川県,./img/trainees/imgi_31_yokoyamakaname.jpg
+29,関 敬次郎,KEIJIRO,B,練習生, (09) ,176,愛知県,./img/trainees/imgi_32_sekikeijiro.jpg
+30,髙松 敬祐,KEISUKE,F,練習生, (08) ,174,岐阜県,./img/trainees/imgi_33_takamatsukeisuke.jpg
+31,小野 慶人,KEITO,C,練習生, (00) ,172,高知県,./img/trainees/imgi_34_onokeito.jpg
+32,西山 賢人,KENTO,D,練習生, (07) ,169,東京都,./img/trainees/imgi_35_nishiyamakento.jpg
+33,河合 晃誠,KOSEI,D,練習生, (10) ,172,愛知県,./img/trainees/imgi_36_kawaikosei.jpg
+34,照井 康祐,KOSUKE,A,練習生, (07) ,174,千葉県,./img/trainees/imgi_37_teruikosuke.jpg
+35,浅香 孝太郎,KOTARO,D,練習生, (03) ,177,大阪府,./img/trainees/imgi_38_asakakotaro.jpg
+36,髙谷 京平,KYOHEI,F,練習生, (05) ,171,宮城県,./img/trainees/imgi_39_takayakyohei.jpg
+37,田中 蒔,MAKI,F,練習生, (04) ,173,静岡県,./img/trainees/imgi_40_tanakamaki.jpg
+38,山根 武蔵,MUSASHI,D,練習生, (05) ,179,メルボルン,./img/trainees/imgi_41_yamanemusashi.jpg
+39,土田 央修,OSUKE,A,練習生, (03) ,164,愛知県,./img/trainees/imgi_42_tsuchidaosuke.jpg
+40,堀野 蓮,H.REN,C,練習生, (07) ,171,神奈川県,./img/trainees/imgi_43_horinoren.jpg
+41,小清水 蓮,KO.REN,F,練習生, (06) ,170,宮崎県,./img/trainees/imgi_44_koshimizuren.jpg
+42,チェン・リッキー,RICKEY,D,練習生, (06) ,178,新竹,./img/trainees/imgi_45_chenrickey.jpg
+43,神元 理丘,RIKU,A,練習生, (03) ,176,京都府,./img/trainees/imgi_46_kamimotoriku.jpg
+44,鳩場 陸人,H.RIKUTO,B,練習生, (09) ,182,滋賀県,./img/trainees/imgi_47_hatobarikuto.jpg
+45,今江 陸斗,I.RIKUTO,D,練習生, (05) ,178,東京都,./img/trainees/imgi_48_imaerikuto.jpg
+46,甲斐 陸也,RIKUYA,C,練習生, (08) ,172,東京都,./img/trainees/imgi_49_kairikuya.jpg
+47,大瀬 凜和,RINTO,C,練習生, (05) ,177,熊本県,./img/trainees/imgi_50_ohserinto.jpg
+48,上野 琉偉,U.RUI,C,練習生, (06) ,174,福岡県,./img/trainees/imgi_51_uenorui.jpg
+49,飯塚 亮賀,RYOGA,F,練習生, (05) ,175,群馬県,./img/trainees/imgi_52_iizukaryoga.jpg
+50,石田 亮太,RYOTA,A,練習生, (03) ,170,神奈川県,./img/trainees/imgi_53_ishidaryota.jpg
+51,岡戸 竜芽,RYUGA,C,練習生, (06) ,171,埼玉県,./img/trainees/imgi_54_okadoryuga.jpg
+52,杉山 竜司,RYUJI,B,練習生, (06) ,182,埼玉県,./img/trainees/imgi_55_sugiyamaryuji.jpg
+53,香月 誠太,SEITA,B,練習生, (09) ,171,京都府,./img/trainees/imgi_56_katsukiseita.jpg
+54,澤井 星名,SENA,D,練習生, (06) ,180,静岡県,./img/trainees/imgi_57_sawaisena.jpg
+55,オ・シンヘン,SHINHAENG,A,練習生, (04) ,177,モクポ,./img/trainees/imgi_58_ohshinhaeng.jpg
+56,岩城 慎二,SHINJI,A,練習生, (03) ,180,東京都,./img/trainees/imgi_59_iwakishinji.jpg
+57,宮崎 真佑,SHINSUKE,D,練習生, (07) ,179,岐阜県,./img/trainees/imgi_60_miyazakishinsuke.jpg
+58,西﨑 柊,N.SHU,F,練習生, (02) ,180,東京都,./img/trainees/imgi_61_nishizakishu.jpg
+59,山下 柊,Y.SHU,C,練習生, (06) ,173,神奈川県,./img/trainees/imgi_62_yamashitashu.jpg
+60,パク・シヨン,SIYOUNG,A,練習生, (03) ,178,キョンギド,./img/trainees/imgi_63_parksiyoung.jpg
+61,佐藤 碧空,S.SORA,C,練習生, (03) ,170,長野県,./img/trainees/imgi_64_satosora.jpg
+62,東野 蒼汰,SOTA,B,練習生, (08) ,179,奈良県,./img/trainees/imgi_65_tonosota.jpg
+63,藤牧 大雅,F.TAIGA,A,練習生, (05) ,181,東京都,./img/trainees/imgi_66_fujimakitaiga.jpg
+64,松田 太雅,M.TAIGA,D,練習生, (04) ,178,愛知県,./img/trainees/imgi_67_matsudataiga.jpg
+65,金倉 拓未,TAKUMI,B,練習生, (07) ,175,北海道,./img/trainees/imgi_68_kanakuratakumi.jpg
+66,熊部 拓斗,K.TAKUTO,D,練習生, (04) ,182,大阪府,./img/trainees/imgi_69_kumabetakuto.jpg
+67,宮里 拓利,M.TAKUTO,C,練習生, (05) ,174,福岡県,./img/trainees/imgi_70_miyazatotakuto.jpg
+68,南平 達矢,TATSUYA,C,練習生, (04) ,180,東京都,./img/trainees/imgi_71_minamihiratatsuya.jpg
+69,森井 輝,TERU,C,練習生, (03) ,171,神奈川県,./img/trainees/imgi_72_moriiteru.jpg
+70,北林 天虎,TETORA,D,練習生, (03) ,172,秋田県,./img/trainees/imgi_73_kitabayashitetora.jpg
+71,藤芳 辰弥,TOKIYA,B,練習生, (07) ,168,福岡県,./img/trainees/imgi_74_fujiyoshitokiya.jpg
+72,増田 倫希,TOMOKI,F,練習生, (08) ,182,千葉県,./img/trainees/imgi_75_masudatomoki.jpg
+73,濱田 永遠,TOWA,B,練習生, (07) ,175,兵庫県,./img/trainees/imgi_76_hamadatowa.jpg
+74,アギナルド・トリスタン・ジェームス,TRISTAN,F,練習生, (03) ,175,リパ,./img/trainees/imgi_77_aguinaldotristanjames.jpg
+75,リー・ウェイゼ,WEIZE,D,練習生, (03) ,178,北京,./img/trainees/imgi_78_liweize.jpg
+76,ヨハン・エマニュエル,YOHAN,F,練習生, (05) ,178,マニラ,./img/trainees/imgi_79_yohanemmanuel.jpg
+77,矢田 佳暉,YOSHIKI,B,練習生, (04) ,177,奈良県,./img/trainees/imgi_80_yadayoshiki.jpg
+78,後藤 結,YUKI,C,練習生, (07) ,180,神奈川県,./img/trainees/imgi_81_gotoyuki.jpg
+79,岡田 侑磨,YUMA,D,練習生, (06) ,177,埼玉県,./img/trainees/imgi_82_okadayuma.jpg
+80,安部 結蘭,YURA,A,練習生, (05) ,175,茨城県,./img/trainees/imgi_83_abeyura.jpg
+81,大林 悠成,O.YUSEI,A,練習生, (01) ,177,京都府,./img/trainees/imgi_84_obayashiyusei.jpg
+82,佐野 由征,S.YUSEI,C,練習生, (04) ,170,徳島県,./img/trainees/imgi_85_sanoyusei.jpg
+83,板倉 悠太,YUTA,F,練習生, (08) ,167,アムステルフェーン,./img/trainees/imgi_86_itakurayuta.jpg
+84,本荘 晃,AKIRA,B,練習生候補, (10) ,168,大阪府,./img/trainees/imgi_87_honjoakira.jpg
+85,児島 歩夢,K.AYUMU,B,練習生候補, (01) ,177,埼玉県,./img/trainees/imgi_88_kojimaayumu.jpg
+86,市川 大輝,I.DAIKI,D,練習生候補, (04) ,183,愛知県,./img/trainees/imgi_89_ichikawadaiki.jpg
+87,川村 珀斗,HAKUTO,?,練習生候補, (07) ,176,長崎県,./img/trainees/imgi_90_kawamurahakuto.jpg
+88,村松 遼空,HARUKU,?,練習生候補, (10) ,166,埼玉県,./img/trainees/imgi_91_muramatsuharuku.jpg
+89,髙城 暖人,HARUTO,?,練習生候補, (03) ,176,東京都,./img/trainees/imgi_92_takagiharuto.jpg
+90,平島 輝,H.HIKARU,?,練習生候補, (09) ,171,福岡県,./img/trainees/imgi_93_hirashimahikaru.jpg
+91,櫻井 輝,S.HIKARU,-,練習生候補, (05) ,173,宮城県,./img/trainees/imgi_94_sakuraihikaru.jpg
+92,佐川 太一,HIROKAZU,?,練習生候補, (05) ,172,北海道,./img/trainees/imgi_95_sagawahirokazu.jpg
+93,イ・ヒョンジェ,HYUNJAE,C,練習生候補, (08) ,171,ソウル,./img/trainees/imgi_96_leehyunjae.jpg
+94,阿部 樹,ITSUKI,?,練習生候補, (08) ,175,北海道,./img/trainees/imgi_97_abeitsuki.jpg
+95,イ・ジュンフン,JOONGHOON,?,練習生候補, (09) ,181,ソウル,./img/trainees/imgi_98_leejoonghoon.jpg
+96,リュウ・カイチ,KAICHI,F,練習生候補, (04) ,184,愛知県,./img/trainees/imgi_99_liukaichi.jpg
+97,黒﨑 貫汰,KANTA,D,練習生候補, (07) ,172,熊本県,./img/trainees/imgi_100_kurosakikanta.jpg
+98,黄 敬眞,KEISHIN,?,練習生候補, (04) ,178,神奈川県,./img/trainees/imgi_101_kokeishin.jpg
+99,釼持 吉成,KINARI,A,練習生候補, (02) ,180,福井県,./img/trainees/imgi_102_kenmotsukinari.jpg
+100,小澤 昂心,KOSHIN,?,練習生候補, (04) ,176,埼玉県,./img/trainees/imgi_103_ozawakoshin.jpg
+101,青沼 昂史朗,KOSHIRO,C,練習生候補, (06) ,179,北海道,./img/trainees/imgi_104_aonumakoshiro.jpg
+102,小林 廣,KOU,?,練習生候補, (06) ,180,大阪府,./img/trainees/imgi_105_kobayashikou.jpg
+103,森 明育,MEI,F,練習生候補, (05) ,177,宮城県,./img/trainees/imgi_106_morimei.jpg
+104,マイケル ミン・マカフリ,MICHAEL MINH,?,練習生候補, (06) ,187,LA,./img/trainees/imgi_107_michaelminhmccaffrey.jpg
+105,パトリックファン・レ,PATRICK,?,練習生候補, (06) ,182,LA,./img/trainees/imgi_108_patrickphanle.jpg
+106,笠原 蓮,KA.REN,?,練習生候補, (04) ,170,群馬県,./img/trainees/imgi_109_kasahararen.jpg
+107,江口 蓮翔,E.RENTO,?,練習生候補, (06) ,168,東京都,./img/trainees/imgi_110_eguchirento.jpg
+108,小林 蓮翔,K.RENTO,F,練習生候補, (07) ,178,埼玉県,./img/trainees/imgi_111_kobayashirento.jpg
+109,落合 利温,RIO,?,練習生候補, (04) ,174,熊本県,./img/trainees/imgi_112_ochiairio.jpg
+110,水上 琉偉,M.RUI,?,練習生候補, (07) ,172,北海道,./img/trainees/imgi_113_mizugamirui.jpg
+111,小谷内 瑠嘉,RUKA,?,練習生候補, (05) ,174,東京都,./img/trainees/imgi_114_koyauchiruka.jpg
+112,齊藤 惺,SEI,?,練習生候補, (05) ,172,兵庫県,./img/trainees/imgi_115_saitosei.jpg
+113,藤本 真成,SHINSEI,?,練習生候補, (03) ,178,大阪府,./img/trainees/imgi_116_fujimotoshinsei.jpg
+114,飯田 柊馬,SHUMA,?,練習生候補, (02) ,177,福井県,./img/trainees/imgi_117_iidashuma.jpg
+115,松田 颯吾,SOGO,C,練習生候補, (05) ,177,神奈川県,./img/trainees/imgi_118_matsudasogo.jpg
+116,髙橋 空良,T.SORA,?,練習生候補, (05) ,178,福井県,./img/trainees/imgi_119_takahashisora.jpg
+117,西田 颯梓,SOSHI,?,練習生候補, (06) ,168,大阪府,./img/trainees/imgi_120_nishidasoshi.jpg
+118,岡本 拓士,O.TAKUTO,F,練習生候補, (03) ,185,大阪府,./img/trainees/imgi_121_okamototakuto.jpg
+119,大澤 佑冴,YUGO,?,練習生候補, (06) ,174,北海道,./img/trainees/imgi_122_osawayugo.jpg
+120,藤井 雄聖,F.YUSEI,?,練習生候補, (04) ,175,兵庫県,./img/trainees/imgi_123_fujiiyusei.jpg
+121,岡本 佑斗,YUTO,?,練習生候補, (07) ,174,北海道,./img/trainees/imgi_124_okamotoyuto.jpg
