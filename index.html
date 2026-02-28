@@ -23,7 +23,6 @@
       --slotMax:96px;
       --benchSize: var(--slotSize);
 
-      /* rings（濃い青だけ） */
       --ringDark: rgba(10,96,255,.92);
     }
 
@@ -88,7 +87,6 @@
       position: relative;
     }
 
-    /* 右下日付（ランキング枠） */
     .rankDate{
       position: absolute;
       right: 10px;
@@ -99,15 +97,10 @@
       user-select: none;
       pointer-events: none;
       white-space: nowrap;
-
-      /* 日付の上に1行ぶん余白 */
-      margin-top: 0;
     }
-    /* 日付の上に余白 + 日付ぶんの下余白 */
     #pyramidPanel{ padding-bottom: 40px; }
-    .rankDatePad{ height: 16px; } /* だいたい1行分の余白 */
+    .rankDatePad{ height: 16px; }
 
-    /* Ranking header（スクロールしてもここは固定） */
     .rankBar{
       display:flex;
       align-items:center;
@@ -148,22 +141,18 @@
       word-break: break-word;
     }
 
-    /* ヘッダーと最初の写真の間：1行ぶん余裕 */
     .pyramidTopGap{ height: 16px; }
 
-    /* 青リング：薄い外側なし / 太さ2px */
     .card.selected,
     .card.activeRing{
       box-shadow: 0 0 0 2px var(--ringDark);
     }
 
-    /* ランキング/ベンチ：いまタップ中だけ枠（濃青2px） */
     .slot.activeRing,
     .benchItem.activeRing{
       box-shadow: 0 0 0 2px var(--ringDark);
     }
 
-    /* Pyramid */
     .rows{display:flex; flex-direction:column; gap:8px}
     .row{display:flex; justify-content:center; gap: var(--gap); width:100%; flex-wrap:nowrap;}
 
@@ -173,7 +162,7 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:3px; /* 少し詰め */
+      gap:3px;
     }
     .slot{
       width: var(--slotSize);
@@ -188,7 +177,6 @@
     .slot img{width:100%;height:100%;object-fit:cover;display:block;border-radius:999px;}
     .slot.empty{background: rgba(10,96,255,.04); border: 1px dashed rgba(10,35,90,.22);}
 
-    /* 表示名：行間もっと詰める */
     .slotInfo{
       width:100%;
       text-align:center;
@@ -208,7 +196,6 @@
       color: rgba(11,16,32,.92);
     }
 
-    /* Bench */
     .benchRow{
       display:flex; gap:10px;
       overflow-x:auto;
@@ -221,7 +208,7 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:3px; /* 少し詰め */
+      gap:3px;
     }
     .benchItem{
       width: var(--benchSize);
@@ -235,7 +222,6 @@
     }
     .benchItem img{width:100%;height:100%;object-fit:cover;display:block;}
 
-    /* ベンチ表示名：行間もっと詰める */
     .benchInfo{
       width:100%;
       text-align:center;
@@ -301,32 +287,42 @@
       padding: 10px;
       box-shadow: var(--shadow);
     }
-    .optionsTitle{
-      font-size:12px;
-      color:var(--muted);
-      margin:0 0 8px;
-    }
 
-    .toggles{
-      display:flex; gap:8px; flex-wrap:wrap;
-      max-height:120px; overflow:auto; padding-right:4px; margin-bottom:10px;
-    }
-    .chipToggle{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid var(--line);
+    /* ここを「ボタン」化（ポップアップを開くトリガー） */
+    .optionsTitleBtn{
+      width: 100%;
+      justify-content: space-between;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
       background: rgba(10,96,255,.06);
-      color: var(--text);
-      font-size:12px; user-select:none; white-space:nowrap;
+      padding: 0 12px;
+      font-size: 12px;
+      color: var(--muted);
     }
-    .chipToggle input{ accent-color: var(--accent); }
-    .chipToggle input:disabled{ opacity:.5; }
+    .optionsTitleBtn strong{
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .optionsTitleBtn .right{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .optionsTitleBtn .picked{
+      color: var(--text);
+      font-weight: 900;
+      max-width: 55vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-    /* 「並び替え」ラベル（表示する項目と同じスタイル） */
     .sortTitle{
       font-size:12px;
       color:var(--muted);
-      margin: 6px 0 8px;
+      margin: 10px 0 8px;
     }
 
     .sortBox{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
@@ -383,6 +379,86 @@
       border:1px solid rgba(10,35,90,.18);
       backdrop-filter: blur(6px);
     }
+
+    /* ===== Modal ===== */
+    .modalOverlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(11,16,32,.38);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modalOverlay.isOpen{ display:flex; }
+
+    .modal{
+      width: min(640px, 100%);
+      background: rgba(255,255,255,.96);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .modalHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.86);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    .modalHeader .title{
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--text);
+      margin: 0;
+    }
+    .modalHeader .hint{
+      font-size: 11px;
+      color: var(--muted);
+      margin: 2px 0 0;
+    }
+    .modalBody{
+      padding: 10px 12px 12px;
+      max-height: min(60vh, 520px);
+      overflow: auto;
+    }
+
+    .modalToggles{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .chipToggle{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(10,96,255,.06);
+      color: var(--text);
+      font-size:12px; user-select:none; white-space:nowrap;
+    }
+    .chipToggle input{ accent-color: var(--accent); }
+    .chipToggle input:disabled{ opacity:.5; }
+
+    .modalFooter{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      padding: 12px;
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,.86);
+    }
+    .btnGhost{
+      background: rgba(10,96,255,.04);
+    }
   </style>
 </head>
 
@@ -437,8 +513,14 @@
   </div>
 
   <section class="optionsPanel">
-    <p class="optionsTitle">表示する項目（3つまで）</p>
-    <div class="toggles" id="toggles"></div>
+    <!-- 表示する項目：押したらモーダル -->
+    <button id="openDisplayModal" type="button" class="optionsTitleBtn" title="表示する項目を選ぶ">
+      <strong>表示する項目（3つまで）</strong>
+      <span class="right">
+        <span class="picked" id="pickedSummary">未選択</span>
+        <span aria-hidden="true">▾</span>
+      </span>
+    </button>
 
     <p class="sortTitle">並び替え</p>
     <div class="sortBox">
@@ -455,15 +537,36 @@
   </section>
 </main>
 
+<!-- Modal -->
+<div class="modalOverlay" id="displayModal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="displayModalTitle">
+    <div class="modalHeader">
+      <div>
+        <p class="title" id="displayModalTitle">表示する項目（3つまで）</p>
+        <p class="hint" id="displayModalHint">チェックは最大3つまで</p>
+      </div>
+      <button type="button" id="closeDisplayModal" class="arrowBtn" aria-label="閉じる">✕</button>
+    </div>
+
+    <div class="modalBody">
+      <div class="modalToggles" id="modalToggles"></div>
+    </div>
+
+    <div class="modalFooter">
+      <button type="button" id="displayModalClear" class="btnGhost">全解除</button>
+      <button type="button" id="displayModalDone">完了</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const CSV_PATH = "data/master.csv";
-  const STORAGE_KEY = "pyramid_maker_state_v6";
+  const STORAGE_KEY = "pyramid_maker_state_v7"; // 変更
 
   const gridEl = document.getElementById("grid");
   const pyramidEl = document.getElementById("pyramid");
   const benchEl = document.getElementById("bench");
   const benchCountEl = document.getElementById("benchCount");
-  const togglesEl = document.getElementById("toggles");
   const pyramidPanelEl = document.getElementById("pyramidPanel");
   const benchPanelEl = document.getElementById("benchPanel");
   const rankBarEl = document.getElementById("rankBar");
@@ -478,6 +581,15 @@
   const rankStatsEl = document.getElementById("rankStats");
   const rankDateEl = document.getElementById("rankDate");
   const rankDatePadEl = document.getElementById("rankDatePad");
+
+  // display modal elements
+  const openDisplayModalBtn = document.getElementById("openDisplayModal");
+  const displayModalEl = document.getElementById("displayModal");
+  const closeDisplayModalBtn = document.getElementById("closeDisplayModal");
+  const modalTogglesEl = document.getElementById("modalToggles");
+  const displayModalClearBtn = document.getElementById("displayModalClear");
+  const displayModalDoneBtn = document.getElementById("displayModalDone");
+  const pickedSummaryEl = document.getElementById("pickedSummary");
 
   const ROWS = [1,2,3,5];
   const TOTAL = ROWS.reduce((a,b)=>a+b,0);
@@ -517,7 +629,6 @@
     show: {},
 
     sortKeys: [],
-
     lastTappedId: null,
 
     benchCollapsed: false,
@@ -528,6 +639,7 @@
   };
 
   let cardElsById = new Map();
+  let modalDraftShow = null; // モーダル内の一時状態
 
   function escapeHtml(s){
     return String(s ?? "")
@@ -667,7 +779,7 @@
 
     const infoH = 46;
     const extra = 18;
-    const minH = Math.round(barH + 16 /*ヘッダー下余白*/ + slotSize + infoH + extra);
+    const minH = Math.round(barH + 16 + slotSize + infoH + extra);
 
     pyramidPanelEl.style.maxHeight = `${minH}px`;
     pyramidPanelEl.style.overflow = "auto";
@@ -688,33 +800,12 @@
     document.documentElement.style.setProperty("--benchSize", Math.max(64, size) + "px");
   }
 
-  function buildDisplayKeysFromHeader(header){
-    return header.filter(h => h && !EXCLUDE_KEYS.has(h));
-  }
-
-  function selectedToggleCount(){
+  function selectedToggleCount(showObj = state.show){
     let c = 0;
     for (const k of state.displayKeys){
-      if (state.show[k]) c++;
+      if (showObj[k]) c++;
     }
     return c;
-  }
-
-  function renderToggles(){
-    const picked = selectedToggleCount();
-    const max = 3;
-    const disableNew = picked >= max;
-
-    togglesEl.innerHTML = state.displayKeys.map(key => {
-      const checked = state.show[key] ? "checked" : "";
-      const disabled = (!state.show[key] && disableNew) ? "disabled" : "";
-      return `
-        <label class="chipToggle">
-          <input type="checkbox" data-key="${escapeHtml(key)}" ${checked} ${disabled}>
-          ${escapeHtml(key)}
-        </label>
-      `;
-    }).join("");
   }
 
   function buildInfoLines(person){
@@ -734,16 +825,6 @@
   function buildSortKeys(header){
     const excludeForSort = new Set(["img","image","Image","画像","photo","Photo"]);
     return header.filter(h => h && !excludeForSort.has(h));
-  }
-
-  function renderSortSelect(){
-    sortKeyEl.innerHTML = state.sortKeys.map(k =>
-      `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`
-    ).join("");
-
-    if (state.sortKeys.includes("Name")) sortKeyEl.value = "Name";
-    else if (state.sortKeys.includes("名前")) sortKeyEl.value = "名前";
-    else sortKeyEl.value = state.sortKeys[0] || "";
   }
 
   function toSortableValue(v){
@@ -961,7 +1042,7 @@
       const p = state.byId.get(id);
       if (!p) continue;
 
-      const yy = parseYearParens(p.raw?.["年/Year"]);
+      const yy = parseYearParens(p.raw?.[YEAR_COL]);
       if (yy != null){
         const age = 26 - yy;
         if (Number.isFinite(age)){
@@ -970,7 +1051,7 @@
         }
       }
 
-      const h = parseHeightCm(p.raw?.["身長/Height"]);
+      const h = parseHeightCm(p.raw?.[HEIGHT_COL]);
       if (h != null){
         hSum += h;
         hCnt++;
@@ -1169,31 +1250,102 @@
     }catch(_){}
   }
 
-  togglesEl.addEventListener("change", (e) => {
+  /* ===== Display Modal ===== */
+
+  function getPickedKeys(showObj = state.show){
+    const picked = [];
+    for (const k of state.displayKeys){
+      if (showObj[k]) picked.push(k);
+    }
+    return picked;
+  }
+
+  function updatePickedSummary(){
+    const picked = getPickedKeys(state.show);
+    pickedSummaryEl.textContent = picked.length ? picked.join(" / ") : "未選択";
+  }
+
+  function openDisplayModal(){
+    modalDraftShow = { ...state.show };
+    renderModalToggles();
+    displayModalEl.classList.add("isOpen");
+    displayModalEl.setAttribute("aria-hidden","false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeDisplayModal(){
+    displayModalEl.classList.remove("isOpen");
+    displayModalEl.setAttribute("aria-hidden","true");
+    document.body.style.overflow = "";
+    modalDraftShow = null;
+  }
+
+  function renderModalToggles(){
+    const picked = selectedToggleCount(modalDraftShow);
+    const max = 3;
+    const disableNew = picked >= max;
+
+    modalTogglesEl.innerHTML = state.displayKeys.map(key => {
+      const checked = modalDraftShow[key] ? "checked" : "";
+      const disabled = (!modalDraftShow[key] && disableNew) ? "disabled" : "";
+      return `
+        <label class="chipToggle">
+          <input type="checkbox" data-key="${escapeHtml(key)}" ${checked} ${disabled}>
+          ${escapeHtml(key)}
+        </label>
+      `;
+    }).join("");
+  }
+
+  modalTogglesEl.addEventListener("change", (e) => {
     const cb = e.target.closest("input[type=checkbox]");
     if (!cb) return;
     const key = cb.dataset.key;
 
-    const currentlyOn = selectedToggleCount();
-    if (!state.show[key] && cb.checked && currentlyOn >= 3){
+    const currentlyOn = selectedToggleCount(modalDraftShow);
+    if (!modalDraftShow[key] && cb.checked && currentlyOn >= 3){
       cb.checked = false;
       return;
     }
 
-    state.show[key] = cb.checked;
+    modalDraftShow[key] = cb.checked;
+    renderModalToggles();
+  });
 
-    renderToggles();
+  openDisplayModalBtn.addEventListener("click", openDisplayModal);
+  closeDisplayModalBtn.addEventListener("click", closeDisplayModal);
+
+  displayModalClearBtn.addEventListener("click", () => {
+    for (const k of state.displayKeys) modalDraftShow[k] = false;
+    renderModalToggles();
+  });
+
+  displayModalDoneBtn.addEventListener("click", () => {
+    state.show = { ...modalDraftShow };
+    closeDisplayModal();
+
+    // 反映
     renderPyramid();
     renderBench();
     renderGrid();
     applyGridClassFrames();
     updateGridSelectionRings();
+    updatePickedSummary();
     persistSoon();
   });
 
+  // overlay click / Esc で閉じる
+  displayModalEl.addEventListener("click", (e) => {
+    if (e.target === displayModalEl) closeDisplayModal();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && displayModalEl.classList.contains("isOpen")) closeDisplayModal();
+  });
+
+  /* ===== Other events ===== */
+
   frameToggleEl.addEventListener("change", () => {
     state.classFrameOn = frameToggleEl.checked;
-
     renderPyramid();
     renderBench();
     applyGridClassFrames();
@@ -1285,8 +1437,7 @@
       if (!state.displayKeys.includes(k)) delete state.show[k];
     }
 
-    state.sortKeys = header.filter(h => h && !new Set(["img","image","Image","画像","photo","Photo"]).has(h));
-
+    state.sortKeys = buildSortKeys(header);
     sortKeyEl.innerHTML = state.sortKeys.map(k =>
       `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`
     ).join("");
@@ -1309,9 +1460,7 @@
     frameToggleEl.checked = state.classFrameOn;
     pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
 
-    renderToggles();
     updateSlotSize();
-
     renderPyramid();
     renderBench();
     renderGrid();
@@ -1319,6 +1468,7 @@
     updateGridSelectionRings();
 
     applyPyramidScrollSizing();
+    updatePickedSummary();
     persistSoon();
   }
 
