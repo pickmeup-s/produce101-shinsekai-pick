@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Produce101 11人ピラミッド</title>
+
+<style>
+body{
+  margin:0;
+  background:#0b0c10;
+  color:#e8e9ee;
+  font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;
+}
+
+header{
+  padding:16px;
+  border-bottom:1px solid #222;
+  background:#111;
+  position:sticky;
+  top:0;
+}
+
+h1{margin:0 0 10px;font-size:18px;}
+
+button,select{
+  padding:8px 12px;
+  background:#1a1d29;
+  border:1px solid #2a2f44;
+  color:#fff;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+textarea{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  background:#111;
+  color:#fff;
+  border:1px solid #333;
+}
+
+.container{
+  display:grid;
+  grid-template-columns: 1fr 380px;
+  gap:16px;
+  padding:16px;
+}
+
+@media(max-width:900px){
+  .container{grid-template-columns:1fr;}
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+  gap:12px;
+}
+
+.card{
+  background:#141824;
+  border:1px solid #2a2f44;
+  border-radius:12px;
+  overflow:hidden;
+  cursor:pointer;
+  text-align:center;
+}
+
+.card img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+}
+
+.card.selected{
+  outline:3px solid #ff6ea8;
+}
+
+.side{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.pyramid{
+  background:#141824;
+  border-radius:16px;
+  padding:16px;
+}
+
+.pRow{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.pRow img{
+  width:90px;
+  height:90px;
+  border-radius:14px;
+  object-fit:cover;
+  border:1px solid #333;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Produce101 11人ピラミッドメーカー</h1>
+
+<select id="sortSelect"></select>
+
+</header>
+
+<div class="container">
+
+<div>
+
+<h3>CSVインポート（id,name,img）</h3>
+<textarea id="csvInput" rows="8" placeholder="id,name,img&#10;adamnagai,アダム・ナガイ,./img/trainees/adamnagai.jpg"></textarea>
+<br><br>
+<button onclick="loadMaster()">マスター読込</button>
+
+<hr style="margin:30px 0;border-color:#222;">
+
+<div class="grid" id="grid"></div>
+
+</div>
+
+<div class="side">
+
+<div>
+<h3>選択中（最大11）</h3>
+<div id="selectedList"></div>
+</div>
+
+<div class="pyramid">
+<h3>プレビュー</h3>
+<div id="pyramidArea"></div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let TRAINEES = [];
+let selected = [];
+let currentSort = "default";
+
+const SORTS = {
+  default:{
+    label:"登録順",
+    compare:(a,b)=>a.no-b.no
+  },
+  name:{
+    label:"名前順",
+    compare:(a,b)=>a.name.localeCompare(b.name,"ja")
+  }
+};
+
+function initSort(){
+  const sel=document.getElementById("sortSelect");
+  sel.innerHTML="";
+  Object.keys(SORTS).forEach(k=>{
+    const o=document.createElement("option");
+    o.value=k;
+    o.textContent=SORTS[k].label;
+    sel.appendChild(o);
+  });
+  sel.onchange=()=>{
+    currentSort=sel.value;
+    renderGrid();
+  };
+}
+
+function loadMaster(){
+  const text=document.getElementById("csvInput").value.trim();
+  if(!text)return;
+
+  const lines=text.split(/\r?\n/);
+  const header=lines.shift().split(",");
+  const idIdx=header.indexOf("id");
+  const nameIdx=header.indexOf("name");
+  const imgIdx=header.indexOf("img");
+
+  TRAINEES=lines.map((l,i)=>{
+    const c=l.split(",");
+    return{
+      no:i+1,
+      id:c[idIdx],
+      name:c[nameIdx],
+      img:c[imgIdx]
+    };
+  });
+
+  renderGrid();
+}
+
+function renderGrid(){
+  const grid=document.getElementById("grid");
+  grid.innerHTML="";
+
+  const sorted=[...TRAINEES].sort(SORTS[currentSort].compare);
+
+  sorted.forEach(t=>{
+    const div=document.createElement("div");
+    div.className="card"+(selected.includes(t.id)?" selected":"");
+    div.innerHTML=`<img src="${t.img}"><div>${t.name}</div>`;
+    div.onclick=()=>toggleSelect(t.id);
+    grid.appendChild(div);
+  });
+}
+
+function toggleSelect(id){
+  if(selected.includes(id)){
+    selected=selected.filter(x=>x!==id);
+  }else{
+    if(selected.length>=11)return;
+    selected.push(id);
+  }
+  renderGrid();
+  renderSelected();
+  renderPyramid();
+}
+
+function renderSelected(){
+  const box=document.getElementById("selectedList");
+  box.innerHTML="";
+  selected.forEach(id=>{
+    const t=TRAINEES.find(x=>x.id===id);
+    if(!t)return;
+    const div=document.createElement("div");
+    div.textContent=t.name;
+    box.appendChild(div);
+  });
+}
+
+function renderPyramid(){
+  const area=document.getElementById("pyramidArea");
+  area.innerHTML="";
+  const shape=[1,2,3,5];
+  let idx=0;
+
+  shape.forEach(n=>{
+    const row=document.createElement("div");
+    row.className="pRow";
+    for(let i=0;i<n;i++){
+      const id=selected[idx++];
+      if(id){
+        const t=TRAINEES.find(x=>x.id===id);
+        const img=document.createElement("img");
+        img.src=t.img;
+        row.appendChild(img);
+      }
+    }
+    area.appendChild(row);
+  });
+}
+
+initSort();
+
+</script>
+
+</body>
+</html>
