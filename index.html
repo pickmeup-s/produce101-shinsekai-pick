@@ -25,10 +25,8 @@
       --slotMax:96px;
       --benchSize: var(--slotSize);
 
-      /* rings */
+      /* rings（濃い青だけ） */
       --ringDark: rgba(10,96,255,.92);
-      --ringGlow: rgba(0,200,255,.10);
-      --ringActiveOuter: rgba(0,200,255,.26);
     }
 
     *{box-sizing:border-box}
@@ -91,7 +89,7 @@
       padding: 8px 6px 10px;
     }
 
-    /* Ranking header */
+    /* ===== Ranking header（スクロールしてもここは固定） ===== */
     .rankBar{
       display:flex;
       align-items:center;
@@ -101,9 +99,30 @@
       padding: 0 2px;
       font-size: 12px;
       color: var(--muted);
+
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--panel);
+      /* panel内スクロール時に横幅いっぱいに見せる */
+      margin-left: -6px;
+      margin-right: -6px;
+      padding-left: calc(6px + 2px);
+      padding-right: calc(6px + 2px);
+      padding-top: 6px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(6px);
     }
     .rankBar strong{ color: var(--text); font-weight:900; }
-    .rankTitlePad{ padding-left: .5em; display:flex; gap:10px; align-items:baseline; flex-wrap:wrap;}
+    .rankTitlePad{
+      padding-left: .5em;
+      display:flex;
+      gap:10px;
+      align-items:baseline;
+      flex-wrap:wrap;
+      min-width: 0;
+    }
     #rankStats{
       color: var(--muted);
       font-size: clamp(10px, 2.8vw, 12px);
@@ -112,13 +131,15 @@
       word-break: break-word;
     }
 
-    /* RINGS：薄い青（外側）を消して、太さは枠色と同じ 2px に
-       ※ただし「ランキング/ベンチ」はリング自体を使わん設定にしてる（JS側でクラス付与しない）
-    */
-    .card.selected{
+    /* ===== 青リング：薄い外側なし / 太さ2px ===== */
+    .card.selected,
+    .card.activeRing{
       box-shadow: 0 0 0 2px var(--ringDark);
     }
-    .card.activeRing{
+
+    /* ランキング/ベンチ：いまタップ中だけ枠（濃青2px） */
+    .slot.activeRing,
+    .benchItem.activeRing{
       box-shadow: 0 0 0 2px var(--ringDark);
     }
 
@@ -152,6 +173,7 @@
       text-align:center;
       line-height:1.15;
       display:flex; flex-direction:column; gap:2px;
+      min-height: calc(1.15em * 3 + 4px); /* 3行ぶんの最低確保（表示キー3つ想定） */
     }
     .slotInfo .line{
       white-space: normal;
@@ -162,6 +184,7 @@
       -webkit-box-orient: vertical;
       font-size: clamp(8px, 2.6vw, 10px);
       color: rgba(11,16,32,.92);
+      min-height: 1.15em;
     }
 
     /* Bench */
@@ -327,12 +350,11 @@
 <main>
   <section class="stickyWrap">
     <div class="panel" id="pyramidPanel">
-      <div class="rankBar">
+      <div class="rankBar" id="rankBar">
         <div class="rankTitlePad">
           <strong>ランキング</strong>
           <span id="rankStats"></span>
         </div>
-        <!-- ロックボタン：ベンチと同じ arrowBtn、表示は ▾ / ▴ -->
         <button id="togglePyramidLock" type="button" class="arrowBtn" title="表示固定">▾</button>
       </div>
       <div class="rows" id="pyramid"></div>
@@ -392,6 +414,7 @@
   const togglesEl = document.getElementById("toggles");
   const pyramidPanelEl = document.getElementById("pyramidPanel");
   const benchPanelEl = document.getElementById("benchPanel");
+  const rankBarEl = document.getElementById("rankBar");
 
   const sortKeyEl = document.getElementById("sortKey");
   const sortDirEl = document.getElementById("sortDir");
@@ -452,7 +475,7 @@
   };
 
   let cardElsById = new Map();
-  let gridOrderIds = []; // 現在の並び順（番号表示に使う）
+  let gridOrderIds = [];
 
   function escapeHtml(s){
     return String(s ?? "")
@@ -546,7 +569,7 @@
     state.slots[slotIndex] = benchId;
 
     if (slotId){
-      state.bench[benchIndex] = slotId; // 入れ替えだけ（順番を勝手に崩さない）
+      state.bench[benchIndex] = slotId;
     } else {
       state.bench.splice(benchIndex, 1);
     }
@@ -558,13 +581,35 @@
     return CLASS_COLOR[cls] || "";
   }
 
+  function getCssNumber(varName){
+    const v = getComputedStyle(document.documentElement).getPropertyValue(varName);
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : 0;
+  }
+
   function applyPyramidScrollSizing(){
     if (state.pyramidLockFull){
       pyramidPanelEl.style.maxHeight = "";
       pyramidPanelEl.style.overflow = "";
       return;
     }
-    pyramidPanelEl.style.maxHeight = "160px"; // ベンチぐらい
+
+    // 折りたたみ時：最低でも
+    // 「rankBar（ランキング文字+平均表示） + 写真1段 + 表示3行ぶん」
+    // を確保した高さにする
+    const slotSize = getCssNumber("--slotSize"); // px
+    const barH = rankBarEl ? rankBarEl.offsetHeight : 44;
+
+    // 表示3行ぶん（slotInfoの最低ぶんをざっくり固定で確保）
+    // clampされるので、ここは大きめに取って崩れにくくしてる
+    const infoH = 48;
+
+    // row間gapやpanelの余白ぶん
+    const extra = 18;
+
+    const minH = Math.round(barH + slotSize + infoH + extra);
+
+    pyramidPanelEl.style.maxHeight = `${minH}px`;
     pyramidPanelEl.style.overflow = "auto";
   }
 
@@ -683,9 +728,9 @@
         const frameColor = (state.classFrameOn ? getClassColor(p) : "");
         const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
-        // ランキングは青リング無し（枠色トグルだけ）
         const slotCls = [
           "slot",
+          (state.activeSlotIndex === idx) ? "activeRing" : "",
           id ? "" : "empty",
         ].filter(Boolean).join(" ");
 
@@ -694,11 +739,13 @@
             <div class="${slotCls}" ${style} data-slot="${idx}" role="button" tabindex="0">
               ${id && imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
             </div>
-            ${lines.length ? `
-              <div class="slotInfo">
-                ${lines.map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")}
-              </div>
-            ` : ``}
+            <div class="slotInfo">
+              ${
+                lines.length
+                  ? lines.map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")
+                  : `<div class="line"></div><div class="line"></div><div class="line"></div>`
+              }
+            </div>
           </div>
         `);
       }
@@ -706,6 +753,7 @@
     }).join("");
 
     updateRankStats();
+    applyPyramidScrollSizing(); // ← 折り畳み時の高さを描画後に再計算
   }
 
   function renderBench(){
@@ -726,8 +774,10 @@
       const frameColor = (state.classFrameOn ? getClassColor(p) : "");
       const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
-      // ベンチも青リング無し（枠色トグルだけ）
-      const cls = ["benchItem"].join(" ");
+      const cls = [
+        "benchItem",
+        (state.activeBenchIndex === i) ? "activeRing" : ""
+      ].filter(Boolean).join(" ");
 
       return `
         <div class="benchItemWrap">
@@ -768,7 +818,6 @@
       const { title, sub } = getCardTitleAndSub(p);
       const idx = i + 1;
 
-      // class frame uses border-color inline (doesn't override rings)
       const frameColor = (state.classFrameOn ? getClassColor(p) : "");
       const borderStyle = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
@@ -810,7 +859,6 @@
   }
 
   function updateGridSelectionRings(){
-    // “いま操作中”のID
     let activeId = null;
     if (state.activeSlotIndex != null){
       activeId = state.slots[state.activeSlotIndex] || null;
@@ -827,7 +875,6 @@
     });
   }
 
-  // 年齢計算：2026年 기준、(10) なら 26-10 = 16
   function parseYearParens(v){
     const s = String(v ?? "").trim();
     if (!s) return null;
@@ -856,7 +903,6 @@
       const p = state.byId.get(id);
       if (!p) continue;
 
-      // Age
       const yy = parseYearParens(p.raw?.[YEAR_COL]);
       if (yy != null){
         const age = 26 - yy;
@@ -866,7 +912,6 @@
         }
       }
 
-      // Height
       const h = parseHeightCm(p.raw?.[HEIGHT_COL]);
       if (h != null){
         hSum += h;
@@ -886,7 +931,6 @@
   function onSlotClick(slotIndex){
     const slotId = state.slots[slotIndex] || null;
 
-    // ベンチ選択中 → スロットと入れ替え
     if (state.activeBenchIndex != null){
       swapSlotWithBench(slotIndex, state.activeBenchIndex);
 
@@ -901,7 +945,6 @@
       return;
     }
 
-    // 同じスロットをもう一回 → 中身削除
     if (state.activeSlotIndex === slotIndex){
       if (slotId) state.slots[slotIndex] = null;
 
@@ -914,7 +957,6 @@
       return;
     }
 
-    // 既に別スロット選択中 → スロット同士入れ替え
     if (state.activeSlotIndex != null && state.activeSlotIndex !== slotIndex){
       swapSlots(state.activeSlotIndex, slotIndex);
 
@@ -927,17 +969,16 @@
       return;
     }
 
-    // スロット選択開始
     state.activeSlotIndex = slotIndex;
     state.activeBenchIndex = null;
     state.lastTappedId = slotId;
 
     renderPyramid();
+    renderBench();
     updateGridSelectionRings();
   }
 
   function onPickId(id, fromBench=false, benchIndex=null){
-    // 2回連続タップ削除（どこでも共通）
     if (state.lastTappedId === id && isSelected(id)){
       removeIdEverywhere(id);
 
@@ -952,12 +993,10 @@
       return;
     }
 
-    // スロット選択中なら：差し替え（ベンチでも121でもOK）
     if (state.activeSlotIndex != null){
       if (fromBench && benchIndex != null){
         swapSlotWithBench(state.activeSlotIndex, benchIndex);
       } else {
-        // 121側から選んだ：スロットの中身をベンチへ（順番崩さず末尾追加）
         const bi = state.bench.indexOf(id);
         if (bi >= 0){
           swapSlotWithBench(state.activeSlotIndex, bi);
@@ -979,10 +1018,8 @@
       return;
     }
 
-    // 2回タップ判定用
     state.lastTappedId = id;
 
-    // 未選択なら：空きがあればランキング、なければベンチへ
     if (!isSelected(id)){
       const empty = firstEmptySlot();
       if (empty >= 0) state.slots[empty] = id;
@@ -998,7 +1035,6 @@
       return;
     }
 
-    // 既に選択済み：ベンチ同士の入れ替え
     if (fromBench && benchIndex != null){
       if (state.activeBenchIndex != null && state.activeBenchIndex !== benchIndex){
         swapBench(state.activeBenchIndex, benchIndex);
@@ -1016,16 +1052,17 @@
       state.activeSlotIndex = null;
 
       renderBench();
+      renderPyramid();
       updateGridSelectionRings();
       return;
     }
 
-    // 121側で選択済みを押した場合：その人がベンチにいるなら選択対象へ
     const bi = state.bench.indexOf(id);
     state.activeBenchIndex = (bi >= 0) ? bi : null;
     state.activeSlotIndex = null;
 
     renderBench();
+    renderPyramid();
     updateGridSelectionRings();
   }
 
@@ -1074,7 +1111,6 @@
     }catch(_){}
   }
 
-  // Events (toggles / sort / etc)
   togglesEl.addEventListener("change", (e) => {
     const cb = e.target.closest("input[type=checkbox]");
     if (!cb) return;
@@ -1092,7 +1128,6 @@
     renderPyramid();
     renderBench();
 
-    // gridは作り直さず、テキスト更新が必要なので再描画する
     renderGrid();
     applyGridClassFrames();
     updateGridSelectionRings();
@@ -1148,10 +1183,7 @@
 
   pyramidLockBtn.addEventListener("click", () => {
     state.pyramidLockFull = !state.pyramidLockFull;
-
-    // 表示は ▾ / ▴（ベンチと同じ）
     pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
-
     applyPyramidScrollSizing();
     persistSoon();
   });
@@ -1202,7 +1234,6 @@
     state.people = normalizePeople(rows);
     state.byId = new Map(state.people.map(p => [p.id, p]));
 
-    // 存在しないIDは消す
     state.slots = state.slots.map(id => (id && state.byId.has(id)) ? id : null);
     state.bench = state.bench.filter(id => state.byId.has(id));
 
@@ -1213,8 +1244,6 @@
     state._savedSortKey = null;
 
     frameToggleEl.checked = state.classFrameOn;
-
-    // ロックボタン表示を storage 反映
     pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
 
     renderToggles();
