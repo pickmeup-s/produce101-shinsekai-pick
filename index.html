@@ -17,7 +17,6 @@
       --r:14px;
 
       --accent:#0a60ff;
-      --accent2:#00c8ff;
 
       --gap:6px;
       --slotSize:72px;
@@ -100,8 +99,13 @@
       user-select: none;
       pointer-events: none;
       white-space: nowrap;
+
+      /* 日付の上に1行ぶん余白 */
+      margin-top: 0;
     }
-    #pyramidPanel{ padding-bottom: 26px; }
+    /* 日付の上に余白 + 日付ぶんの下余白 */
+    #pyramidPanel{ padding-bottom: 40px; }
+    .rankDatePad{ height: 16px; } /* だいたい1行分の余白 */
 
     /* Ranking header（スクロールしてもここは固定） */
     .rankBar{
@@ -109,7 +113,7 @@
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      margin: 0 0 6px;
+      margin: 0 0 0;
       padding: 0 2px;
       font-size: 12px;
       color: var(--muted);
@@ -144,6 +148,9 @@
       word-break: break-word;
     }
 
+    /* ヘッダーと最初の写真の間：1行ぶん余裕 */
+    .pyramidTopGap{ height: 16px; }
+
     /* 青リング：薄い外側なし / 太さ2px */
     .card.selected,
     .card.activeRing{
@@ -166,7 +173,7 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:4px;
+      gap:3px; /* 少し詰め */
     }
     .slot{
       width: var(--slotSize);
@@ -181,14 +188,14 @@
     .slot img{width:100%;height:100%;object-fit:cover;display:block;border-radius:999px;}
     .slot.empty{background: rgba(10,96,255,.04); border: 1px dashed rgba(10,35,90,.22);}
 
-    /* ★ここ：最低3行確保を廃止（詰める） */
+    /* 表示名：行間もっと詰める */
     .slotInfo{
       width:100%;
       text-align:center;
-      line-height:1.15;
+      line-height:1.05;
       display:flex;
       flex-direction:column;
-      gap:2px;
+      gap:1px;
     }
     .slotInfo .line{
       white-space: normal;
@@ -208,7 +215,14 @@
       padding-bottom:2px;
       -webkit-overflow-scrolling: touch;
     }
-    .benchItemWrap{width:var(--benchSize);flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;}
+    .benchItemWrap{
+      width:var(--benchSize);
+      flex:0 0 auto;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:3px; /* 少し詰め */
+    }
     .benchItem{
       width: var(--benchSize);
       aspect-ratio:1/1;
@@ -220,7 +234,16 @@
       touch-action: manipulation;
     }
     .benchItem img{width:100%;height:100%;object-fit:cover;display:block;}
-    .benchInfo{width:100%;text-align:center;line-height:1.15;display:flex;flex-direction:column;gap:2px;}
+
+    /* ベンチ表示名：行間もっと詰める */
+    .benchInfo{
+      width:100%;
+      text-align:center;
+      line-height:1.05;
+      display:flex;
+      flex-direction:column;
+      gap:1px;
+    }
     .benchInfo .line{
       white-space: normal;
       word-break: break-word;
@@ -278,7 +301,12 @@
       padding: 10px;
       box-shadow: var(--shadow);
     }
-    .optionsTitle{font-size:12px;color:var(--muted);margin:0 0 8px;}
+    .optionsTitle{
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 8px;
+    }
+
     .toggles{
       display:flex; gap:8px; flex-wrap:wrap;
       max-height:120px; overflow:auto; padding-right:4px; margin-bottom:10px;
@@ -293,6 +321,13 @@
     }
     .chipToggle input{ accent-color: var(--accent); }
     .chipToggle input:disabled{ opacity:.5; }
+
+    /* 「並び替え」ラベル（表示する項目と同じスタイル） */
+    .sortTitle{
+      font-size:12px;
+      color:var(--muted);
+      margin: 6px 0 8px;
+    }
 
     .sortBox{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
     select{
@@ -363,14 +398,16 @@
     <div class="panel" id="pyramidPanel">
       <div class="rankBar" id="rankBar">
         <div class="rankTitlePad">
-          <strong>ランキング</strong>
+          <strong>11pick</strong>
           <span id="rankStats"></span>
         </div>
         <button id="togglePyramidLock" type="button" class="arrowBtn" title="表示固定">▾</button>
       </div>
 
+      <div class="pyramidTopGap"></div>
       <div class="rows" id="pyramid"></div>
 
+      <div class="rankDatePad" id="rankDatePad"></div>
       <div class="rankDate" id="rankDate"></div>
     </div>
 
@@ -400,9 +437,10 @@
   </div>
 
   <section class="optionsPanel">
-    <p class="optionsTitle">表示する項目（３つまで）</p>
+    <p class="optionsTitle">表示する項目（3つまで）</p>
     <div class="toggles" id="toggles"></div>
 
+    <p class="sortTitle">並び替え</p>
     <div class="sortBox">
       <select id="sortKey"></select>
       <select id="sortDir">
@@ -439,6 +477,7 @@
   const pyramidLockBtn = document.getElementById("togglePyramidLock");
   const rankStatsEl = document.getElementById("rankStats");
   const rankDateEl = document.getElementById("rankDate");
+  const rankDatePadEl = document.getElementById("rankDatePad");
 
   const ROWS = [1,2,3,5];
   const TOTAL = ROWS.reduce((a,b)=>a+b,0);
@@ -608,21 +647,27 @@
     return `${y}/${m}/${da}`;
   }
 
+  function setRankDateVisible(visible){
+    rankDateEl.style.display = visible ? "" : "none";
+    rankDatePadEl.style.display = visible ? "" : "none";
+  }
+
   function applyPyramidScrollSizing(){
     if (state.pyramidLockFull){
       pyramidPanelEl.style.maxHeight = "";
       pyramidPanelEl.style.overflow = "";
+      setRankDateVisible(true);
       return;
     }
+
+    setRankDateVisible(false);
 
     const slotSize = getCssNumber("--slotSize");
     const barH = rankBarEl ? rankBarEl.offsetHeight : 44;
 
-    /* 1人分 + その下に3行表示されうる高さは確保（ただし空きは作らない） */
     const infoH = 46;
     const extra = 18;
-
-    const minH = Math.round(barH + slotSize + infoH + extra);
+    const minH = Math.round(barH + 16 /*ヘッダー下余白*/ + slotSize + infoH + extra);
 
     pyramidPanelEl.style.maxHeight = `${minH}px`;
     pyramidPanelEl.style.overflow = "auto";
@@ -916,7 +961,7 @@
       const p = state.byId.get(id);
       if (!p) continue;
 
-      const yy = parseYearParens(p.raw?.[YEAR_COL]);
+      const yy = parseYearParens(p.raw?.["年/Year"]);
       if (yy != null){
         const age = 26 - yy;
         if (Number.isFinite(age)){
@@ -925,7 +970,7 @@
         }
       }
 
-      const h = parseHeightCm(p.raw?.[HEIGHT_COL]);
+      const h = parseHeightCm(p.raw?.["身長/Height"]);
       if (h != null){
         hSum += h;
         hCnt++;
@@ -1232,7 +1277,7 @@
 
     state.header = header;
 
-    state.displayKeys = buildDisplayKeysFromHeader(header);
+    state.displayKeys = header.filter(h => h && !EXCLUDE_KEYS.has(h));
     for (const k of state.displayKeys){
       if (!(k in state.show)) state.show[k] = false;
     }
@@ -1240,19 +1285,26 @@
       if (!state.displayKeys.includes(k)) delete state.show[k];
     }
 
-    state.sortKeys = buildSortKeys(header);
+    state.sortKeys = header.filter(h => h && !new Set(["img","image","Image","画像","photo","Photo"]).has(h));
+
+    sortKeyEl.innerHTML = state.sortKeys.map(k =>
+      `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`
+    ).join("");
+
+    if (state.sortKeys.includes("Name")) sortKeyEl.value = "Name";
+    else if (state.sortKeys.includes("名前")) sortKeyEl.value = "名前";
+    else sortKeyEl.value = state.sortKeys[0] || "";
+
+    if (state._savedSortKey && state.sortKeys.includes(state._savedSortKey)){
+      sortKeyEl.value = state._savedSortKey;
+    }
+    state._savedSortKey = null;
 
     state.people = normalizePeople(rows);
     state.byId = new Map(state.people.map(p => [p.id, p]));
 
     state.slots = state.slots.map(id => (id && state.byId.has(id)) ? id : null);
     state.bench = state.bench.filter(id => state.byId.has(id));
-
-    renderSortSelect();
-    if (state._savedSortKey && state.sortKeys.includes(state._savedSortKey)){
-      sortKeyEl.value = state._savedSortKey;
-    }
-    state._savedSortKey = null;
 
     frameToggleEl.checked = state.classFrameOn;
     pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
