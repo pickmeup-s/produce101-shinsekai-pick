@@ -1493,7 +1493,23 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
     const { header, rows } = parseCsvWithHeader(text);
 
     state.header = header;
+// CSV列名ゆらぎ吸収（ここ重要）
+RAW_CLASS_COL = resolveHeaderKey(header, "D:シグナルソングクラス", [
+  (h)=> normalizeKey(h).includes(normalizeKey("D:シグナルソングクラス")),
+  (h)=> normalizeKey(h).includes("シグナルソングクラス"),
+]);
 
+RAW_BIRTH_COL = resolveHeaderKey(header, "S:生まれ年(00-10)", [
+  (h)=> normalizeKey(h).startsWith(normalizeKey("S:生まれ年")),
+  (h)=> normalizeKey(h).includes("生まれ年"),
+  (h)=> normalizeKey(h).includes("birth"),
+]);
+
+RAW_HEIGHT_COL = resolveHeaderKey(header, "S:身長(cm)", [
+  (h)=> normalizeKey(h).startsWith(normalizeKey("S:身長")),
+  (h)=> normalizeKey(h).includes("身長"),
+  (h)=> normalizeKey(h).includes("height"),
+]);
     // 表示候補（D:***）
     state.displayKeys = buildDisplayKeysFromHeader(header);
     for (const k of state.displayKeys){
