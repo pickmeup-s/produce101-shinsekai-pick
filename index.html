@@ -86,7 +86,6 @@
       position: relative;
     }
 
-    /* ===== 11pick panel: paddingをrankBarとbodyで分ける（スクロール時の覗き隙間対策） ===== */
     #pyramidPanel{
       padding: 0;
       overflow: hidden;
@@ -95,7 +94,6 @@
       padding: 0 6px 10px;
     }
 
-    /* 日付 */
     .rankDate{
       position: absolute;
       right: 10px;
@@ -110,7 +108,6 @@
     #pyramidPanel{ padding-bottom: 25px; }
     .rankDatePad{ height: 0px; }
 
-    /* Ranking header */
     .rankBar{
       display:flex;
       align-items:center;
@@ -150,7 +147,6 @@
 
     .pyramidTopGap{ height: 8px; }
 
-    /* ===== Rings ===== */
     .card.selected,
     .card.activeRing{
       box-shadow: 0 0 0 2px var(--ringDark);
@@ -160,7 +156,6 @@
       box-shadow: 0 0 0 2px var(--ringDark);
     }
 
-    /* ===== Pyramid：段の行間を詰める ===== */
     .rows{display:flex; flex-direction:column; gap:5px;}
     .row{display:flex; justify-content:center; gap: var(--gap); width:100%; flex-wrap:nowrap;}
 
@@ -203,7 +198,6 @@
       color: rgba(11,16,32,.92);
     }
 
-    /* ===== Bench panel ===== */
     #benchPanel{
       padding: 8px 6px 10px;
       overflow: visible;
@@ -391,7 +385,6 @@
       backdrop-filter: blur(6px);
     }
 
-    /* ===== Modal ===== */
     .modalOverlay{
       position: fixed;
       inset: 0;
@@ -517,7 +510,7 @@
 
     <label class="chip">
       <input id="frameToggle" type="checkbox">
-      枠色（シグナルソングA-F ）
+      枠色（シグナルソングクラス）
     </label>
   </div>
 
@@ -606,11 +599,8 @@
   ]);
 
   // ===== CSV列名（指定）=====
-  // クラス枠色：D：シグナルソングA-F 
-  // 年齢計算：S:生まれ年(00-10)（CSVはYYYY/MM/DD想定）
-  // 身長計算：S:身長(cm)
-  let RAW_CLASS_COL = "D:シグナルソングA-F ";
-  let RAW_BIRTH_COL = "S:生まれ年(00-10)";
+  let RAW_CLASS_COL  = "D:シグナルソングクラス";
+  let RAW_BIRTH_COL  = "S:生まれ年(00-10)";
   let RAW_HEIGHT_COL = "S:身長(cm)";
 
   const CLASS_COLOR = {
@@ -746,12 +736,22 @@
     }
   }
 
-  // ===== ヘッダーゆらぎ吸収（空白/全角括弧など）=====
+  // ===== ヘッダーゆらぎ吸収（空白/全角括弧/全角コロン等）=====
   function normalizeKey(s){
     return String(s ?? "")
       .trim()
       .replace(/\s+/g, "")
-      .replace(/[（）]/g, (m)=> m==="（" ? "(" : ")");
+      .replace(/[（）]/g, (m)=> m==="（" ? "(" : ")")
+      .replace(/[：]/g, ":");
+  }
+
+  function isDKey(h){
+    const n = normalizeKey(h);
+    return n.startsWith("D:");
+  }
+  function isSKey(h){
+    const n = normalizeKey(h);
+    return n.startsWith("S:");
   }
 
   function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
@@ -1039,12 +1039,10 @@
     });
   }
 
-  // ===== 年齢/身長計算 =====
   function parseBirthDate(v){
     const s = String(v ?? "").trim();
     if (!s) return null;
 
-    // 例: 2007/07/07, 2007-07-07, 2007.07.07 など
     const m = s.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);
     if (!m) return null;
 
@@ -1069,12 +1067,9 @@
   function parseHeightCm(v){
     const s0 = String(v ?? "").trim();
     if (!s0) return null;
-
-    // 170,5 → 170.5 対策
     const s = s0.replace(",", ".");
     const m = s.match(/(\d+(\.\d+)?)/);
     if (!m) return null;
-
     const n = Number(m[1]);
     return Number.isFinite(n) ? n : null;
   }
@@ -1252,7 +1247,6 @@
     updateGridSelectionRings();
   }
 
-  // ===== ここ追加：空白タッチで「選択（枠）」だけ解除 =====
   function clearActiveSelection(){
     if (state.activeSlotIndex == null && state.activeBenchIndex == null && state.lastTappedId == null) return;
 
@@ -1467,12 +1461,9 @@
     onPickId(card.dataset.id, false, null);
   });
 
-  // ===== ここ追加：ページの空白タッチ/クリックで「選択枠」解除 =====
   document.addEventListener("pointerdown", (e) => {
-    // モーダル中は無視
     if (displayModalEl.classList.contains("isOpen")) return;
 
-    // 操作系を触ったときは無視
     if (e.target.closest(
       ".slot,.benchItem,.card," +
       "button,select,input,label," +
@@ -1500,10 +1491,10 @@
 
     state.header = header;
 
-    // ヘッダーゆらぎ吸収して列名確定（ここ重要）
-    RAW_CLASS_COL = resolveHeaderKey(header, "D:シグナルソングA-F ", [
-      (h)=> normalizeKey(h).includes(normalizeKey("D:シグナルソングA-F ")),
-      (h)=> normalizeKey(h).includes("シグナルソングA-F "),
+    // 列名確定（ゆらぎ吸収）
+    RAW_CLASS_COL = resolveHeaderKey(header, "D:シグナルソングクラス", [
+      (h)=> normalizeKey(h).includes(normalizeKey("D:シグナルソングクラス")),
+      (h)=> normalizeKey(h).includes("シグナルソングクラス"),
     ]);
     RAW_BIRTH_COL = resolveHeaderKey(header, "S:生まれ年(00-10)", [
       (h)=> normalizeKey(h).startsWith(normalizeKey("S:生まれ年")),
@@ -1516,15 +1507,23 @@
       (h)=> normalizeKey(h).includes("height"),
     ]);
 
-    state.displayKeys = header.filter(h => h && !EXCLUDE_KEYS.has(h));
-    for (const k of state.displayKeys){
-      if (!(k in state.show)) state.show[k] = false;
-    }
-    for (const k of Object.keys(state.show)){
-      if (!state.displayKeys.includes(k)) delete state.show[k];
-    }
+    // ===== ここが修正点：D/Sで役割分離 =====
+    // 表示名：D: だけ
+    state.displayKeys = header
+      .filter(h => h && !EXCLUDE_KEYS.has(h))
+      .filter(h => isDKey(h));
 
-    state.sortKeys = buildSortKeys(header);
+    // show初期化（displayKeysにあるD:だけ保持）
+    const nextShow = {};
+    for (const k of state.displayKeys){
+      nextShow[k] = Boolean(state.show?.[k]);
+    }
+    state.show = nextShow;
+
+    // 並び替え：S: だけ（＋Name/名前は例外で許可）
+    const baseSort = buildSortKeys(header);
+    state.sortKeys = baseSort.filter(h => isSKey(h) || h === "Name" || h === "名前");
+
     sortKeyEl.innerHTML = state.sortKeys.map(k =>
       `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`
     ).join("");
