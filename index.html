@@ -14,6 +14,8 @@
       --line:rgba(255,255,255,.12);
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --r:14px;
+      --headerH: 64px; /* JSで実測して上書き */
+      --stickyGap: 10px;
     }
     *{box-sizing:border-box}
     body{
@@ -24,18 +26,19 @@
                   var(--bg);
       color:var(--text);
     }
+
     header{
-      position:sticky; top:0; z-index:10;
+      position:sticky; top:0; z-index:50;
       backdrop-filter: blur(10px);
       background: rgba(11,15,26,.72);
       border-bottom:1px solid var(--line);
     }
-    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .wrap{max-width:1100px;margin:0 auto;padding:12px 16px}
     .top{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:10px 0 6px;
     }
     h1{margin:0;font-size:18px;font-weight:700;letter-spacing:.2px}
+
     .controls{
       display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
     }
@@ -55,13 +58,90 @@
       box-shadow: 0 8px 18px rgba(30,90,210,.25);
     }
     button:active{transform: translateY(1px)}
-    main{max-width:1100px;margin:0 auto;padding:18px 16px 60px}
+
+    main{max-width:1100px;margin:0 auto;padding:14px 16px 60px}
+
+    /* ピラミッド（スクロール固定） */
+    .pyramidWrap{
+      position: sticky;
+      top: calc(var(--headerH) + var(--stickyGap));
+      z-index: 40;
+      margin-top: 10px;
+    }
+    .pyramid{
+      background: rgba(18,26,43,.65);
+      border:1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding:12px;
+    }
+    .hintBar{
+      display:flex; align-items:center; justify-content:space-between;
+      margin:0 0 10px; gap:10px; flex-wrap:wrap;
+      color:var(--muted); font-size:12px;
+    }
+    .miniBtns{display:flex; gap:8px; align-items:center}
+    .mini{
+      height:32px;
+      padding:0 10px;
+      border-radius:10px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+    .mini.primary{
+      background: rgba(40,120,255,.22);
+      border-color: rgba(40,120,255,.35);
+    }
+
+    .row{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin:10px 0;
+      flex-wrap:wrap;
+    }
+
+    /* プレビュー側は丸 */
+    .slot{
+      width:86px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.04);
+      overflow:hidden;
+      box-shadow: 0 8px 18px rgba(0,0,0,.22);
+    }
+    .slot img{
+      width:100%;
+      aspect-ratio:1/1;
+      object-fit:cover;
+      display:block;
+      border-radius:999px;
+    }
+    .slot .cap{
+      padding:6px 8px 8px;
+      font-size:11px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      text-align:center;
+    }
+    .slot.empty{
+      border-style:dashed;
+      box-shadow:none;
+    }
+    .slot.empty .cap{color:transparent}
+
+    /* 一覧 */
+    .gridSection{margin-top:14px}
     .grid{
       display:grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap:14px;
     }
     .card{
+      position:relative;
       background: linear-gradient(180deg, rgba(18,26,43,.9), rgba(15,22,38,.92));
       border:1px solid var(--line);
       border-radius: var(--r);
@@ -88,61 +168,40 @@
       box-shadow: 0 0 0 2px rgba(110,190,255,.25), var(--shadow);
     }
 
-    /* ピラミッド */
-    .pyramidWrap{margin-top:18px}
-    .pyramid{
-      background: rgba(18,26,43,.65);
-      border:1px solid var(--line);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-      padding:14px;
+    /* 並び順番号バッジ */
+    .idx{
+      position:absolute;
+      top:10px; left:10px;
+      height:22px;
+      padding:0 8px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      font-size:12px;
+      font-weight:700;
+      color:rgba(255,255,255,.95);
+      background: rgba(0,0,0,.38);
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(6px);
     }
-    .row{
-      display:flex;
-      justify-content:center;
-      gap:10px;
-      margin:10px 0;
-      flex-wrap:wrap;
+
+    /* 選択バッジ（任意：選択中だけ右上） */
+    .pick{
+      position:absolute;
+      top:10px; right:10px;
+      height:22px;
+      padding:0 8px;
+      border-radius:999px;
+      display:none;
+      align-items:center;
+      font-size:12px;
+      font-weight:700;
+      color:rgba(255,255,255,.95);
+      background: rgba(40,120,255,.28);
+      border:1px solid rgba(40,120,255,.45);
+      backdrop-filter: blur(6px);
     }
-    .slot{
-      width:86px;
-      border-radius:14px;
-      border:1px dashed rgba(255,255,255,.18);
-      background: rgba(255,255,255,.04);
-      overflow:hidden;
-    }
-    .slot img{
-      width:100%;
-      aspect-ratio:1/1;
-      object-fit:cover;
-      display:block;
-    }
-    .slot .cap{
-      padding:6px 8px 8px;
-      font-size:11px;
-      color:var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .hintBar{
-      display:flex; align-items:center; justify-content:space-between;
-      margin:0 0 10px; gap:10px; flex-wrap:wrap;
-      color:var(--muted); font-size:12px;
-    }
-    .miniBtns{display:flex; gap:8px; align-items:center}
-    .mini{
-      height:32px;
-      padding:0 10px;
-      border-radius:10px;
-      background: rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      box-shadow:none;
-    }
-    .mini.primary{
-      background: rgba(40,120,255,.22);
-      border-color: rgba(40,120,255,.35);
-    }
+    .card.selected .pick{display:inline-flex}
 
     @media (max-width:520px){
       .slot{width:78px}
@@ -150,7 +209,7 @@
   </style>
 </head>
 <body>
-  <header>
+  <header id="header">
     <div class="wrap">
       <div class="top">
         <h1>Produce101 11人ピラミッドメーカー</h1>
@@ -173,20 +232,22 @@
           <div id="count"></div>
           <div class="miniBtns">
             <button class="mini" id="clear" type="button">全解除</button>
-            <button class="mini primary" id="autoFill" type="button">ピラミッド反映</button>
+            <button class="mini primary" id="autoFill" type="button">プレビュー反映</button>
           </div>
         </div>
         <div id="pyramid"></div>
       </div>
     </section>
 
-    <section style="margin-top:16px">
+    <section class="gridSection">
       <div class="grid" id="grid"></div>
     </section>
   </main>
 
   <script>
     const CSV_PATH = "data/master.csv";
+
+    const headerEl = document.getElementById("header");
     const gridEl = document.getElementById("grid");
     const sortEl = document.getElementById("sort");
     const countEl = document.getElementById("count");
@@ -195,7 +256,14 @@
     const state = {
       people: [],
       selectedIds: new Set(),
+      lastSortedIds: [],
     };
+
+    function setHeaderHeightVar(){
+      const h = Math.ceil(headerEl.getBoundingClientRect().height || 64);
+      document.documentElement.style.setProperty("--headerH", h + "px");
+    }
+    window.addEventListener("resize", setHeaderHeightVar);
 
     function escapeHtml(s){
       return String(s ?? "")
@@ -241,13 +309,22 @@
       return rows;
     }
 
+    function pickField(obj, keys){
+      for (const k of keys){
+        if (obj[k] != null && String(obj[k]).trim() !== "") return String(obj[k]).trim();
+      }
+      return "";
+    }
+
     function normalizePeople(rows){
       return rows.map((r, idx) => {
-        const id = r.id || r.ID || r.Id || String(idx+1);
-        const name = r.name || r.Name || r.名前 || r.氏名 || "";
-        const name_kana = r.kana || r.Kana || r.カナ || r.ふりがな || "";
-        const img = r.img || r.image || r.Image || r.画像 || "";
-        return { id, name, name_kana, img, __idx: idx };
+        const id = pickField(r, ["id","ID","Id"]) || String(idx+1);
+        const name = pickField(r, ["name","Name","名前","氏名"]);
+        const kana = pickField(r, ["kana","Kana","カナ","ふりがな","フリガナ"]);
+        const img  = pickField(r, ["img","image","Image","画像","photo","Photo"]);
+        const origin = pickField(r, ["origin","出身地","出身","city","pref","prefecture"]);
+        const note = pickField(r, ["note","memo","メモ","補足","remark","remarks"]);
+        return { id, name, kana, img, origin, note, __idx: idx };
       });
     }
 
@@ -266,19 +343,36 @@
       } else if (mode === "name_desc"){
         arr.sort((a,b) => (b.name || "").localeCompare(a.name || "", "ja"));
       }
+      state.lastSortedIds = arr.map(p => p.id);
       return arr;
+    }
+
+    function buildSubLine(p){
+      const parts = [];
+      if (p.kana) parts.push(p.kana);
+      if (p.origin) parts.push(p.origin);
+      // noteは長くなりがちなので表示はしない（必要ならここに追加）
+      return parts.join(" / ");
     }
 
     function renderGrid(){
       const arr = getSortedPeople();
-      const html = arr.map(p => {
+      const html = arr.map((p, i) => {
         const selected = state.selectedIds.has(p.id) ? "selected" : "";
         const imgSrc = p.img ? escapeHtml(p.img) : "";
         const name = escapeHtml(p.name || "");
-        const sub = escapeHtml(p.name_kana || "");
+        const sub = escapeHtml(buildSubLine(p));
+        const idx = i + 1;
+
         return `
           <div class="card ${selected}" data-id="${escapeHtml(p.id)}" role="button" tabindex="0" aria-label="${name}">
-            <img class="thumb" src="${imgSrc}" alt="${name}" loading="lazy" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div style=&quot;aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block&quot;></div>')" />
+            <span class="idx">${idx}</span>
+            <span class="pick">選択</span>
+            ${imgSrc
+              ? `<img class="thumb" src="${imgSrc}" alt="${name}" loading="lazy"
+                   onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div style=&quot;aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block&quot;></div>')" />`
+              : `<div style="aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block"></div>`
+            }
             <div class="meta">
               <p class="name">${name}</p>
               <p class="sub">${sub}</p>
@@ -286,6 +380,7 @@
           </div>
         `;
       }).join("");
+
       gridEl.innerHTML = html;
       setCountText();
     }
@@ -297,14 +392,20 @@
     }
 
     function renderPyramidFromSelection(){
-      const picked = state.people.filter(p => state.selectedIds.has(p.id));
-      const order = [1,2,3,5];
-      const totalSlots = order.reduce((a,b)=>a+b,0);
+      // 選択された人だけ、現在の並び順で上から詰める
+      const orderIds = state.lastSortedIds.length ? state.lastSortedIds : state.people.map(p => p.id);
+      const picked = orderIds
+        .filter(id => state.selectedIds.has(id))
+        .map(id => state.people.find(p => p.id === id))
+        .filter(Boolean);
 
+      // 1-2-3-5
+      const rows = [1,2,3,5];
+      const totalSlots = rows.reduce((a,b)=>a+b,0);
       const slots = picked.slice(0, totalSlots);
 
       let cursor = 0;
-      const rowsHtml = order.map(n => {
+      const rowsHtml = rows.map(n => {
         const rowItems = [];
         for (let i=0;i<n;i++){
           const p = slots[cursor++];
@@ -313,12 +414,16 @@
             const name = escapeHtml(p.name || "");
             rowItems.push(`
               <div class="slot" title="${name}">
-                <img src="${imgSrc}" alt="${name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.background='rgba(255,255,255,.06)'" />
+                ${imgSrc
+                  ? `<img src="${imgSrc}" alt="${name}" loading="lazy"
+                       onerror="this.style.display='none'; this.parentElement.classList.add('empty');" />`
+                  : `<div style="aspect-ratio:1/1"></div>`
+                }
                 <div class="cap">${name}</div>
               </div>
             `);
           } else {
-            rowItems.push(`<div class="slot"><div style="aspect-ratio:1/1"></div><div class="cap"></div></div>`);
+            rowItems.push(`<div class="slot empty"><div style="aspect-ratio:1/1"></div><div class="cap">.</div></div>`);
           }
         }
         return `<div class="row">${rowItems.join("")}</div>`;
@@ -335,6 +440,7 @@
       state.selectedIds.clear();
       pyramidEl.innerHTML = "";
       renderGrid();
+      setHeaderHeightVar();
     }
 
     gridEl.addEventListener("click", (e) => {
@@ -351,7 +457,12 @@
       toggleSelect(card.dataset.id);
     });
 
-    sortEl.addEventListener("change", renderGrid);
+    sortEl.addEventListener("change", () => {
+      renderGrid();
+      // 並び替え後もプレビューは「選択集合」を維持して、反映ボタンで更新
+      // すぐ追従したいなら↓のコメント外す
+      // renderPyramidFromSelection();
+    });
 
     document.getElementById("reload").addEventListener("click", loadData);
     document.getElementById("clear").addEventListener("click", () => {
@@ -361,6 +472,7 @@
     });
     document.getElementById("autoFill").addEventListener("click", renderPyramidFromSelection);
 
+    setHeaderHeightVar();
     loadData();
   </script>
 </body>
