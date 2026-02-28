@@ -5,30 +5,30 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>日プ新世界 ピラミッドメーカー</title>
   <style>
-    :root{
-      --bg:#0b0f1a;
-      --panel:#121a2b;
+/* ① 背景を白に（ページ全体） */
+:root{
+  --bg:#ffffff;            /* ←ここを白 */
+  --panel:#f6f8ff;         /* パネル背景（薄い青み白） */
+  --text:#0b1020;          /* 文字（濃紺） */
+  --muted:#3b4a77;         /* 補助文字（青みグレー） */
+  --line:rgba(10,35,90,.18); /* 枠線（青寄り） */
+}
 
-      --text:#e8eefc;
-      --muted:#a9b6d6;
-      --line:rgba(255,255,255,.12);
-      --shadow:0 10px 30px rgba(0,0,0,.35);
-      --r:14px;
+/* ② bodyの背景（今はグラデ描画してるから、これを白ベースに変更） */
+body{
+  background:
+    radial-gradient(1100px 520px at 50% -10%, rgba(30,120,255,.18), transparent 60%),
+    radial-gradient(900px 500px at 85% 0%, rgba(0,200,255,.12), transparent 55%),
+    #ffffff; /* ←最後は白 */
+  color: var(--text);
+}
 
-      --gap:6px;
-
-      /* JSで更新（下段5人が必ず収まる） */
-      --slotSize: 72px;
-      --slotMax: 96px;
-
-      /* ベンチも同サイズ */
-      --benchSize: var(--slotSize);
-
-      /* 選択リング（枠色と被らない用に外側に太く） */
-      --selectRing: rgba(110,190,255,.95);
-      --selectRingGlow: rgba(110,190,255,.22);
-    }
-
+/* ③ 選択リング（青いネオン寄りに） */
+:root{
+  --selectRing: rgba(0,140,255,.95);     /* 明るいブルー */
+  --selectRingGlow: rgba(0,200,255,.22); /* シアン寄りの光 */
+}
+    
     *{box-sizing:border-box}
     body{
       margin:0;
