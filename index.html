@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Produce101 11人ピラミッドメーカー</title>
+  <title>日プ新世界 ピラミッドメーカー</title>
   <style>
     :root{
       --bg:#0b0f1a;
@@ -17,11 +17,11 @@
 
       --gap:4px;
 
-      /* JSで内幅から決定（はみ出し防止） */
-      --slotSize: 70px;
-      --slotMax: 92px;
+      /* JSで内幅から決定（はみ出し防止＋小さめ） */
+      --slotSize: 54px;
+      --slotMax: 64px;
 
-      --benchSize: 62px;
+      --benchSize: 52px;
     }
     *{box-sizing:border-box}
     body{
@@ -38,7 +38,6 @@
       border-bottom:1px solid var(--line);
     }
     .wrap{max-width:1100px;margin:0 auto;padding:12px 16px}
-    .top{display:flex; align-items:center; justify-content:space-between; gap:12px}
     h1{margin:0;font-size:18px;font-weight:700;letter-spacing:.2px}
 
     button{
@@ -106,7 +105,7 @@
       border-radius: 999px;
       overflow: hidden;
       background: rgba(255,255,255,.05);
-      border: none;
+      border: 2px solid transparent;
       cursor:pointer;
       touch-action: manipulation;
     }
@@ -129,8 +128,6 @@
     .slotInfo, .benchInfo{
       width: 100%;
       text-align:center;
-      font-size: 10px;
-      color: rgba(232,238,252,.92);
       line-height: 1.15;
       display:flex;
       flex-direction:column;
@@ -140,6 +137,8 @@
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
+      font-size: clamp(8px, 2.2vw, 10px); /* 長い子は小さく寄る */
+      color: rgba(232,238,252,.92);
     }
 
     /* bench */
@@ -164,7 +163,7 @@
       border-radius:999px;
       overflow:hidden;
       background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
+      border: 2px solid rgba(255,255,255,.10);
       cursor:pointer;
       touch-action: manipulation;
     }
@@ -174,6 +173,17 @@
       object-fit:cover;
       display:block;
     }
+    .benchItem.activeBench{
+      outline: 2px solid rgba(110,190,255,.85);
+      outline-offset: 0px;
+    }
+    .benchItem.pendingDelete{
+      outline: 2px solid rgba(255,200,90,.95);
+      outline-offset: 0px;
+    }
+
+    .benchCollapsed .benchInfo{ display:none; }
+    .benchCollapsed .benchItemWrap{ gap:0; }
 
     /* options (スクロールで流れる) */
     .optionsPanel{
@@ -211,6 +221,7 @@
       white-space:nowrap;
     }
     .chip input{ accent-color: #7fb6ff; }
+    .chip input:disabled{ opacity:.5; }
 
     .sortBox{
       display:flex;
@@ -244,7 +255,7 @@
     .card{
       position:relative;
       background: linear-gradient(180deg, rgba(18,26,43,.95), rgba(15,22,38,.96));
-      border:1px solid var(--line);
+      border:2px solid rgba(255,255,255,.10);
       border-radius: 14px;
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -267,8 +278,13 @@
     .card.selected{
       border-color: rgba(110,190,255,.85);
       filter: saturate(1.05);
-      box-shadow: 0 0 0 2px rgba(110,190,255,.22), var(--shadow);
+      box-shadow: 0 0 0 2px rgba(110,190,255,.18), var(--shadow);
     }
+    .card.pendingDelete{
+      border-color: rgba(255,200,90,.95);
+      box-shadow: 0 0 0 2px rgba(255,200,90,.18), var(--shadow);
+    }
+
     .idx{
       position:absolute;
       top:8px; left:8px;
@@ -284,53 +300,40 @@
       border:1px solid rgba(255,255,255,.14);
       backdrop-filter: blur(6px);
     }
-    .card.pickTarget{
-      outline: 2px solid rgba(110,190,255,.55);
-      outline-offset: 2px;
-    }
   </style>
 </head>
 
 <body>
 <header>
   <div class="wrap">
-    <div class="top">
-      <!-- ★タイトルだけ -->
-      <h1>Produce101 11人ピラミッドメーカー</h1>
-      <div></div>
-    </div>
+    <h1>日プ新世界 ピラミッドメーカー</h1>
   </div>
 </header>
 
 <main>
   <section class="stickyWrap">
     <div class="panel" id="pyramidPanel">
-      <div class="bar">
-        <div id="count"></div>
-        <div></div>
-      </div>
       <div class="rows" id="pyramid"></div>
     </div>
 
-    <div class="panel">
+    <div class="panel" id="benchPanel">
       <div class="bar">
         <div><strong>ベンチ</strong> <span id="benchCount"></span></div>
-        <div></div>
+        <button id="toggleBench" type="button">折りたたみ</button>
       </div>
       <div class="benchRow" id="bench"></div>
     </div>
   </section>
 
-  <!-- ★全解除はベンチの下（流れてOK） -->
+  <!-- 全解除（流れてOK） -->
   <div style="margin-top:10px; display:flex; justify-content:flex-end;">
     <button id="clear" type="button">全解除</button>
   </div>
 
   <section class="optionsPanel">
-    <p class="optionsTitle">表示する項目（CSVの列から自動生成）</p>
+    <p class="optionsTitle">表示する項目（３つまで）</p>
     <div class="toggles" id="toggles"></div>
 
-    <!-- ★並び替えはここ（スクロールで流れてOK） -->
     <div class="sortBox">
       <select id="sortKey"></select>
       <select id="sortDir">
@@ -349,12 +352,12 @@
   const CSV_PATH = "data/master.csv";
 
   const gridEl = document.getElementById("grid");
-  const countEl = document.getElementById("count");
   const pyramidEl = document.getElementById("pyramid");
   const benchEl = document.getElementById("bench");
   const benchCountEl = document.getElementById("benchCount");
   const togglesEl = document.getElementById("toggles");
   const pyramidPanelEl = document.getElementById("pyramidPanel");
+  const benchPanelEl = document.getElementById("benchPanel");
 
   const sortKeyEl = document.getElementById("sortKey");
   const sortDirEl = document.getElementById("sortDir");
@@ -368,18 +371,34 @@
     "__idx"
   ]);
 
+  const CLASS_COL = "シグナルソングクラス";
+  const CLASS_COL_ALT = "signal_class";
+
+  const CLASS_COLOR = {
+    "A":"#ff69b4",
+    "B":"#ff8c00",
+    "C":"#00ff7f",
+    "D":"#000000",
+    "F":"#a9a9a9"
+  };
+
   const state = {
     header: [],
     people: [],
     byId: new Map(),
     slots: Array(TOTAL).fill(null),
     bench: [],
-    activeSlotIndex: null,
+    activeSlotIndex: null,   // スロット入替の選択
+    activeBenchIndex: null,  // ベンチ→ピラミッド入替の選択
     displayKeys: [],
     show: {},
     sortKeys: [],
-    lastTappedId: null, // 2回タップ削除用
+    lastTappedId: null,      // 2回タップ削除用
+    benchCollapsed: false,
+    classFrameOn: false,     // 枠色ON/OFF
   };
+
+  const SPECIAL_FRAME_TOGGLE = "__frame__";
 
   function escapeHtml(s){
     return String(s ?? "")
@@ -440,7 +459,6 @@
     });
   }
 
-  function slotCount(){ return state.slots.filter(Boolean).length; }
   function isInSlots(id){ return state.slots.includes(id); }
   function isInBench(id){ return state.bench.includes(id); }
   function isSelected(id){ return isInSlots(id) || isInBench(id); }
@@ -451,37 +469,36 @@
     const bi = state.bench.indexOf(id);
     if (bi >= 0) state.bench.splice(bi, 1);
   }
+
   function firstEmptySlot(){ return state.slots.findIndex(x => !x); }
+
   function swapSlots(a, b){
     const tmp = state.slots[a];
     state.slots[a] = state.slots[b];
     state.slots[b] = tmp;
   }
 
-  function placeIdIntoSlot(id, slotIndex){
-    if (state.slots[slotIndex] === id) return;
+  function swapSlotWithBench(slotIndex, benchIndex){
+    const slotId = state.slots[slotIndex] || null;
+    const benchId = state.bench[benchIndex] || null;
+    if (!benchId) return;
 
-    const from = state.slots.indexOf(id);
-    if (from >= 0){
-      swapSlots(from, slotIndex);
-      return;
+    state.slots[slotIndex] = benchId;
+
+    if (slotId){
+      state.bench[benchIndex] = slotId; // ★順番はそのまま（場所だけ入替）
+    } else {
+      state.bench.splice(benchIndex, 1); // 空枠は消す
     }
-
-    const bi = state.bench.indexOf(id);
-    if (bi >= 0){
-      const occupant = state.slots[slotIndex];
-      state.slots[slotIndex] = id;
-      state.bench.splice(bi, 1);
-      if (occupant) state.bench.unshift(occupant);
-      return;
-    }
-
-    const occupant = state.slots[slotIndex];
-    state.slots[slotIndex] = id;
-    if (occupant) state.bench.unshift(occupant);
   }
 
-  // はみ出し防止：パネルの内幅からslotSizeを確定
+  function getClassColor(person){
+    if (!person) return "";
+    const cls = (person.raw?.[CLASS_COL] || person.raw?.[CLASS_COL_ALT] || "").trim();
+    return CLASS_COLOR[cls] || "";
+  }
+
+  // ★写真サイズ：パネル内幅と「画面幅の半分」を基準に決定（小さめ + はみ出し防止）
   function updateSlotSize(){
     if (!pyramidPanelEl) return;
 
@@ -492,33 +509,78 @@
 
     const root = getComputedStyle(document.documentElement);
     const gap = parseFloat(root.getPropertyValue("--gap")) || 4;
-    const slotMax = parseFloat(root.getPropertyValue("--slotMax")) || 92;
+    const slotMax = parseFloat(root.getPropertyValue("--slotMax")) || 64;
 
-    const size = Math.min(slotMax, Math.floor((inner - (4 * gap)) / 5));
-    document.documentElement.style.setProperty("--slotSize", size + "px");
+    const targetWidth = Math.min(inner, Math.floor(window.innerWidth * 0.5)); // ★ここが「半分」
+    const size = Math.min(slotMax, Math.floor((targetWidth - (4 * gap)) / 5));
+
+    document.documentElement.style.setProperty("--slotSize", Math.max(34, size) + "px");
   }
 
   function buildDisplayKeysFromHeader(header){
-    return header.filter(h => h && !EXCLUDE_KEYS.has(h));
+    const keys = header.filter(h => h && !EXCLUDE_KEYS.has(h));
+    return keys;
+  }
+
+  function selectedToggleCount(){
+    let c = 0;
+    for (const k of state.displayKeys){
+      if (state.show[k]) c++;
+    }
+    return c;
   }
 
   function renderToggles(){
-    togglesEl.innerHTML = state.displayKeys.map(key => {
+    const picked = selectedToggleCount();
+    const max = 3;
+    const disableNew = picked >= max;
+
+    const chips = state.displayKeys.map(key => {
       const checked = state.show[key] ? "checked" : "";
+      const disabled = (!state.show[key] && disableNew) ? "disabled" : "";
       return `
         <label class="chip">
-          <input type="checkbox" data-key="${escapeHtml(key)}" ${checked}>
+          <input type="checkbox" data-key="${escapeHtml(key)}" ${checked} ${disabled}>
           ${escapeHtml(key)}
         </label>
       `;
-    }).join("");
+    });
+
+    // 枠色ON/OFF（表示する項目とは別枠だけど、ここに入れる）
+    const frameChecked = state.classFrameOn ? "checked" : "";
+    chips.unshift(`
+      <label class="chip">
+        <input type="checkbox" data-key="${SPECIAL_FRAME_TOGGLE}" ${frameChecked}>
+        枠色（シグナルソングクラス）
+      </label>
+    `);
+
+    togglesEl.innerHTML = chips.join("");
   }
 
   togglesEl.addEventListener("change", (e) => {
     const cb = e.target.closest("input[type=checkbox]");
     if (!cb) return;
+
     const key = cb.dataset.key;
+
+    if (key === SPECIAL_FRAME_TOGGLE){
+      state.classFrameOn = cb.checked;
+      renderPyramid();
+      renderBench();
+      renderGrid();
+      return;
+    }
+
+    const currentlyOn = selectedToggleCount();
+    if (!state.show[key] && cb.checked && currentlyOn >= 3){
+      cb.checked = false;
+      return;
+    }
+
     state.show[key] = cb.checked;
+
+    renderToggles(); // disabled更新
     renderPyramid();
     renderBench();
     renderGrid();
@@ -533,11 +595,11 @@
       const v = (r[key] ?? "").trim();
       if (!v) continue;
       lines.push(v);
+      if (lines.length >= 3) break;
     }
     return lines;
   }
 
-  // 並び替え：CSV列のみ（登録順なし）＋昇順/降順
   function buildSortKeys(header){
     const excludeForSort = new Set(["img","image","Image","画像","photo","Photo"]);
     return header.filter(h => h && !excludeForSort.has(h));
@@ -548,7 +610,6 @@
       `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`
     ).join("");
 
-    // デフォで Name があればそれ、なければ先頭
     if (state.sortKeys.includes("Name")) sortKeyEl.value = "Name";
     else if (state.sortKeys.includes("名前")) sortKeyEl.value = "名前";
     else sortKeyEl.value = state.sortKeys[0] || "";
@@ -580,14 +641,9 @@
     return arr;
   }
 
-  function setBar(){
-    const n = slotCount();
-    countEl.innerHTML = n ? `<strong>${n}</strong> / ${TOTAL}` : "";
-    benchCountEl.textContent = state.bench.length ? `（${state.bench.length}）` : "";
-  }
-
   function renderPyramid(){
     let cursor = 0;
+
     const rowsHtml = ROWS.map(n => {
       const items = [];
       for (let i=0;i<n;i++){
@@ -597,6 +653,9 @@
         const imgSrc = p?.img ? escapeHtml(p.img) : "";
         const lines = buildInfoLines(p);
 
+        const frameColor = (state.classFrameOn ? getClassColor(p) : "");
+        const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
+
         const slotCls = [
           "slot",
           id ? "" : "empty",
@@ -605,12 +664,12 @@
 
         items.push(`
           <div class="slotWrap">
-            <div class="${slotCls}" data-slot="${idx}" role="button" tabindex="0">
+            <div class="${slotCls}" ${style} data-slot="${idx}" role="button" tabindex="0">
               ${id && imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
             </div>
             ${lines.length ? `
               <div class="slotInfo">
-                ${lines.slice(0,3).map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")}
+                ${lines.map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")}
               </div>
             ` : ``}
           </div>
@@ -620,21 +679,31 @@
     }).join("");
 
     pyramidEl.innerHTML = rowsHtml;
-    setBar();
   }
 
   function renderBench(){
-    const html = state.bench.map(id => {
+    const collapsedClass = state.benchCollapsed ? "benchCollapsed" : "";
+    benchPanelEl.classList.toggle("benchCollapsed", state.benchCollapsed);
+
+    benchCountEl.textContent = state.bench.length ? `（${state.bench.length}）` : "";
+
+    const html = state.bench.map((id, i) => {
       const p = state.byId.get(id);
       const imgSrc = p?.img ? escapeHtml(p.img) : "";
       const lines = buildInfoLines(p);
 
+      const frameColor = (state.classFrameOn ? getClassColor(p) : "");
+      const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
+
+      const activeCls = (state.activeBenchIndex === i) ? "activeBench" : "";
+      const delCls = (state.lastTappedId === id) ? "pendingDelete" : "";
+
       return `
         <div class="benchItemWrap">
-          <div class="benchItem" data-id="${escapeHtml(id)}" role="button" tabindex="0">
+          <div class="benchItem ${activeCls} ${delCls}" ${style} data-index="${i}" data-id="${escapeHtml(id)}" role="button" tabindex="0">
             ${imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
           </div>
-          ${lines.length ? `
+          ${(!state.benchCollapsed && lines.length) ? `
             <div class="benchInfo">
               ${lines.slice(0,2).map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")}
             </div>
@@ -644,34 +713,37 @@
     }).join("");
 
     benchEl.innerHTML = html;
-    setBar();
   }
 
-  // 121人カードも「表示する項目」に揃える
   function getCardTitleAndSub(person){
     const lines = buildInfoLines(person);
+
     const fallbackNameKey = state.header.includes("Name") ? "Name"
       : state.header.includes("名前") ? "名前"
       : null;
+
     const title = lines[0] || (fallbackNameKey ? (person.raw[fallbackNameKey] || "") : "");
     const sub = lines.slice(1,3).join(" / ");
+
     return { title, sub };
   }
 
   function renderGrid(){
     const arr = getSortedPeople();
-    const active = state.activeSlotIndex != null;
 
     const html = arr.map((p, i) => {
       const selected = isSelected(p.id) ? "selected" : "";
-      const pickTarget = active ? "pickTarget" : "";
+      const pendingDelete = (state.lastTappedId === p.id) ? "pendingDelete" : "";
       const imgSrc = p.img ? escapeHtml(p.img) : "";
+
+      const frameColor = (state.classFrameOn ? getClassColor(p) : "");
+      const borderStyle = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
       const { title, sub } = getCardTitleAndSub(p);
       const idx = i + 1;
 
       return `
-        <div class="card ${selected} ${pickTarget}" data-id="${escapeHtml(p.id)}" role="button" tabindex="0">
+        <div class="card ${selected} ${pendingDelete}" ${borderStyle} data-id="${escapeHtml(p.id)}" role="button" tabindex="0">
           <span class="idx">${idx}</span>
           ${imgSrc
             ? `<img class="thumb" src="${imgSrc}" alt="${escapeHtml(title)}" loading="lazy"
@@ -687,59 +759,112 @@
     }).join("");
 
     gridEl.innerHTML = html;
-    setBar();
   }
 
-  // ピラミッド枠：2回タップで削除 / 別枠タップで入れ替え準備
+  // ピラミッド枠操作：
+  // - 1回目：枠選択（入替の起点）
+  // - 同じ枠2回目：削除
+  // - 枠選択中に別枠：入替
+  // - ベンチ選択中に枠：ベンチ↔枠 入替
   function onSlotClick(slotIndex){
-    const id = state.slots[slotIndex];
+    const slotId = state.slots[slotIndex] || null;
 
-    if (state.activeSlotIndex === slotIndex){
-      if (id) state.slots[slotIndex] = null;
+    // ベンチ側を先に選んでる → 入替
+    if (state.activeBenchIndex != null){
+      swapSlotWithBench(slotIndex, state.activeBenchIndex);
+      state.activeBenchIndex = null;
       state.activeSlotIndex = null;
+      state.lastTappedId = null;
       renderPyramid(); renderBench(); renderGrid();
       return;
     }
 
+    // 同じ枠2回目 → 削除
+    if (state.activeSlotIndex === slotIndex){
+      if (slotId) state.slots[slotIndex] = null;
+      state.activeSlotIndex = null;
+      state.lastTappedId = null;
+      renderPyramid(); renderBench(); renderGrid();
+      return;
+    }
+
+    // 枠選択中に別枠 → 入替
     if (state.activeSlotIndex != null && state.activeSlotIndex !== slotIndex){
       swapSlots(state.activeSlotIndex, slotIndex);
       state.activeSlotIndex = null;
+      state.lastTappedId = null;
       renderPyramid(); renderBench(); renderGrid();
       return;
     }
 
+    // 1回目：枠選択
     state.activeSlotIndex = slotIndex;
+    state.activeBenchIndex = null;
+    state.lastTappedId = slotId; // その子の削除候補（2回目で削除）
     renderPyramid(); renderBench(); renderGrid();
   }
 
-  // ★削除は「同じidの2回連続タップ」のみ
-  function onPickId(id){
-    // 2回連続タップなら削除
+  // ベンチ/一覧の子タップ：
+  // - 同じ子2回連続タップ：削除（選択済みだけ）
+  // - 枠選択中：枠↔ベンチ(その場所) or 枠に入れる
+  // - それ以外：未選択なら追加 / 選択済みならベンチ選択（入替用）
+  function onPickId(id, fromBench=false, benchIndex=null){
+    // 2回連続タップなら削除（選択済みのみ）
     if (state.lastTappedId === id && isSelected(id)){
       removeIdEverywhere(id);
       state.lastTappedId = null;
+      state.activeBenchIndex = null;
+      state.activeSlotIndex = null;
       renderPyramid(); renderBench(); renderGrid();
       return;
     }
 
-    // スロット選択中なら差し替え
+    // 枠選択中なら：入替/差し替え
     if (state.activeSlotIndex != null){
-      placeIdIntoSlot(id, state.activeSlotIndex);
+      if (fromBench && benchIndex != null){
+        // ★順番入替なしで場所だけ交換
+        swapSlotWithBench(state.activeSlotIndex, benchIndex);
+      } else {
+        // 一覧から来た：そのまま枠へ（既にベンチに居るならベンチ位置保持で交換）
+        const bi = state.bench.indexOf(id);
+        if (bi >= 0){
+          swapSlotWithBench(state.activeSlotIndex, bi);
+        } else {
+          // 未選択 → 枠に入れて、枠の元の子はベンチへ（末尾に追加）
+          const occupant = state.slots[state.activeSlotIndex] || null;
+          state.slots[state.activeSlotIndex] = id;
+          if (occupant) state.bench.push(occupant);
+        }
+      }
       state.activeSlotIndex = null;
+      state.activeBenchIndex = null;
       state.lastTappedId = null;
       renderPyramid(); renderBench(); renderGrid();
       return;
     }
 
-    // 1回目タップは記録
+    // ここからは「枠選択なし」
+
+    // 1回目タップは削除候補として記録
     state.lastTappedId = id;
 
     // 未選択なら追加
     if (!isSelected(id)){
       const empty = firstEmptySlot();
       if (empty >= 0) state.slots[empty] = id;
-      else state.bench.unshift(id);
+      else state.bench.push(id);
       state.lastTappedId = null;
+      state.activeBenchIndex = null;
+      renderPyramid(); renderBench(); renderGrid();
+      return;
+    }
+
+    // 選択済み：ベンチ側を選んで入替準備（ベンチ内にいる場合だけ）
+    if (fromBench && benchIndex != null){
+      state.activeBenchIndex = benchIndex;
+    } else {
+      const bi = state.bench.indexOf(id);
+      state.activeBenchIndex = (bi >= 0) ? bi : null;
     }
 
     renderPyramid(); renderBench(); renderGrid();
@@ -767,7 +892,9 @@
 
     state.slots = state.slots.map(id => (id && state.byId.has(id)) ? id : null);
     state.bench = state.bench.filter(id => state.byId.has(id));
+
     state.activeSlotIndex = null;
+    state.activeBenchIndex = null;
     state.lastTappedId = null;
 
     renderToggles();
@@ -777,7 +904,6 @@
     renderPyramid(); renderBench(); renderGrid();
   }
 
-  // events
   pyramidEl.addEventListener("click", (e) => {
     const slot = e.target.closest(".slot");
     if (!slot) return;
@@ -787,13 +913,13 @@
   benchEl.addEventListener("click", (e) => {
     const item = e.target.closest(".benchItem");
     if (!item) return;
-    onPickId(item.dataset.id);
+    onPickId(item.dataset.id, true, Number(item.dataset.index));
   });
 
   gridEl.addEventListener("click", (e) => {
     const card = e.target.closest(".card");
     if (!card) return;
-    onPickId(card.dataset.id);
+    onPickId(card.dataset.id, false, null);
   });
 
   sortKeyEl.addEventListener("change", renderGrid);
@@ -803,8 +929,15 @@
     state.slots = Array(TOTAL).fill(null);
     state.bench = [];
     state.activeSlotIndex = null;
+    state.activeBenchIndex = null;
     state.lastTappedId = null;
     renderPyramid(); renderBench(); renderGrid();
+  });
+
+  document.getElementById("toggleBench").addEventListener("click", () => {
+    state.benchCollapsed = !state.benchCollapsed;
+    document.getElementById("toggleBench").textContent = state.benchCollapsed ? "展開" : "折りたたみ";
+    renderBench();
   });
 
   window.addEventListener("resize", () => {
