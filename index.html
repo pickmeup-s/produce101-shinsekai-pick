@@ -372,6 +372,7 @@
     displayKeys: [],
     show: {},
     sortKeys: [], // CSV列名
+    lastTappedId: null   // ← 追加
   };
 
   function escapeHtml(s){
@@ -700,46 +701,65 @@
 
   // 操作
   function onSlotClick(slotIndex){
-    const id = state.slots[slotIndex];
+  const id = state.slots[slotIndex];
 
-    if (state.activeSlotIndex == null){
-      state.activeSlotIndex = slotIndex;
-      renderPyramid(); renderBench(); renderGrid();
-      return;
+  // 同じ枠を2回押したら削除
+  if (state.activeSlotIndex === slotIndex){
+    if (id){
+      state.slots[slotIndex] = null;
     }
-
-    if (state.activeSlotIndex === slotIndex){
-      if (id) state.slots[slotIndex] = null;
-      state.activeSlotIndex = null;
-      renderPyramid(); renderBench(); renderGrid();
-      return;
-    }
-
-    swapSlots(state.activeSlotIndex, slotIndex);
     state.activeSlotIndex = null;
-    renderPyramid(); renderBench(); renderGrid();
+    renderPyramid();
+    renderBench();
+    renderGrid();
+    return;
   }
 
-  function onPickId(id){
-    if (state.activeSlotIndex != null){
-      placeIdIntoSlot(id, state.activeSlotIndex);
-      state.activeSlotIndex = null;
-      renderPyramid(); renderBench(); renderGrid();
-      return;
-    }
+  state.activeSlotIndex = slotIndex;
+  renderPyramid();
+  renderBench();
+  renderGrid();
+}
 
-    if (isSelected(id)){
-      removeIdEverywhere(id);
-      renderPyramid(); renderBench(); renderGrid();
-      return;
-    }
+function onPickId(id){
 
+  // 2回連続タップなら削除
+  if (state.lastTappedId === id && isSelected(id)){
+    removeIdEverywhere(id);
+    state.lastTappedId = null;
+    renderPyramid();
+    renderBench();
+    renderGrid();
+    return;
+  }
+
+  // スロット選択中なら差し替え
+  if (state.activeSlotIndex != null){
+    placeIdIntoSlot(id, state.activeSlotIndex);
+    state.activeSlotIndex = null;
+    state.lastTappedId = null;
+    renderPyramid();
+    renderBench();
+    renderGrid();
+    return;
+  }
+
+  // 1回目タップは選択記録だけ
+  state.lastTappedId = id;
+
+  // まだ未選択なら追加
+  if (!isSelected(id)){
     const empty = firstEmptySlot();
     if (empty >= 0) state.slots[empty] = id;
     else state.bench.unshift(id);
 
-    renderPyramid(); renderBench(); renderGrid();
+    state.lastTappedId = null; // 追加後はリセット
   }
+
+  renderPyramid();
+  renderBench();
+  renderGrid();
+}
 
   async function loadData(){
     const res = await fetch(CSV_PATH, { cache: "no-store" });
