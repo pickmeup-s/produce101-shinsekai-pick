@@ -3,31 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Produce101 11人ピラミッドメーカー</title>
+  <title>日プ新世界 ピラミッドメーカー</title>
   <style>
-:root{
-  --bg:#0b0f1a;
-  --panel:#121a2b;
+    :root{
+      --bg:#0b0f1a;
+      --panel:#121a2b;
 
-  --text:#e8eefc;
-  --muted:#a9b6d6;
-  --line:rgba(255,255,255,.12);
-  --shadow:0 10px 30px rgba(0,0,0,.35);
-  --r:14px;
+      --text:#e8eefc;
+      --muted:#a9b6d6;
+      --line:rgba(255,255,255,.12);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --r:14px;
 
-  /* 余白と間隔を詰める（=顔を大きくできる） */
-  --gap:4px;
+      --gap:4px;
 
-  /* ★顔サイズの上限を上げる */
-  --slotMax: 86px;
+      /* JSで最終決定（はみ出し対策） */
+      --slotSize: 70px;
+      --slotMax: 92px;
 
-  /* ★計算の基準を「画面幅」に寄せる（豆粒化しにくい） */
-  --pyrWidth: min(520px, calc(100vw - 24px));  /* 24pxは左右の余白ぶん */
-  --slotSize: min(var(--slotMax), calc((var(--pyrWidth) - (4 * var(--gap))) / 5));
-
-  /* ベンチも見やすく */
-  --benchSize: 62px;
-}
+      --benchSize: 62px;
+    }
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -65,10 +60,14 @@
       box-shadow: 0 8px 18px rgba(30,90,210,.25);
     }
     button:active{transform: translateY(1px)}
+    .btnGhost{
+      background: rgba(255,255,255,.06);
+      box-shadow:none;
+    }
 
     main{max-width:1100px;margin:0 auto;padding:10px 16px 60px}
 
-    /* ===== sticky: ピラミッド＋ベンチだけ固定 ===== */
+    /* sticky: ピラミッド＋ベンチだけ固定 */
     .stickyWrap{
       position: sticky;
       top: 0;
@@ -83,7 +82,7 @@
       border:1px solid var(--line);
       border-radius: var(--r);
       box-shadow: var(--shadow);
-      padding: 8px 10px 10px;
+      padding: 8px 6px 10px;
     }
     .bar{
       display:flex;
@@ -95,17 +94,15 @@
       font-size: 12px;
     }
     .bar strong{color:var(--text); font-weight:900}
-    .mini{
-      height:30px;
-      padding:0 10px;
-      border-radius:10px;
-      background: rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      cursor:pointer;
-      color: var(--text);
+
+    /* ★全解除を枠外に */
+    .topActions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
     }
 
-    /* ===== ピラミッド ===== */
+    /* pyramid */
     .rows{display:flex; flex-direction:column; gap:6px}
     .row{
       display:flex;
@@ -141,14 +138,13 @@
     }
     .slot.active{
       outline: 2px solid rgba(110,190,255,.85);
-      outline-offset: 2px;
+      outline-offset: 0px; /* ★はみ出し原因になりやすいので0 */
     }
     .slot.empty{
       background: rgba(255,255,255,.04);
       border: 1px dashed rgba(255,255,255,.14);
     }
 
-    /* ★テキストは写真サイズに影響させない（下に出すだけ） */
     .slotInfo, .benchInfo{
       width: 100%;
       text-align:center;
@@ -165,7 +161,7 @@
       white-space:nowrap;
     }
 
-    /* ===== ベンチ ===== */
+    /* bench */
     .benchRow{
       display:flex;
       gap: 8px;
@@ -198,7 +194,7 @@
       display:block;
     }
 
-    /* ===== 表示項目トグル：stickyに入れない。スクロールで流れる場所 ===== */
+    /* options (スクロールで流れる) */
     .optionsPanel{
       margin-top: 12px;
       background: rgba(255,255,255,.05);
@@ -215,7 +211,7 @@
       display:flex;
       gap:8px;
       flex-wrap:wrap;
-      max-height: 120px; /* ここでスクロール */
+      max-height: 120px;
       overflow:auto;
       padding-right:4px;
     }
@@ -234,7 +230,7 @@
     }
     .chip input{ accent-color: #7fb6ff; }
 
-    /* ===== 一覧 ===== */
+    /* grid */
     .gridSection{margin-top: 12px}
     .grid{
       display:grid;
@@ -301,14 +297,9 @@
 <header>
   <div class="wrap">
     <div class="top">
-      <h1>Produce101 11人ピラミッドメーカー</h1>
+      <h1>日プ新世界 ピラミッドメーカー</h1>
       <div class="controls">
-        <select id="sort">
-          <option value="registered">登録順</option>
-          <option value="name_asc">名前 A→Z</option>
-          <option value="name_desc">名前 Z→A</option>
-          <option value="slot_order">スロット順</option>
-        </select>
+        <select id="sort"></select>
         <button id="reload" type="button">データ再読込</button>
       </div>
     </div>
@@ -316,12 +307,16 @@
 </header>
 
 <main>
-  <!-- ★固定されるのはピラミッド＋ベンチだけ -->
   <section class="stickyWrap">
-    <div class="panel">
+    <!-- ★全解除はピラミッド枠の外 -->
+    <div class="topActions">
+      <button class="btnGhost" id="clear" type="button">全解除</button>
+    </div>
+
+    <div class="panel" id="pyramidPanel">
       <div class="bar">
         <div id="count"></div>
-        <button class="mini" id="clear" type="button">全解除</button>
+        <div></div>
       </div>
       <div class="rows" id="pyramid"></div>
     </div>
@@ -335,7 +330,6 @@
     </div>
   </section>
 
-  <!-- ★表示スロット（トグル）はここに移動：スクロールで流れる -->
   <section class="optionsPanel">
     <p class="optionsTitle">表示する項目（3つまで）</p>
     <div class="toggles" id="toggles"></div>
@@ -356,10 +350,12 @@
   const benchEl = document.getElementById("bench");
   const benchCountEl = document.getElementById("benchCount");
   const togglesEl = document.getElementById("toggles");
+  const pyramidPanelEl = document.getElementById("pyramidPanel");
 
   const ROWS = [1,2,3,5];
   const TOTAL = ROWS.reduce((a,b)=>a+b,0);
 
+  // 表示トグル候補から除外（id/img系）
   const EXCLUDE_KEYS = new Set([
     "id","ID","Id",
     "img","image","Image","画像","photo","Photo",
@@ -367,6 +363,7 @@
   ]);
 
   const state = {
+    header: [],
     people: [],
     byId: new Map(),
     slots: Array(TOTAL).fill(null),
@@ -374,6 +371,7 @@
     activeSlotIndex: null,
     displayKeys: [],
     show: {},
+    sortKeys: [], // CSV列名
   };
 
   function escapeHtml(s){
@@ -476,6 +474,25 @@
     if (occupant) state.bench.unshift(occupant);
   }
 
+  // ===== はみ出し対策：パネルの内幅からslotSizeをJSで決定 =====
+  function updateSlotSize(){
+    if (!pyramidPanelEl) return;
+
+    const st = getComputedStyle(pyramidPanelEl);
+    const padL = parseFloat(st.paddingLeft) || 0;
+    const padR = parseFloat(st.paddingRight) || 0;
+
+    const inner = Math.max(0, pyramidPanelEl.clientWidth - padL - padR);
+
+    const root = getComputedStyle(document.documentElement);
+    const gap = parseFloat(root.getPropertyValue("--gap")) || 4;
+    const slotMax = parseFloat(root.getPropertyValue("--slotMax")) || 92;
+
+    const size = Math.min(slotMax, Math.floor((inner - (4 * gap)) / 5));
+    document.documentElement.style.setProperty("--slotSize", size + "px");
+  }
+
+  // ===== 表示トグル（CSV列名から） =====
   function buildDisplayKeysFromHeader(header){
     return header.filter(h => h && !EXCLUDE_KEYS.has(h));
   }
@@ -499,6 +516,7 @@
     state.show[key] = cb.checked;
     renderPyramid();
     renderBench();
+    renderGrid(); // ★121人の表示も、ここで即反映
   });
 
   function buildInfoLines(person){
@@ -512,6 +530,58 @@
       lines.push(v);
     }
     return lines;
+  }
+
+  // ===== sort：CSVの列名から自動生成 =====
+  function buildSortKeys(header){
+    // 画像列は並び替え対象にしない（必要なら外してOK）
+    const excludeForSort = new Set(["img","image","Image","画像","photo","Photo"]);
+    return header.filter(h => h && !excludeForSort.has(h));
+  }
+
+  function renderSortSelect(){
+    // 先頭に登録順（内部）も残す
+    const opts = [
+      { value: "__idx", label: "登録順" },
+      ...state.sortKeys.map(k => ({ value: k, label: k })),
+    ];
+
+    sortEl.innerHTML = opts.map(o =>
+      `<option value="${escapeHtml(o.value)}">${escapeHtml(o.label)}</option>`
+    ).join("");
+
+    // 何も指定なければ登録順
+    sortEl.value = "__idx";
+  }
+
+  function toSortableValue(v){
+    const s = String(v ?? "").trim();
+    // 数字っぽいのは数値で
+    const n = Number(s);
+    if (s !== "" && Number.isFinite(n)) return { type:"num", v:n };
+    return { type:"str", v:s };
+  }
+
+  function getSortedPeople(){
+    const arr = [...state.people];
+    const key = sortEl.value;
+
+    if (key === "__idx"){
+      arr.sort((a,b) => a.__idx - b.__idx);
+      return arr;
+    }
+
+    arr.sort((a,b) => {
+      const av = toSortableValue(a.raw[key]);
+      const bv = toSortableValue(b.raw[key]);
+
+      if (av.type === "num" && bv.type === "num") return av.v - bv.v;
+
+      // 日本語含む文字列ソート
+      return String(av.v).localeCompare(String(bv.v), "ja", { numeric:true, sensitivity:"base" });
+    });
+
+    return arr;
   }
 
   function setBar(){
@@ -581,73 +651,44 @@
     setBar();
   }
 
-  function getSlotOrderRankMap(){
-    const map = new Map();
-    let r = 0;
-    for (const id of state.slots){
-      if (!id) continue;
-      if (!map.has(id)) map.set(id, r++);
-    }
-    for (const id of state.bench){
-      if (!map.has(id)) map.set(id, r++);
-    }
-    return map;
-  }
+  // ★121人のカード表示も「表示する項目」に揃える
+  function getCardTitleAndSub(person){
+    const lines = buildInfoLines(person);
 
-  function getSortedPeople(){
-    const arr = [...state.people];
-    const mode = sortEl.value;
+    // 何もONがない時の保険（Nameだけ出す）
+    const fallbackNameKey = state.header.includes("Name") ? "Name"
+      : state.header.includes("名前") ? "名前"
+      : null;
 
-    if (mode === "registered"){
-      arr.sort((a,b) => a.__idx - b.__idx);
-    } else if (mode === "name_asc" || mode === "name_desc"){
-      const nameKey = ["name","Name","名前","氏名"].find(k => state.displayKeys.includes(k)) || null;
-      if (nameKey){
-        arr.sort((a,b) => ((a.raw[nameKey]||"").localeCompare((b.raw[nameKey]||""), "ja")));
-        if (mode === "name_desc") arr.reverse();
-      } else {
-        arr.sort((a,b) => a.__idx - b.__idx);
-      }
-    } else if (mode === "slot_order"){
-      const rank = getSlotOrderRankMap();
-      arr.sort((a,b) => {
-        const ra = rank.has(a.id) ? rank.get(a.id) : 1e9 + a.__idx;
-        const rb = rank.has(b.id) ? rank.get(b.id) : 1e9 + b.__idx;
-        return ra - rb;
-      });
-    }
-    return arr;
+    const title = lines[0] || (fallbackNameKey ? (person.raw[fallbackNameKey] || "") : "");
+    const sub = lines.slice(1,3).join(" / ");
+
+    return { title, sub };
   }
 
   function renderGrid(){
     const arr = getSortedPeople();
     const active = state.activeSlotIndex != null;
 
-    const subKeysPref = ["romaji","ローマ字","birth","生年","生年月日","origin","出身地","height","身長"];
-    const subKeys = subKeysPref.filter(k => state.displayKeys.includes(k)).slice(0,4);
-
     const html = arr.map((p, i) => {
       const selected = isSelected(p.id) ? "selected" : "";
       const pickTarget = active ? "pickTarget" : "";
       const imgSrc = p.img ? escapeHtml(p.img) : "";
 
-      const nameKey = ["name","Name","名前","氏名"].find(k => state.displayKeys.includes(k)) || null;
-      const name = escapeHtml(nameKey ? (p.raw[nameKey] || "") : "");
-
-      const sub = escapeHtml(subKeys.map(k => p.raw[k]).filter(Boolean).join(" / "));
+      const { title, sub } = getCardTitleAndSub(p);
       const idx = i + 1;
 
       return `
         <div class="card ${selected} ${pickTarget}" data-id="${escapeHtml(p.id)}" role="button" tabindex="0">
           <span class="idx">${idx}</span>
           ${imgSrc
-            ? `<img class="thumb" src="${imgSrc}" alt="${name}" loading="lazy"
+            ? `<img class="thumb" src="${imgSrc}" alt="${escapeHtml(title)}" loading="lazy"
                  onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div style=&quot;aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block&quot;></div>')" />`
             : `<div style="aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block"></div>`
           }
           <div class="meta">
-            <p class="name">${name}</p>
-            <p class="sub">${sub}</p>
+            <p class="name">${escapeHtml(title)}</p>
+            <p class="sub">${escapeHtml(sub)}</p>
           </div>
         </div>
       `;
@@ -657,6 +698,7 @@
     setBar();
   }
 
+  // 操作
   function onSlotClick(slotIndex){
     const id = state.slots[slotIndex];
 
@@ -704,14 +746,19 @@
     const text = await res.text();
     const { header, rows } = parseCsvWithHeader(text);
 
-    state.displayKeys = buildDisplayKeysFromHeader(header);
+    state.header = header;
 
+    // 表示トグル
+    state.displayKeys = buildDisplayKeysFromHeader(header);
     for (const k of state.displayKeys){
       if (!(k in state.show)) state.show[k] = false;
     }
     for (const k of Object.keys(state.show)){
       if (!state.displayKeys.includes(k)) delete state.show[k];
     }
+
+    // sort
+    state.sortKeys = buildSortKeys(header);
 
     state.people = normalizePeople(rows);
     state.byId = new Map(state.people.map(p => [p.id, p]));
@@ -720,7 +767,10 @@
     state.bench = state.bench.filter(id => state.byId.has(id));
     state.activeSlotIndex = null;
 
+    renderSortSelect();
     renderToggles();
+
+    updateSlotSize();  // ★ロード直後にまず確定
     renderPyramid(); renderBench(); renderGrid();
   }
 
@@ -774,6 +824,13 @@
     renderPyramid(); renderBench(); renderGrid();
   });
 
+  // ★幅変化でslotSizeを再計算（はみ出し完全防止）
+  window.addEventListener("resize", () => {
+    updateSlotSize();
+    renderPyramid(); // テキスト量によって見え方変わるので再描画
+  });
+
+  // init
   loadData();
 </script>
 </body>
