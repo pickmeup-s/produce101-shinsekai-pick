@@ -15,7 +15,7 @@
       --r:14px;
 
       --gap:6px;
-      --slotMax: 52px; /* 5人段の最大サイズ */
+      --slotMax: 52px;
       --slotSize: min(var(--slotMax), calc((100% - (4 * var(--gap))) / 5));
       --benchSize: 44px;
     }
@@ -60,14 +60,18 @@
 
     main{max-width:1100px;margin:0 auto;padding:10px 16px 60px}
 
-    /* ===== ピラミッド：11人だけ sticky ===== */
-    .pyramidWrap{
+    /* ===== ピラミッド + ベンチ：まとめて sticky ===== */
+    .stickyWrap{
       position: sticky;
       top: 0;
       z-index: 30;
       margin-top: 10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
     }
-    .pyramid{
+
+    .panel{
       background: var(--panel);
       border:1px solid var(--line);
       border-radius: var(--r);
@@ -84,9 +88,7 @@
       color: var(--muted);
       font-size: 12px;
     }
-    .bar .left{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
     .bar strong{color:var(--text); font-weight:900}
-    .bar .hint{opacity:.9}
     .mini{
       height:30px;
       padding:0 10px;
@@ -98,7 +100,7 @@
       color: var(--text);
     }
 
-    /* ===== ピラミッド段：1-2-3-5（顔だけ・名前無し） ===== */
+    /* ===== ピラミッド段：1-2-3-5（顔だけ） ===== */
     .rows{display:flex; flex-direction:column; gap:6px}
     .row{
       display:flex;
@@ -109,7 +111,7 @@
     }
 
     .slot{
-      width: var(--slotSize);          /* ★全段同じサイズ */
+      width: var(--slotSize);
       aspect-ratio: 1 / 1;
       border-radius: 999px;
       overflow: hidden;
@@ -119,6 +121,7 @@
       position: relative;
       touch-action: manipulation;
       flex: 0 0 auto;
+      cursor: pointer;
     }
     .slot img{
       width:100%;
@@ -136,24 +139,7 @@
       border: 1px dashed rgba(255,255,255,.14);
     }
 
-    /* ===== ベンチ：無限。ここは sticky じゃない ===== */
-    .benchWrap{
-      margin-top: 10px;
-      background: rgba(18,26,43,.35);
-      border:1px solid var(--line);
-      border-radius: var(--r);
-      padding: 10px;
-    }
-    .benchHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin: 0 0 8px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .benchHeader strong{color:var(--text); font-weight:900}
+    /* ===== ベンチ（横スクロール、でも stickyWrap の中で固定） ===== */
     .benchRow{
       display:flex;
       gap: 8px;
@@ -171,6 +157,7 @@
       flex: 0 0 auto;
       cursor:pointer;
       position:relative;
+      touch-action: manipulation;
     }
     .benchItem img{
       width:100%;
@@ -265,29 +252,24 @@
   </header>
 
   <main>
-    <section class="pyramidWrap">
-      <div class="pyramid">
+    <section class="stickyWrap">
+      <!-- ピラミッド -->
+      <div class="panel">
         <div class="bar">
-          <div class="left">
-            <div id="count"></div>
-            <div class="hint" id="hint"></div>
-          </div>
-          <div>
-            <button class="mini" id="clear" type="button">全解除</button>
-          </div>
+          <div id="count"></div>
+          <button class="mini" id="clear" type="button">全解除</button>
         </div>
-
         <div class="rows" id="pyramid"></div>
       </div>
-    </section>
 
-    <!-- ベンチ：ここはスクロールで流れる -->
-    <section class="benchWrap">
-      <div class="benchHeader">
-        <div><strong>追加枠</strong> <span id="benchCount"></span></div>
-        <div style="opacity:.9" id="benchHint"></div>
+      <!-- ベンチ（stickyWrap の中なので一緒に固定される） -->
+      <div class="panel">
+        <div class="bar">
+          <div><strong>ベンチ</strong> <span id="benchCount"></span></div>
+          <div></div>
+        </div>
+        <div class="benchRow" id="bench"></div>
       </div>
-      <div class="benchRow" id="bench"></div>
     </section>
 
     <section class="gridSection">
@@ -301,12 +283,10 @@
     const gridEl = document.getElementById("grid");
     const sortEl = document.getElementById("sort");
     const countEl = document.getElementById("count");
-    const hintEl  = document.getElementById("hint");
     const pyramidEl = document.getElementById("pyramid");
 
     const benchEl = document.getElementById("bench");
     const benchCountEl = document.getElementById("benchCount");
-    const benchHintEl = document.getElementById("benchHint");
 
     const ROWS = [1,2,3,5];
     const TOTAL = ROWS.reduce((a,b)=>a+b,0);
@@ -315,10 +295,9 @@
       people: [],
       byId: new Map(),
       lastSortedIds: [],
-
-      slots: Array(TOTAL).fill(null), // 11枠（固定表示）
-      bench: [],                      // 無限（横スクロール）
-      activeSlotIndex: null,          // 枠選択中
+      slots: Array(TOTAL).fill(null), // 11枠
+      bench: [],                      // 無限
+      activeSlotIndex: null,
     };
 
     function escapeHtml(s){
@@ -403,7 +382,6 @@
     }
 
     function slotCount(){ return state.slots.filter(Boolean).length; }
-
     function isInSlots(id){ return state.slots.includes(id); }
     function isInBench(id){ return state.bench.includes(id); }
     function isSelected(id){ return isInSlots(id) || isInBench(id); }
@@ -425,19 +403,15 @@
       state.slots[b] = tmp;
     }
 
-    // ★枠選択中に、任意のidをその枠へ（入替・移動・押し出しはしない）
     function placeIdIntoSlot(id, slotIndex){
-      // もともとそこにいるなら何もしない
       if (state.slots[slotIndex] === id) return;
 
-      // そのidが別の枠にいるなら入替
       const from = state.slots.indexOf(id);
       if (from >= 0){
         swapSlots(from, slotIndex);
         return;
       }
 
-      // ベンチにいるなら「枠の中身」と交換（ベンチ→枠、枠→ベンチ）
       const bi = state.bench.indexOf(id);
       if (bi >= 0){
         const occupant = state.slots[slotIndex];
@@ -447,7 +421,6 @@
         return;
       }
 
-      // 未選択のid：枠の中身があればベンチへ押し出して、その枠に入れる
       const occupant = state.slots[slotIndex];
       state.slots[slotIndex] = id;
       if (occupant) state.bench.unshift(occupant);
@@ -456,10 +429,7 @@
     function setBar(){
       const n = slotCount();
       countEl.innerHTML = n ? `<strong>${n}</strong> / ${TOTAL}` : "";
-      hintEl.textContent = (state.activeSlotIndex == null) ? "" : "枠を選択中（別の枠で入替 / 同じ枠をもう一回で削除 / 一覧 or ベンチを押したら差し替え）";
-
       benchCountEl.textContent = state.bench.length ? `（${state.bench.length}）` : "";
-      benchHintEl.textContent = (state.activeSlotIndex == null) ? "" : "この状態でベンチ押すと差し替え";
     }
 
     function renderPyramid(){
@@ -484,7 +454,7 @@
             </div>
           `);
         }
-        return `<div class="row" data-n="${n}">${items.join("")}</div>`;
+        return `<div class="row">${items.join("")}</div>`;
       }).join("");
 
       pyramidEl.innerHTML = rowsHtml;
@@ -495,9 +465,8 @@
       const html = state.bench.map(id => {
         const p = state.byId.get(id);
         const imgSrc = p?.img ? escapeHtml(p.img) : "";
-        const active = "";
         return `
-          <div class="benchItem ${active}" data-id="${escapeHtml(id)}" role="button" tabindex="0" title="${escapeHtml(p?.name || "")}">
+          <div class="benchItem" data-id="${escapeHtml(id)}" role="button" tabindex="0" title="${escapeHtml(p?.name || "")}">
             ${imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
           </div>
         `;
@@ -509,6 +478,7 @@
     function renderGrid(){
       const arr = getSortedPeople();
       const active = state.activeSlotIndex != null;
+
       const html = arr.map((p, i) => {
         const selected = isSelected(p.id) ? "selected" : "";
         const pickTarget = active ? "pickTarget" : "";
@@ -537,15 +507,6 @@
       setBar();
     }
 
-    // ===== 操作ルール =====
-    // ・枠を押す → 枠選択（active）
-    // ・同じ枠をもう一回押す → その枠を削除（空なら解除）
-    // ・別の枠を押す → 枠同士入替
-    // ・枠選択中に一覧orベンチを押す → その枠に差し替え（枠の中身はベンチへ）
-    // ・枠選択してない時に一覧orベンチを押す
-    //    - すでに選択済みなら削除
-    //    - 未選択なら まず枠へ（空きがあれば）/ なければベンチへ追加
-
     function onSlotClick(slotIndex){
       const id = state.slots[slotIndex];
 
@@ -555,22 +516,19 @@
         return;
       }
 
-      // 同じ枠もう一回：削除（★ここが要望）
       if (state.activeSlotIndex === slotIndex){
-        if (id) state.slots[slotIndex] = null;
+        if (id) state.slots[slotIndex] = null; // もう1回押したら削除
         state.activeSlotIndex = null;
         renderPyramid(); renderBench(); renderGrid();
         return;
       }
 
-      // 別枠：入替
       swapSlots(state.activeSlotIndex, slotIndex);
       state.activeSlotIndex = null;
       renderPyramid(); renderBench(); renderGrid();
     }
 
     function onPickId(id){
-      // 枠選択中：その枠へ差し替え
       if (state.activeSlotIndex != null){
         placeIdIntoSlot(id, state.activeSlotIndex);
         state.activeSlotIndex = null;
@@ -578,7 +536,6 @@
         return;
       }
 
-      // 枠選択してない：トグル（削除 or 追加）
       if (isSelected(id)){
         removeIdEverywhere(id);
         renderPyramid(); renderBench(); renderGrid();
@@ -586,11 +543,9 @@
       }
 
       const empty = firstEmptySlot();
-      if (empty >= 0){
-        state.slots[empty] = id;
-      } else {
-        state.bench.unshift(id); // ベンチは無限
-      }
+      if (empty >= 0) state.slots[empty] = id;
+      else state.bench.unshift(id);
+
       renderPyramid(); renderBench(); renderGrid();
     }
 
@@ -602,7 +557,6 @@
       state.people = normalizePeople(rows);
       state.byId = new Map(state.people.map(p => [p.id, p]));
 
-      // データ更新で存在しないidが残ってたら消す
       state.slots = state.slots.map(id => (id && state.byId.has(id)) ? id : null);
       state.bench = state.bench.filter(id => state.byId.has(id));
       state.activeSlotIndex = null;
@@ -610,7 +564,7 @@
       renderPyramid(); renderBench(); renderGrid();
     }
 
-    // ===== イベント =====
+    // ===== Events =====
     pyramidEl.addEventListener("click", (e) => {
       const slot = e.target.closest(".slot");
       if (!slot) return;
@@ -660,7 +614,7 @@
       renderPyramid(); renderBench(); renderGrid();
     });
 
-    // 初期
+    // init
     renderPyramid();
     renderBench();
     loadData();
