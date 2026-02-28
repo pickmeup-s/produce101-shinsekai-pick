@@ -50,6 +50,15 @@
       cursor:pointer;
       box-shadow:none;
     }
+    .arrowBtn{
+  width:36px;
+  padding:0;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  }
+    
     button:active{transform: translateY(1px)}
 
     main{max-width:1100px;margin:0 auto;padding:10px 16px 60px}
@@ -319,7 +328,7 @@
     <div class="panel" id="benchPanel">
       <div class="bar">
         <div><strong>ベンチ</strong> <span id="benchCount"></span></div>
-        <button id="toggleBench" type="button">折りたたみ</button>
+        <button id="toggleBench" type="button" class="arrowBtn">⌄</button>
       </div>
       <div class="benchRow" id="bench"></div>
     </div>
@@ -934,11 +943,11 @@
     renderPyramid(); renderBench(); renderGrid();
   });
 
-  document.getElementById("toggleBench").addEventListener("click", () => {
-    state.benchCollapsed = !state.benchCollapsed;
-    document.getElementById("toggleBench").textContent = state.benchCollapsed ? "展開" : "折りたたみ";
-    renderBench();
-  });
+document.getElementById("toggleBench").addEventListener("click", () => {
+  state.benchCollapsed = !state.benchCollapsed;
+  document.getElementById("toggleBench").textContent = state.benchCollapsed ? "⌃" : "⌄";
+  renderBench();
+});
 
   window.addEventListener("resize", () => {
     updateSlotSize();
