@@ -88,11 +88,11 @@
 
     /* ===== 11pick panel: paddingをrankBarとbodyで分ける（スクロール時の覗き隙間対策） ===== */
     #pyramidPanel{
-      padding: 0;                 /* ここ重要：rankBarの背景が枠までピタッと */
-      overflow: hidden;           /* 通常時は覗き防止 */
+      padding: 0;
+      overflow: hidden;
     }
     .pyramidBody{
-      padding: 0 6px 10px;        /* 旧panel padding相当 */
+      padding: 0 6px 10px;
     }
 
     /* 日付 */
@@ -107,8 +107,8 @@
       pointer-events: none;
       white-space: nowrap;
     }
-    #pyramidPanel{ padding-bottom: 25px; } /* 日付分ちょい確保（以前より詰め） */
-    .rankDatePad{ height: 0px; }           /* 16px → 6px（ここが「日付上の行間」） */
+    #pyramidPanel{ padding-bottom: 25px; }
+    .rankDatePad{ height: 0px; }
 
     /* Ranking header */
     .rankBar{
@@ -127,7 +127,7 @@
       background: var(--panel);
       border-bottom: 1px solid var(--line);
 
-      padding: 10px 8px 8px;      /* 余白少し詰め */
+      padding: 10px 8px 8px;
       border-top-left-radius: var(--r);
       border-top-right-radius: var(--r);
     }
@@ -148,8 +148,7 @@
       word-break: break-word;
     }
 
-    /* ヘッダーと最初の写真の間（詰める） */
-    .pyramidTopGap{ height: 8px; }  /* 16 → 6 */
+    .pyramidTopGap{ height: 8px; }
 
     /* ===== Rings ===== */
     .card.selected,
@@ -162,7 +161,7 @@
     }
 
     /* ===== Pyramid：段の行間を詰める ===== */
-    .rows{display:flex; flex-direction:column; gap:5px;} /* 8 → 5 */
+    .rows{display:flex; flex-direction:column; gap:5px;}
     .row{display:flex; justify-content:center; gap: var(--gap); width:100%; flex-wrap:nowrap;}
 
     .slotWrap{
@@ -171,7 +170,7 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:1px;                    /* 3 → 1（写真と表示名の間） */
+      gap:1px;
     }
     .slot{
       width: var(--slotSize);
@@ -189,9 +188,9 @@
     .slotInfo{
       width:100%;
       text-align:center;
-      line-height:1.0;            /* 1.05 → 1.0 */
+      line-height:1.0;
       display:flex; flex-direction:column;
-      gap:0px;                    /* 1 → 0 */
+      gap:0px;
     }
     .slotInfo .line{
       white-space: normal;
@@ -432,11 +431,6 @@
       color: var(--text);
       margin: 0;
     }
-    .modalHeader .hint{
-      font-size: 11px;
-      color: var(--muted);
-      margin: 2px 0 0;
-    }
     .modalBody{
       padding: 10px 12px 12px;
       max-height: min(60vh, 520px);
@@ -573,7 +567,7 @@
 
 <script>
   const CSV_PATH = "data/master.csv";
-  const STORAGE_KEY = "pyramid_maker_state_v8";
+  const STORAGE_KEY = "pyramid_maker_state_v9";
 
   const gridEl = document.getElementById("grid");
   const pyramidEl = document.getElementById("pyramid");
@@ -605,14 +599,22 @@
   const ROWS = [1,2,3,5];
   const TOTAL = ROWS.reduce((a,b)=>a+b,0);
 
+  // CSVルール（今回の要望）
+  // - 表示する項目：D:*** だけ
+  // - 並び替え：S:*** だけ
+  // - 枠色：D:シグナルソングクラス だけ
+  // - 平均年齢：S:生まれ年(00-10)（YYYY/MM/DD）から満年齢
+  // - 平均身長：S:身長(cm)
+  const DISPLAY_PREFIX = "D:";
+  const SORT_PREFIX = "S:";
+  const RAW_CLASS_COL = "D:シグナルソングクラス";
+  const RAW_BIRTH_COL = "S:生まれ年(00-10)";
+  const RAW_HEIGHT_COL = "S:身長(cm)";
+
   const EXCLUDE_KEYS = new Set([
-    "id","ID","Id",
     "img","image","Image","画像","photo","Photo",
     "__idx"
   ]);
-
-  const CLASS_COL = "シグナルソングクラス";
-  const CLASS_COL_ALT = "signal_class";
 
   const CLASS_COLOR = {
     "A":"#ff69b4",
@@ -621,9 +623,6 @@
     "D":"#080000",
     "F":"#d3d3d3"
   };
-
-  const YEAR_COL = "年/Year";
-  const HEIGHT_COL = "身長/Height";
 
   const state = {
     header: [],
@@ -636,10 +635,11 @@
     activeSlotIndex: null,
     activeBenchIndex: null,
 
-    displayKeys: [],
-    show: {},
+    // UI用（prefix無し）
+    displayKeys: [],       // ["名前","出身",...]
+    show: {},              // { "名前": true, ... }
 
-    sortKeys: [],
+    sortKeys: [],          // ["Name（A-Z）", "フルネーム（あいうえお順）", ...]（prefix無し）
     lastTappedId: null,
 
     benchCollapsed: false,
@@ -703,12 +703,32 @@
     return "";
   }
 
+  // No. をIDとして使う / img を画像として使う
   function normalizePeople(rows){
     return rows.map((r, idx) => {
-      const id = pickField(r, ["id","ID","Id"]) || String(idx+1);
+      const id = pickField(r, ["No.","id","ID","Id"]) || String(idx+1);
       const img  = pickField(r, ["img","image","Image","画像","photo","Photo"]);
       return { id, img, raw: r, __idx: idx };
     });
+  }
+
+  function rawKeyForDisplay(uiKey){ return `${DISPLAY_PREFIX}${uiKey}`; }
+  function rawKeyForSort(uiKey){ return `${SORT_PREFIX}${uiKey}`; }
+
+  function buildDisplayKeysFromHeader(header){
+    return header
+      .filter(h => h && !EXCLUDE_KEYS.has(h))
+      .filter(h => h.startsWith(DISPLAY_PREFIX))
+      .map(h => h.slice(DISPLAY_PREFIX.length).trim())
+      .filter(Boolean);
+  }
+
+  function buildSortKeysFromHeader(header){
+    return header
+      .filter(h => h && !EXCLUDE_KEYS.has(h))
+      .filter(h => h.startsWith(SORT_PREFIX))
+      .map(h => h.slice(SORT_PREFIX.length).trim())
+      .filter(Boolean);
   }
 
   function isInSlots(id){ return state.slots.includes(id); }
@@ -750,9 +770,10 @@
     }
   }
 
+  // 枠色：D:シグナルソングクラス だけ
   function getClassColor(person){
     if (!person) return "";
-    const cls = (person.raw?.[CLASS_COL] || person.raw?.[CLASS_COL_ALT] || "").trim();
+    const cls = (person.raw?.[RAW_CLASS_COL] || "").trim();
     return CLASS_COLOR[cls] || "";
   }
 
@@ -793,11 +814,10 @@
     const minH = Math.round(barH + 6 + slotSize + infoH + extra);
 
     pyramidPanelEl.style.maxHeight = `${minH}px`;
-    pyramidPanelEl.style.overflow = "auto";     /* 折りたたみ時だけスクロール */
+    pyramidPanelEl.style.overflow = "auto";
   }
 
   function updateSlotSize(){
-    const st = getComputedStyle(pyramidPanelEl);
     const inner = Math.max(0, pyramidPanelEl.clientWidth);
 
     const root = getComputedStyle(document.documentElement);
@@ -817,13 +837,14 @@
     return c;
   }
 
+  // 表示行：D:*** から拾う
   function buildInfoLines(person){
     if (!person) return [];
     const r = person.raw || {};
     const lines = [];
-    for (const key of state.displayKeys){
-      if (!state.show[key]) continue;
-      const v = (r[key] ?? "").trim();
+    for (const uiKey of state.displayKeys){
+      if (!state.show[uiKey]) continue;
+      const v = (r[rawKeyForDisplay(uiKey)] ?? "").trim();
       if (!v) continue;
       lines.push(v);
       if (lines.length >= 3) break;
@@ -831,11 +852,7 @@
     return lines;
   }
 
-  function buildSortKeys(header){
-    const excludeForSort = new Set(["img","image","Image","画像","photo","Photo"]);
-    return header.filter(h => h && !excludeForSort.has(h));
-  }
-
+  // 並び替え：S:*** から拾う
   function toSortableValue(v){
     const s = String(v ?? "").trim();
     const n = Number(s);
@@ -845,12 +862,12 @@
 
   function getSortedPeople(){
     const arr = [...state.people];
-    const key = sortKeyEl.value;
+    const uiKey = sortKeyEl.value;
     const dir = sortDirEl.value;
 
     arr.sort((a,b) => {
-      const av = toSortableValue(a.raw[key]);
-      const bv = toSortableValue(b.raw[key]);
+      const av = toSortableValue(a.raw[rawKeyForSort(uiKey)]);
+      const bv = toSortableValue(b.raw[rawKeyForSort(uiKey)]);
 
       let cmp = 0;
       if (av.type === "num" && bv.type === "num") cmp = av.v - bv.v;
@@ -946,11 +963,13 @@
   function getCardTitleAndSub(person){
     const lines = buildInfoLines(person);
 
-    const fallbackNameKey = state.header.includes("Name") ? "Name"
-      : state.header.includes("名前") ? "名前"
-      : null;
+    const r = person.raw || {};
+    const fallbackTitle =
+      (r["D:名前"] ?? "").trim() ||
+      (r["D:Name"] ?? "").trim() ||
+      "";
 
-    const title = lines[0] || (fallbackNameKey ? (person.raw[fallbackNameKey] || "") : "");
+    const title = lines[0] || fallbackTitle;
     const sub = lines.slice(1,3).join(" / ");
 
     return { title, sub };
@@ -1021,13 +1040,32 @@
     });
   }
 
-  function parseYearParens(v){
+  // 年齢：S:生まれ年(00-10)（YYYY/MM/DD）から満年齢
+  function parseBirthDate(v){
     const s = String(v ?? "").trim();
     if (!s) return null;
-    const m = s.match(/\((\d{1,2})\)/);
+
+    const m = s.match(/(\d{2,4})[\/\.\-](\d{1,2})[\/\.\-](\d{1,2})/);
     if (!m) return null;
-    const yy = Number(m[1]);
-    return Number.isFinite(yy) ? yy : null;
+
+    let y = Number(m[1]);
+    const mo = Number(m[2]);
+    const d = Number(m[3]);
+
+    if (!Number.isFinite(y) || !Number.isFinite(mo) || !Number.isFinite(d)) return null;
+    if (y < 100) y = 2000 + y;
+
+    const dt = new Date(y, mo - 1, d);
+    if (dt.getFullYear() !== y || (dt.getMonth() + 1) !== mo || dt.getDate() !== d) return null;
+    return dt;
+  }
+
+  function calcAgeFromBirth(birth, today = new Date()){
+    let age = today.getFullYear() - birth.getFullYear();
+    const mDiff = (today.getMonth() + 1) - (birth.getMonth() + 1);
+    const dDiff = today.getDate() - birth.getDate();
+    if (mDiff < 0 || (mDiff === 0 && dDiff < 0)) age--;
+    return Number.isFinite(age) ? age : null;
   }
 
   function parseHeightCm(v){
@@ -1039,6 +1077,7 @@
     return Number.isFinite(n) ? n : null;
   }
 
+  // 平均年齢/身長
   function updateRankStats(){
     const ids = state.slots.filter(Boolean);
 
@@ -1049,16 +1088,14 @@
       const p = state.byId.get(id);
       if (!p) continue;
 
-      const yy = parseYearParens(p.raw?.[YEAR_COL]);
-      if (yy != null){
-        const age = 26 - yy;
-        if (Number.isFinite(age)){
-          ageSum += age;
-          ageCnt++;
-        }
+      const birth = parseBirthDate(p.raw?.[RAW_BIRTH_COL]);
+      const age = birth ? calcAgeFromBirth(birth, new Date()) : null;
+      if (age != null){
+        ageSum += age;
+        ageCnt++;
       }
 
-      const h = parseHeightCm(p.raw?.[HEIGHT_COL]);
+      const h = parseHeightCm(p.raw?.[RAW_HEIGHT_COL]);
       if (h != null){
         hSum += h;
         hCnt++;
@@ -1430,7 +1467,8 @@
 
     state.header = header;
 
-    state.displayKeys = header.filter(h => h && !EXCLUDE_KEYS.has(h));
+    // 表示候補（D:***）
+    state.displayKeys = buildDisplayKeysFromHeader(header);
     for (const k of state.displayKeys){
       if (!(k in state.show)) state.show[k] = false;
     }
@@ -1438,13 +1476,15 @@
       if (!state.displayKeys.includes(k)) delete state.show[k];
     }
 
-    state.sortKeys = buildSortKeys(header);
+    // 並び替え候補（S:***）
+    state.sortKeys = buildSortKeysFromHeader(header);
     sortKeyEl.innerHTML = state.sortKeys.map(k =>
       `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`
     ).join("");
 
-    if (state.sortKeys.includes("Name")) sortKeyEl.value = "Name";
-    else if (state.sortKeys.includes("名前")) sortKeyEl.value = "名前";
+    // 初期ソート：Name（A-Z）>フルネーム（あいうえお順）>先頭
+    if (state.sortKeys.includes("Name（A-Z）")) sortKeyEl.value = "Name（A-Z）";
+    else if (state.sortKeys.includes("フルネーム（あいうえお順）")) sortKeyEl.value = "フルネーム（あいうえお順）";
     else sortKeyEl.value = state.sortKeys[0] || "";
 
     if (state._savedSortKey && state.sortKeys.includes(state._savedSortKey)){
