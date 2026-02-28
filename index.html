@@ -607,9 +607,36 @@
   // - 平均身長：S:身長(cm)
   const DISPLAY_PREFIX = "D:";
   const SORT_PREFIX = "S:";
-  const RAW_CLASS_COL = "D:シグナルソングクラス";
-  const RAW_BIRTH_COL = "S:生まれ年(00-10)";
-  const RAW_HEIGHT_COL = "S:身長(cm)";
+let RAW_CLASS_COL = "D:シグナルソングクラス";
+let RAW_BIRTH_COL = "S:生まれ年(00-10)";
+let RAW_HEIGHT_COL = "S:身長(cm)";
+
+function normalizeKey(s){
+  return String(s ?? "")
+    .trim()
+    .replace(/\s+/g, "")          // 全/半角スペースを無視
+    .replace(/[（）]/g, (m)=> m==="（" ? "(" : ")"); // 全角括弧→半角括弧
+}
+
+function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
+  // 1) 完全一致（trim済み）
+  const exact = header.find(h => String(h).trim() === preferredExact);
+  if (exact) return exact;
+
+  // 2) 正規化して一致
+  const prefN = normalizeKey(preferredExact);
+  const norm = header.find(h => normalizeKey(h) === prefN);
+  if (norm) return norm;
+
+  // 3) それっぽい候補（startsWith / includes / regex など）
+  for (const fn of fallbackMatchers){
+    const hit = header.find(h => fn(String(h)));
+    if (hit) return hit;
+  }
+
+  // 4) 見つからなければそのまま返す（＝計算されないのでデバッグしやすい）
+  return preferredExact;
+}
 
   const EXCLUDE_KEYS = new Set([
     "img","image","Image","画像","photo","Photo",
