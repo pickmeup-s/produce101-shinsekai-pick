@@ -17,12 +17,16 @@
 
       --gap:6px;
 
-      /* ピラミッドの丸サイズはJSで更新 */
+      /* JSで更新（下段5人が必ず収まる） */
       --slotSize: 72px;
       --slotMax: 96px;
 
-      /* ベンチもピラミッドと同じサイズにする */
+      /* ベンチも同サイズ */
       --benchSize: var(--slotSize);
+
+      /* 選択リング（枠色と被らない用に外側に太く） */
+      --selectRing: rgba(110,190,255,.95);
+      --selectRingGlow: rgba(110,190,255,.22);
     }
 
     *{box-sizing:border-box}
@@ -57,9 +61,7 @@
       gap:8px;
     }
     button:active{transform: translateY(1px)}
-    .btnIcon{
-      width:18px;height:18px; display:inline-block;
-    }
+    .btnIcon{ width:18px;height:18px; display:inline-block; }
 
     .arrowBtn{
       width:32px;
@@ -74,37 +76,6 @@
     }
 
     main{max-width:1100px;margin:0 auto;padding:10px 16px 60px}
-
-    /* スクロールで流れてOKな上部コマンド */
-    .topControls{
-      margin-top: 10px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      justify-content:space-between;
-    }
-    .topLeft{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      font-size: 12px;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .chip input{ accent-color: #7fb6ff; }
 
     /* sticky: ピラミッド＋ベンチだけ固定 */
     .stickyWrap{
@@ -136,6 +107,29 @@
     }
     .bar strong{color:var(--text); font-weight:900}
 
+    /* ランキング見出し */
+    .rankBar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin: 0 0 6px;
+      padding: 0 2px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .rankBar strong{ color: var(--text); font-weight:900; }
+    .lockBtn{
+      height:32px;
+      width:40px;
+      padding:0;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:16px;
+    }
+
     /* pyramid */
     .rows{display:flex; flex-direction:column; gap:8px}
     .row{
@@ -159,7 +153,7 @@
       border-radius: 999px;
       overflow: hidden;
       background: rgba(255,255,255,.05);
-      border: 2px solid rgba(255,255,255,.10);
+      border: 2px solid rgba(255,255,255,.10); /* ここが枠色（クラス）で塗り替わる */
       cursor:pointer;
       touch-action: manipulation;
     }
@@ -170,17 +164,14 @@
       display:block;
       border-radius:999px;
     }
-    .slot.active{
-      outline: 2px solid rgba(110,190,255,.85);
-      outline-offset: 0px;
-    }
-    .slot.pending{
-      outline: 2px solid rgba(110,190,255,.85);
-      outline-offset: 0px;
-    }
     .slot.empty{
       background: rgba(255,255,255,.04);
       border: 1px dashed rgba(255,255,255,.14);
+    }
+
+    /* 選択リング（枠色と被らない外側リング） */
+    .slot.active{
+      box-shadow: 0 0 0 4px var(--selectRing), 0 0 0 8px var(--selectRingGlow);
     }
 
     .slotInfo{
@@ -234,16 +225,12 @@
       object-fit:cover;
       display:block;
     }
+
+    /* ベンチ選択も青リング（オレンジは一切使わん） */
     .benchItem.activeBench{
-      outline: 2px solid rgba(110,190,255,.85);
-      outline-offset: 0px;
-    }
-    .benchItem.pendingDelete{
-      outline: 2px solid rgba(255,200,90,.95);
-      outline-offset: 0px;
+      box-shadow: 0 0 0 4px var(--selectRing), 0 0 0 8px var(--selectRingGlow);
     }
 
-    /* ベンチの表示項目 */
     .benchInfo{
       width: 100%;
       text-align:center;
@@ -267,6 +254,33 @@
     .benchCollapsed .benchRow{ display:none; }
     .benchCollapsed .bar{ margin-bottom:0; }
     .benchCollapsed{ padding-bottom:8px; }
+
+    /* ベンチ文字の左寄り感を1文字分ゆるめる */
+    .benchTitlePad{ padding-left: 0.5em; }
+
+    /* いま「ベンチの下」に置くやつ */
+    .belowBenchControls{
+      margin-top: 10px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-size: 12px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .chip input{ accent-color: #7fb6ff; }
 
     /* options (スクロールで流れる) */
     .optionsPanel{
@@ -335,6 +349,7 @@
     @media (max-width: 360px){
       .grid{ grid-template-columns: repeat(3, 1fr); }
     }
+
     .card{
       position:relative;
       background: linear-gradient(180deg, rgba(18,26,43,.95), rgba(15,22,38,.96));
@@ -344,7 +359,7 @@
       overflow:hidden;
       cursor:pointer;
       user-select:none;
-      transition: transform .12s ease, border-color .12s ease, filter .12s ease;
+      transition: transform .12s ease, border-color .12s ease;
     }
     .card:hover{transform: translateY(-2px)}
     .thumb{
@@ -358,19 +373,9 @@
     .name{font-size:13px;font-weight:900;line-height:1.2;margin:0 0 4px}
     .sub{font-size:11px;color:var(--muted);margin:0}
 
-    /* 121人側：選択済みの枠表示 */
+    /* 121人側：選択済みも枠色と被らないリング */
     .card.selected{
-      border-color: rgba(110,190,255,.85);
-      filter: saturate(1.05);
-      box-shadow: 0 0 0 2px rgba(110,190,255,.18), var(--shadow);
-    }
-    /* 121人側：入替/削除候補 */
-    .card.pendingSwap{
-      box-shadow: 0 0 0 2px rgba(110,190,255,.22), var(--shadow);
-    }
-    .card.pendingDelete{
-      border-color: rgba(255,200,90,.95);
-      box-shadow: 0 0 0 2px rgba(255,200,90,.18), var(--shadow);
+      box-shadow: 0 0 0 4px var(--selectRing), 0 0 0 8px var(--selectRingGlow), var(--shadow);
     }
 
     .idx{
@@ -399,40 +404,40 @@
 </header>
 
 <main>
-  <!-- スクロールで流れてOK -->
-  <div class="topControls">
-    <div class="topLeft">
-      <button id="clear" type="button" title="全解除">
-        <!-- ゴミ箱アイコン（SVG） -->
-        <svg class="btnIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M9 3h6l1 2h5v2H3V5h5l1-2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M6 9v11a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M10 12v6M14 12v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        全解除
-      </button>
-
-      <label class="chip">
-        <input id="frameToggle" type="checkbox">
-        枠色（シグナルソングクラス）
-      </label>
-    </div>
-    <div></div>
-  </div>
-
   <section class="stickyWrap">
     <div class="panel" id="pyramidPanel">
+      <div class="rankBar">
+        <div><strong>ランキング</strong></div>
+        <button id="togglePyramidLock" type="button" class="lockBtn" title="表示固定">🔓</button>
+      </div>
       <div class="rows" id="pyramid"></div>
     </div>
 
     <div class="panel" id="benchPanel">
       <div class="bar">
-        <div><strong>ベンチ</strong> <span id="benchCount"></span></div>
+        <div class="benchTitlePad"><strong>ベンチ</strong> <span id="benchCount"></span></div>
         <button id="toggleBench" type="button" class="arrowBtn">▾</button>
       </div>
       <div class="benchRow" id="bench"></div>
     </div>
   </section>
+
+  <!-- ★「全解除」「枠色」をベンチの下へ移動 -->
+  <div class="belowBenchControls">
+    <button id="clear" type="button" title="全解除">
+      <svg class="btnIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M9 3h6l1 2h5v2H3V5h5l1-2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M6 9v11a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M10 12v6M14 12v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      全解除
+    </button>
+
+    <label class="chip">
+      <input id="frameToggle" type="checkbox">
+      枠色（シグナルソングクラス）
+    </label>
+  </div>
 
   <section class="optionsPanel">
     <p class="optionsTitle">表示する項目（３つまで）</p>
@@ -454,7 +459,7 @@
 
 <script>
   const CSV_PATH = "data/master.csv";
-  const STORAGE_KEY = "pyramid_maker_state_v3";
+  const STORAGE_KEY = "pyramid_maker_state_v4";
 
   const gridEl = document.getElementById("grid");
   const pyramidEl = document.getElementById("pyramid");
@@ -470,6 +475,7 @@
   const clearBtn = document.getElementById("clear");
   const frameToggleEl = document.getElementById("frameToggle");
   const benchToggleBtn = document.getElementById("toggleBench");
+  const pyramidLockBtn = document.getElementById("togglePyramidLock");
 
   const ROWS = [1,2,3,5];
   const TOTAL = ROWS.reduce((a,b)=>a+b,0);
@@ -483,7 +489,7 @@
   const CLASS_COL = "シグナルソングクラス";
   const CLASS_COL_ALT = "signal_class";
 
-  // ★カラーコード更新
+  // 指定の色
   const CLASS_COLOR = {
     "A":"#ff69b4",
     "B":"#ffa500",
@@ -513,8 +519,13 @@
     benchCollapsed: false,
     classFrameOn: false,
 
+    pyramidLockFull: true,  // ★ロック：true=全表示（制限なし）
+
     _savedSortKey: null,
   };
+
+  // gridのDOMを保持して点滅を減らす
+  let cardElsById = new Map();
 
   function escapeHtml(s){
     return String(s ?? "")
@@ -608,7 +619,7 @@
     state.slots[slotIndex] = benchId;
 
     if (slotId){
-      state.bench[benchIndex] = slotId;   // 場所だけ入替（順番は変えない）
+      state.bench[benchIndex] = slotId;
     } else {
       state.bench.splice(benchIndex, 1);
     }
@@ -620,8 +631,13 @@
     return CLASS_COLOR[cls] || "";
   }
 
-  // ★ピラミッド：スクロール中だけ max-height をかける（上に戻したら解除）
+  // ★ピラミッド：スクロール中だけ制限（ロックOFFの時だけ）
   function applyPyramidScrollSizing(){
+    if (state.pyramidLockFull){
+      pyramidPanelEl.style.maxHeight = "";
+      pyramidPanelEl.style.overflow = "";
+      return;
+    }
     const top = window.scrollY || document.documentElement.scrollTop || 0;
     if (top > 0){
       pyramidPanelEl.style.maxHeight = "50vh";
@@ -632,7 +648,7 @@
     }
   }
 
-  // ★写真サイズ：5人が必ず収まる最大サイズ（豆粒回避で最低64）
+  // ★写真サイズ：5人が必ず収まる最大サイズ（最低64）
   function updateSlotSize(){
     const st = getComputedStyle(pyramidPanelEl);
     const padL = parseFloat(st.paddingLeft) || 0;
@@ -692,7 +708,7 @@
     renderToggles();
     renderPyramid();
     renderBench();
-    renderGrid();
+    renderGrid(true); // 表示項目変わるから作り直し
     persistSoon();
   });
 
@@ -700,7 +716,8 @@
     state.classFrameOn = frameToggleEl.checked;
     renderPyramid();
     renderBench();
-    renderGrid();
+    // 点滅減：gridは作り直さず枠だけ更新
+    applyGridClassFrames();
     persistSoon();
   });
 
@@ -815,13 +832,11 @@
       const frameColor = (state.classFrameOn ? getClassColor(p) : "");
       const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
-      // ★ベンチ選択の枠色＝ピラミッドの選択枠（同じ青）
       const activeCls = (state.activeBenchIndex === i) ? "activeBench" : "";
-      const delCls = (state.lastTappedId === id) ? "pendingDelete" : "";
 
       return `
         <div class="benchItemWrap">
-          <div class="benchItem ${activeCls} ${delCls}" ${style} data-index="${i}" data-id="${escapeHtml(id)}" role="button" tabindex="0">
+          <div class="benchItem ${activeCls}" ${style} data-index="${i}" data-id="${escapeHtml(id)}" role="button" tabindex="0">
             ${imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
           </div>
           ${lines.length ? `
@@ -847,23 +862,28 @@
     return { title, sub };
   }
 
-  function renderGrid(){
+  // ★gridは必要な時だけ作り直す（点滅減）
+  function renderGrid(forceRebuild=false){
     const arr = getSortedPeople();
 
+    if (!forceRebuild && cardElsById.size === arr.length){
+      // 並び替えで順番変わるから、基本は作り直しが必要
+      // ただしこのルートは「選択/枠色」みたいな時だけ使う
+      updateGridSelectionRings();
+      applyGridClassFrames();
+      return;
+    }
+
     gridEl.innerHTML = arr.map((p, i) => {
-      const selected = isSelected(p.id) ? "selected" : "";
-      const pendingSwap = (state.activeBenchIndex != null && state.bench[state.activeBenchIndex] === p.id) ? "pendingSwap" : "";
-      const pendingDelete = (state.lastTappedId === p.id) ? "pendingDelete" : "";
       const imgSrc = p.img ? escapeHtml(p.img) : "";
+      const { title, sub } = getCardTitleAndSub(p);
+      const idx = i + 1;
 
       const frameColor = (state.classFrameOn ? getClassColor(p) : "");
       const borderStyle = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
-      const { title, sub } = getCardTitleAndSub(p);
-      const idx = i + 1;
-
       return `
-        <div class="card ${selected} ${pendingSwap} ${pendingDelete}" ${borderStyle} data-id="${escapeHtml(p.id)}" role="button" tabindex="0">
+        <div class="card" ${borderStyle} data-id="${escapeHtml(p.id)}" role="button" tabindex="0">
           <span class="idx">${idx}</span>
           ${
             imgSrc
@@ -878,57 +898,95 @@
         </div>
       `;
     }).join("");
+
+    cardElsById = new Map();
+    gridEl.querySelectorAll(".card").forEach(el => {
+      cardElsById.set(el.dataset.id, el);
+    });
+
+    updateGridSelectionRings();
+    applyGridClassFrames();
+  }
+
+  function updateGridSelectionRings(){
+    cardElsById.forEach((el, id) => {
+      el.classList.toggle("selected", isSelected(id));
+    });
+  }
+
+  function applyGridClassFrames(){
+    // 枠色ON/OFFだけ反映（選択リングは別）
+    cardElsById.forEach((el, id) => {
+      if (!state.classFrameOn){
+        el.style.borderColor = "rgba(255,255,255,.10)";
+        return;
+      }
+      const p = state.byId.get(id);
+      const c = getClassColor(p);
+      el.style.borderColor = c ? c : "rgba(255,255,255,.10)";
+    });
   }
 
   function onSlotClick(slotIndex){
     const slotId = state.slots[slotIndex] || null;
 
-    // ベンチ選択中 → 入替
     if (state.activeBenchIndex != null){
       swapSlotWithBench(slotIndex, state.activeBenchIndex);
       state.activeBenchIndex = null;
       state.activeSlotIndex = null;
       state.lastTappedId = null;
-      renderPyramid(); renderBench(); renderGrid();
+
+      renderPyramid();
+      renderBench();
+      updateGridSelectionRings();
       persistSoon();
       return;
     }
 
-    // 同じ枠2回目 → 削除
     if (state.activeSlotIndex === slotIndex){
       if (slotId) state.slots[slotIndex] = null;
       state.activeSlotIndex = null;
       state.lastTappedId = null;
-      renderPyramid(); renderBench(); renderGrid();
+
+      renderPyramid();
+      renderBench();
+      updateGridSelectionRings();
       persistSoon();
       return;
     }
 
-    // 枠選択中に別枠 → 入替
     if (state.activeSlotIndex != null && state.activeSlotIndex !== slotIndex){
       swapSlots(state.activeSlotIndex, slotIndex);
       state.activeSlotIndex = null;
       state.lastTappedId = null;
-      renderPyramid(); renderBench(); renderGrid();
+
+      renderPyramid();
+      renderBench();
+      updateGridSelectionRings();
       persistSoon();
       return;
     }
 
-    // 1回目：枠選択
     state.activeSlotIndex = slotIndex;
     state.activeBenchIndex = null;
     state.lastTappedId = slotId;
-    renderPyramid(); renderBench(); renderGrid();
+
+    renderPyramid();
+    renderBench();
+    // 選択リングは変わらんので更新不要
   }
 
   function onPickId(id, fromBench=false, benchIndex=null){
-    // 2回連続タップなら削除（選択済みのみ）
+    // 2回連続タップ削除（見た目のオレンジは出さない）
     if (state.lastTappedId === id && isSelected(id)){
       removeIdEverywhere(id);
       state.lastTappedId = null;
       state.activeBenchIndex = null;
       state.activeSlotIndex = null;
-      renderPyramid(); renderBench(); renderGrid();
+
+      renderPyramid();
+      renderBench();
+      updateGridSelectionRings();
       persistSoon();
       return;
     }
@@ -947,15 +1005,19 @@
           if (occupant) state.bench.push(occupant);
         }
       }
+
       state.activeSlotIndex = null;
       state.activeBenchIndex = null;
       state.lastTappedId = null;
-      renderPyramid(); renderBench(); renderGrid();
+
+      renderPyramid();
+      renderBench();
+      updateGridSelectionRings();
       persistSoon();
       return;
     }
 
-    // ここからは「枠選択なし」
+    // 枠選択なし
     state.lastTappedId = id;
 
     // 未選択なら追加
@@ -963,34 +1025,38 @@
       const empty = firstEmptySlot();
       if (empty >= 0) state.slots[empty] = id;
       else state.bench.push(id);
+
       state.lastTappedId = null;
       state.activeBenchIndex = null;
-      renderPyramid(); renderBench(); renderGrid();
+
+      renderPyramid();
+      renderBench();
+      updateGridSelectionRings();
       persistSoon();
       return;
     }
 
-    // 選択済み：ベンチ内なら「ベンチ枠として選択」→ 次に別のベンチ枠を押したら入替
+    // ベンチ内での入替（ベンチ同士）
     if (fromBench && benchIndex != null){
       if (state.activeBenchIndex != null && state.activeBenchIndex !== benchIndex){
         swapBench(state.activeBenchIndex, benchIndex);
         state.activeBenchIndex = null;
         state.lastTappedId = null;
-        renderPyramid(); renderBench(); renderGrid();
+
+        renderBench();
         persistSoon();
         return;
       }
+
       state.activeBenchIndex = benchIndex;
       renderBench();
-      renderGrid();
       return;
     }
 
-    // 一覧から押した時は「ベンチでの入替準備」用に、ベンチに居るならそのindexを選択状態にする
+    // 一覧から押した時：ベンチに居るならそのindexを青リング選択
     const bi = state.bench.indexOf(id);
     state.activeBenchIndex = (bi >= 0) ? bi : null;
     renderBench();
-    renderGrid();
   }
 
   // 永続化
@@ -1009,6 +1075,7 @@
       sortDir: sortDirEl.value,
       benchCollapsed: state.benchCollapsed,
       classFrameOn: state.classFrameOn,
+      pyramidLockFull: state.pyramidLockFull,
     };
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -1030,6 +1097,7 @@
 
       if (typeof p.benchCollapsed === "boolean") state.benchCollapsed = p.benchCollapsed;
       if (typeof p.classFrameOn === "boolean") state.classFrameOn = p.classFrameOn;
+      if (typeof p.pyramidLockFull === "boolean") state.pyramidLockFull = p.pyramidLockFull;
 
       if (typeof p.sortDir === "string") sortDirEl.value = p.sortDir;
       state._savedSortKey = (typeof p.sortKey === "string") ? p.sortKey : null;
@@ -1070,11 +1138,13 @@
 
     frameToggleEl.checked = state.classFrameOn;
 
+    pyramidLockBtn.textContent = state.pyramidLockFull ? "🔒" : "🔓";
+
     renderToggles();
     updateSlotSize();
     renderPyramid();
     renderBench();
-    renderGrid();
+    renderGrid(true);
     applyPyramidScrollSizing();
 
     persistSoon();
@@ -1096,12 +1166,12 @@
     const card = e.target.closest(".card");
     if (!card) return;
     onPickId(card.dataset.id, false, null);
+    updateGridSelectionRings(); // 点滅減：作り直しせずリングだけ更新
   });
 
-  sortKeyEl.addEventListener("change", () => { renderGrid(); persistSoon(); });
-  sortDirEl.addEventListener("change", () => { renderGrid(); persistSoon(); });
+  sortKeyEl.addEventListener("change", () => { renderGrid(true); persistSoon(); });
+  sortDirEl.addEventListener("change", () => { renderGrid(true); persistSoon(); });
 
-  // ★全解除：確認ポップアップ
   clearBtn.addEventListener("click", () => {
     const ok = confirm("選択を解除しますか？");
     if (!ok) return;
@@ -1111,7 +1181,10 @@
     state.activeSlotIndex = null;
     state.activeBenchIndex = null;
     state.lastTappedId = null;
-    renderPyramid(); renderBench(); renderGrid();
+
+    renderPyramid();
+    renderBench();
+    updateGridSelectionRings();
     persistSoon();
   });
 
@@ -1121,9 +1194,17 @@
     persistSoon();
   });
 
+  pyramidLockBtn.addEventListener("click", () => {
+    state.pyramidLockFull = !state.pyramidLockFull;
+    pyramidLockBtn.textContent = state.pyramidLockFull ? "🔒" : "🔓";
+    applyPyramidScrollSizing();
+    persistSoon();
+  });
+
   window.addEventListener("resize", () => {
     updateSlotSize();
     renderPyramid();
+    renderBench(); // ベンチもサイズ同期
   });
 
   window.addEventListener("scroll", () => {
