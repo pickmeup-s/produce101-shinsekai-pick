@@ -7,7 +7,6 @@
 
   <style>
     :root{
-      /* White base + Blue accent */
       --bg:#ffffff;
       --panel:#f6f8ff;
       --card:#ffffff;
@@ -87,9 +86,24 @@
       border-radius: var(--r);
       box-shadow: var(--shadow);
       padding: 8px 6px 10px;
+      position: relative;
     }
 
-    /* ===== Ranking header（スクロールしてもここは固定） ===== */
+    /* 右下日付（ランキング枠） */
+    .rankDate{
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      color: var(--muted);
+      font-size: clamp(10px, 2.8vw, 12px);
+      line-height: 1.2;
+      user-select: none;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #pyramidPanel{ padding-bottom: 26px; }
+
+    /* Ranking header（スクロールしてもここは固定） */
     .rankBar{
       display:flex;
       align-items:center;
@@ -104,7 +118,6 @@
       top: 0;
       z-index: 50;
       background: var(--panel);
-      /* panel内スクロール時に横幅いっぱいに見せる */
       margin-left: -6px;
       margin-right: -6px;
       padding-left: calc(6px + 2px);
@@ -131,7 +144,7 @@
       word-break: break-word;
     }
 
-    /* ===== 青リング：薄い外側なし / 太さ2px ===== */
+    /* 青リング：薄い外側なし / 太さ2px */
     .card.selected,
     .card.activeRing{
       box-shadow: 0 0 0 2px var(--ringDark);
@@ -161,19 +174,21 @@
       border-radius: 999px;
       overflow: hidden;
       background: rgba(10,96,255,.06);
-      border: 2px solid rgba(10,35,90,.16); /* class frame uses border-color inline */
+      border: 2px solid rgba(10,35,90,.16);
       cursor:pointer;
       touch-action: manipulation;
     }
     .slot img{width:100%;height:100%;object-fit:cover;display:block;border-radius:999px;}
     .slot.empty{background: rgba(10,96,255,.04); border: 1px dashed rgba(10,35,90,.22);}
 
+    /* ★ここ：最低3行確保を廃止（詰める） */
     .slotInfo{
       width:100%;
       text-align:center;
       line-height:1.15;
-      display:flex; flex-direction:column; gap:2px;
-      min-height: calc(1.15em * 3 + 4px); /* 3行ぶんの最低確保（表示キー3つ想定） */
+      display:flex;
+      flex-direction:column;
+      gap:2px;
     }
     .slotInfo .line{
       white-space: normal;
@@ -184,7 +199,6 @@
       -webkit-box-orient: vertical;
       font-size: clamp(8px, 2.6vw, 10px);
       color: rgba(11,16,32,.92);
-      min-height: 1.15em;
     }
 
     /* Bench */
@@ -233,7 +247,6 @@
     .bar strong{color:var(--text); font-weight:900}
     .benchTitlePad{ padding-left: .5em; }
 
-    /* Controls below bench */
     .belowBenchControls{
       margin-top: 10px;
       display:flex;
@@ -257,7 +270,6 @@
     }
     .chip input{ accent-color: var(--accent); }
 
-    /* Options */
     .optionsPanel{
       margin-top: 12px;
       background: rgba(255,255,255,.70);
@@ -293,7 +305,6 @@
       outline:none;
     }
 
-    /* Grid */
     .gridSection{margin-top:12px}
     .grid{display:grid;gap:10px;grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));}
     @media (max-width:1100px){ .grid{ grid-template-columns: repeat(4, 1fr); } }
@@ -357,7 +368,10 @@
         </div>
         <button id="togglePyramidLock" type="button" class="arrowBtn" title="表示固定">▾</button>
       </div>
+
       <div class="rows" id="pyramid"></div>
+
+      <div class="rankDate" id="rankDate"></div>
     </div>
 
     <div class="panel" id="benchPanel">
@@ -424,6 +438,7 @@
   const benchToggleBtn = document.getElementById("toggleBench");
   const pyramidLockBtn = document.getElementById("togglePyramidLock");
   const rankStatsEl = document.getElementById("rankStats");
+  const rankDateEl = document.getElementById("rankDate");
 
   const ROWS = [1,2,3,5];
   const TOTAL = ROWS.reduce((a,b)=>a+b,0);
@@ -445,9 +460,8 @@
     "F":"#d3d3d3"
   };
 
-  // 年齢・身長列名（ユーザー指定）
-  const YEAR_COL = "年/Year";         // 例: (10)
-  const HEIGHT_COL = "身長/Height";   // 例: 172.3 / 172
+  const YEAR_COL = "年/Year";
+  const HEIGHT_COL = "身長/Height";
 
   const state = {
     header: [],
@@ -470,12 +484,11 @@
     benchCollapsed: false,
     classFrameOn: false,
 
-    pyramidLockFull: true,  // true=制限なし（ロック）
+    pyramidLockFull: true,
     _savedSortKey: null,
   };
 
   let cardElsById = new Map();
-  let gridOrderIds = [];
 
   function escapeHtml(s){
     return String(s ?? "")
@@ -587,6 +600,14 @@
     return Number.isFinite(n) ? n : 0;
   }
 
+  function formatTodayYMD(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const da = String(d.getDate()).padStart(2,"0");
+    return `${y}/${m}/${da}`;
+  }
+
   function applyPyramidScrollSizing(){
     if (state.pyramidLockFull){
       pyramidPanelEl.style.maxHeight = "";
@@ -594,17 +615,11 @@
       return;
     }
 
-    // 折りたたみ時：最低でも
-    // 「rankBar（ランキング文字+平均表示） + 写真1段 + 表示3行ぶん」
-    // を確保した高さにする
-    const slotSize = getCssNumber("--slotSize"); // px
+    const slotSize = getCssNumber("--slotSize");
     const barH = rankBarEl ? rankBarEl.offsetHeight : 44;
 
-    // 表示3行ぶん（slotInfoの最低ぶんをざっくり固定で確保）
-    // clampされるので、ここは大きめに取って崩れにくくしてる
-    const infoH = 48;
-
-    // row間gapやpanelの余白ぶん
+    /* 1人分 + その下に3行表示されうる高さは確保（ただし空きは作らない） */
+    const infoH = 46;
     const extra = 18;
 
     const minH = Math.round(barH + slotSize + infoH + extra);
@@ -623,7 +638,6 @@
     const gap = parseFloat(root.getPropertyValue("--gap")) || 6;
     const slotMax = parseFloat(root.getPropertyValue("--slotMax")) || 96;
 
-    // 5人が必ず収まる
     const size = Math.min(slotMax, Math.floor((inner - (4 * gap)) / 5));
     document.documentElement.style.setProperty("--slotSize", Math.max(64, size) + "px");
     document.documentElement.style.setProperty("--benchSize", Math.max(64, size) + "px");
@@ -739,13 +753,13 @@
             <div class="${slotCls}" ${style} data-slot="${idx}" role="button" tabindex="0">
               ${id && imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
             </div>
-            <div class="slotInfo">
-              ${
-                lines.length
-                  ? lines.map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")
-                  : `<div class="line"></div><div class="line"></div><div class="line"></div>`
-              }
-            </div>
+            ${
+              lines.length ? `
+                <div class="slotInfo">
+                  ${lines.map(t => `<div class="line">${escapeHtml(t)}</div>`).join("")}
+                </div>
+              ` : ``
+            }
           </div>
         `);
       }
@@ -753,7 +767,7 @@
     }).join("");
 
     updateRankStats();
-    applyPyramidScrollSizing(); // ← 折り畳み時の高さを描画後に再計算
+    applyPyramidScrollSizing();
   }
 
   function renderBench(){
@@ -811,7 +825,6 @@
 
   function renderGrid(){
     const arr = getSortedPeople();
-    gridOrderIds = arr.map(p => p.id);
 
     gridEl.innerHTML = arr.map((p, i) => {
       const imgSrc = p.img ? escapeHtml(p.img) : "";
@@ -1127,11 +1140,9 @@
     renderToggles();
     renderPyramid();
     renderBench();
-
     renderGrid();
     applyGridClassFrames();
     updateGridSelectionRings();
-
     persistSoon();
   });
 
@@ -1142,7 +1153,6 @@
     renderBench();
     applyGridClassFrames();
     updateGridSelectionRings();
-
     persistSoon();
   });
 
@@ -1214,6 +1224,7 @@
 
   async function loadData(){
     restoreFromStorage();
+    rankDateEl.textContent = formatTodayYMD();
 
     const res = await fetch(CSV_PATH, { cache: "no-store" });
     const text = await res.text();
