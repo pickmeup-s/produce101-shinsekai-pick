@@ -203,7 +203,7 @@
       color: rgba(11,16,32,.92);
     }
 
-    /* ===== Bench panel（そのまま） ===== */
+    /* ===== Bench panel ===== */
     #benchPanel{
       padding: 8px 6px 10px;
       overflow: visible;
@@ -517,7 +517,7 @@
 
     <label class="chip">
       <input id="frameToggle" type="checkbox">
-      枠色（シグナルソングクラス）
+      枠色（シグナルソングA-F ）
     </label>
   </div>
 
@@ -567,7 +567,7 @@
 
 <script>
   const CSV_PATH = "data/master.csv";
-  const STORAGE_KEY = "pyramid_maker_state_v9";
+  const STORAGE_KEY = "pyramid_maker_state_v8";
 
   const gridEl = document.getElementById("grid");
   const pyramidEl = document.getElementById("pyramid");
@@ -599,49 +599,19 @@
   const ROWS = [1,2,3,5];
   const TOTAL = ROWS.reduce((a,b)=>a+b,0);
 
-  // CSVルール（今回の要望）
-  // - 表示する項目：D:*** だけ
-  // - 並び替え：S:*** だけ
-  // - 枠色：D:シグナルソングクラス だけ
-  // - 平均年齢：S:生まれ年(00-10)（YYYY/MM/DD）から満年齢
-  // - 平均身長：S:身長(cm)
-  const DISPLAY_PREFIX = "D:";
-  const SORT_PREFIX = "S:";
-let RAW_CLASS_COL = "D:シグナルソングクラス";
-let RAW_BIRTH_COL = "S:生まれ年(00-10)";
-let RAW_HEIGHT_COL = "S:身長(cm)";
-
-function normalizeKey(s){
-  return String(s ?? "")
-    .trim()
-    .replace(/\s+/g, "")          // 全/半角スペースを無視
-    .replace(/[（）]/g, (m)=> m==="（" ? "(" : ")"); // 全角括弧→半角括弧
-}
-
-function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
-  // 1) 完全一致（trim済み）
-  const exact = header.find(h => String(h).trim() === preferredExact);
-  if (exact) return exact;
-
-  // 2) 正規化して一致
-  const prefN = normalizeKey(preferredExact);
-  const norm = header.find(h => normalizeKey(h) === prefN);
-  if (norm) return norm;
-
-  // 3) それっぽい候補（startsWith / includes / regex など）
-  for (const fn of fallbackMatchers){
-    const hit = header.find(h => fn(String(h)));
-    if (hit) return hit;
-  }
-
-  // 4) 見つからなければそのまま返す（＝計算されないのでデバッグしやすい）
-  return preferredExact;
-}
-
   const EXCLUDE_KEYS = new Set([
+    "id","ID","Id",
     "img","image","Image","画像","photo","Photo",
     "__idx"
   ]);
+
+  // ===== CSV列名（指定）=====
+  // クラス枠色：D：シグナルソングA-F 
+  // 年齢計算：S:生まれ年(00-10)（CSVはYYYY/MM/DD想定）
+  // 身長計算：S:身長(cm)
+  let RAW_CLASS_COL = "D:シグナルソングA-F ";
+  let RAW_BIRTH_COL = "S:生まれ年(00-10)";
+  let RAW_HEIGHT_COL = "S:身長(cm)";
 
   const CLASS_COLOR = {
     "A":"#ff69b4",
@@ -662,11 +632,10 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
     activeSlotIndex: null,
     activeBenchIndex: null,
 
-    // UI用（prefix無し）
-    displayKeys: [],       // ["名前","出身",...]
-    show: {},              // { "名前": true, ... }
+    displayKeys: [],
+    show: {},
 
-    sortKeys: [],          // ["Name（A-Z）", "フルネーム（あいうえお順）", ...]（prefix無し）
+    sortKeys: [],
     lastTappedId: null,
 
     benchCollapsed: false,
@@ -730,32 +699,12 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
     return "";
   }
 
-  // No. をIDとして使う / img を画像として使う
   function normalizePeople(rows){
     return rows.map((r, idx) => {
-      const id = pickField(r, ["No.","id","ID","Id"]) || String(idx+1);
+      const id = pickField(r, ["id","ID","Id"]) || String(idx+1);
       const img  = pickField(r, ["img","image","Image","画像","photo","Photo"]);
       return { id, img, raw: r, __idx: idx };
     });
-  }
-
-  function rawKeyForDisplay(uiKey){ return `${DISPLAY_PREFIX}${uiKey}`; }
-  function rawKeyForSort(uiKey){ return `${SORT_PREFIX}${uiKey}`; }
-
-  function buildDisplayKeysFromHeader(header){
-    return header
-      .filter(h => h && !EXCLUDE_KEYS.has(h))
-      .filter(h => h.startsWith(DISPLAY_PREFIX))
-      .map(h => h.slice(DISPLAY_PREFIX.length).trim())
-      .filter(Boolean);
-  }
-
-  function buildSortKeysFromHeader(header){
-    return header
-      .filter(h => h && !EXCLUDE_KEYS.has(h))
-      .filter(h => h.startsWith(SORT_PREFIX))
-      .map(h => h.slice(SORT_PREFIX.length).trim())
-      .filter(Boolean);
   }
 
   function isInSlots(id){ return state.slots.includes(id); }
@@ -797,7 +746,29 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
     }
   }
 
-  // 枠色：D:シグナルソングクラス だけ
+  // ===== ヘッダーゆらぎ吸収（空白/全角括弧など）=====
+  function normalizeKey(s){
+    return String(s ?? "")
+      .trim()
+      .replace(/\s+/g, "")
+      .replace(/[（）]/g, (m)=> m==="（" ? "(" : ")");
+  }
+
+  function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
+    const exact = header.find(h => String(h).trim() === preferredExact);
+    if (exact) return exact;
+
+    const prefN = normalizeKey(preferredExact);
+    const norm = header.find(h => normalizeKey(h) === prefN);
+    if (norm) return norm;
+
+    for (const fn of fallbackMatchers){
+      const hit = header.find(h => fn(String(h)));
+      if (hit) return hit;
+    }
+    return preferredExact;
+  }
+
   function getClassColor(person){
     if (!person) return "";
     const cls = (person.raw?.[RAW_CLASS_COL] || "").trim();
@@ -864,14 +835,13 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
     return c;
   }
 
-  // 表示行：D:*** から拾う
   function buildInfoLines(person){
     if (!person) return [];
     const r = person.raw || {};
     const lines = [];
-    for (const uiKey of state.displayKeys){
-      if (!state.show[uiKey]) continue;
-      const v = (r[rawKeyForDisplay(uiKey)] ?? "").trim();
+    for (const key of state.displayKeys){
+      if (!state.show[key]) continue;
+      const v = (r[key] ?? "").trim();
       if (!v) continue;
       lines.push(v);
       if (lines.length >= 3) break;
@@ -879,7 +849,11 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
     return lines;
   }
 
-  // 並び替え：S:*** から拾う
+  function buildSortKeys(header){
+    const excludeForSort = new Set(["img","image","Image","画像","photo","Photo"]);
+    return header.filter(h => h && !excludeForSort.has(h));
+  }
+
   function toSortableValue(v){
     const s = String(v ?? "").trim();
     const n = Number(s);
@@ -889,12 +863,12 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
 
   function getSortedPeople(){
     const arr = [...state.people];
-    const uiKey = sortKeyEl.value;
+    const key = sortKeyEl.value;
     const dir = sortDirEl.value;
 
     arr.sort((a,b) => {
-      const av = toSortableValue(a.raw[rawKeyForSort(uiKey)]);
-      const bv = toSortableValue(b.raw[rawKeyForSort(uiKey)]);
+      const av = toSortableValue(a.raw[key]);
+      const bv = toSortableValue(b.raw[key]);
 
       let cmp = 0;
       if (av.type === "num" && bv.type === "num") cmp = av.v - bv.v;
@@ -990,13 +964,11 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
   function getCardTitleAndSub(person){
     const lines = buildInfoLines(person);
 
-    const r = person.raw || {};
-    const fallbackTitle =
-      (r["D:名前"] ?? "").trim() ||
-      (r["D:Name"] ?? "").trim() ||
-      "";
+    const fallbackNameKey = state.header.includes("Name") ? "Name"
+      : state.header.includes("名前") ? "名前"
+      : null;
 
-    const title = lines[0] || fallbackTitle;
+    const title = lines[0] || (fallbackNameKey ? (person.raw[fallbackNameKey] || "") : "");
     const sub = lines.slice(1,3).join(" / ");
 
     return { title, sub };
@@ -1067,44 +1039,46 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
     });
   }
 
-  // 年齢：S:生まれ年(00-10)（YYYY/MM/DD）から満年齢
+  // ===== 年齢/身長計算 =====
   function parseBirthDate(v){
     const s = String(v ?? "").trim();
     if (!s) return null;
 
-    const m = s.match(/(\d{2,4})[\/\.\-](\d{1,2})[\/\.\-](\d{1,2})/);
+    // 例: 2007/07/07, 2007-07-07, 2007.07.07 など
+    const m = s.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);
     if (!m) return null;
 
-    let y = Number(m[1]);
+    const y = Number(m[1]);
     const mo = Number(m[2]);
     const d = Number(m[3]);
-
     if (!Number.isFinite(y) || !Number.isFinite(mo) || !Number.isFinite(d)) return null;
-    if (y < 100) y = 2000 + y;
 
     const dt = new Date(y, mo - 1, d);
-    if (dt.getFullYear() !== y || (dt.getMonth() + 1) !== mo || dt.getDate() !== d) return null;
+    if (Number.isNaN(dt.getTime())) return null;
     return dt;
   }
 
-  function calcAgeFromBirth(birth, today = new Date()){
-    let age = today.getFullYear() - birth.getFullYear();
-    const mDiff = (today.getMonth() + 1) - (birth.getMonth() + 1);
-    const dDiff = today.getDate() - birth.getDate();
-    if (mDiff < 0 || (mDiff === 0 && dDiff < 0)) age--;
-    return Number.isFinite(age) ? age : null;
+  function calcAgeFromBirth(birth){
+    const now = new Date();
+    let age = now.getFullYear() - birth.getFullYear();
+    const m = now.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
+    return age;
   }
 
   function parseHeightCm(v){
-    const s = String(v ?? "").trim();
-    if (!s) return null;
+    const s0 = String(v ?? "").trim();
+    if (!s0) return null;
+
+    // 170,5 → 170.5 対策
+    const s = s0.replace(",", ".");
     const m = s.match(/(\d+(\.\d+)?)/);
     if (!m) return null;
+
     const n = Number(m[1]);
     return Number.isFinite(n) ? n : null;
   }
 
-  // 平均年齢/身長
   function updateRankStats(){
     const ids = state.slots.filter(Boolean);
 
@@ -1116,10 +1090,12 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
       if (!p) continue;
 
       const birth = parseBirthDate(p.raw?.[RAW_BIRTH_COL]);
-      const age = birth ? calcAgeFromBirth(birth, new Date()) : null;
-      if (age != null){
-        ageSum += age;
-        ageCnt++;
+      if (birth){
+        const age = calcAgeFromBirth(birth);
+        if (Number.isFinite(age)){
+          ageSum += age;
+          ageCnt++;
+        }
       }
 
       const h = parseHeightCm(p.raw?.[RAW_HEIGHT_COL]);
@@ -1273,6 +1249,19 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
 
     renderBench();
     renderPyramid();
+    updateGridSelectionRings();
+  }
+
+  // ===== ここ追加：空白タッチで「選択（枠）」だけ解除 =====
+  function clearActiveSelection(){
+    if (state.activeSlotIndex == null && state.activeBenchIndex == null && state.lastTappedId == null) return;
+
+    state.activeSlotIndex = null;
+    state.activeBenchIndex = null;
+    state.lastTappedId = null;
+
+    renderPyramid();
+    renderBench();
     updateGridSelectionRings();
   }
 
@@ -1478,6 +1467,23 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
     onPickId(card.dataset.id, false, null);
   });
 
+  // ===== ここ追加：ページの空白タッチ/クリックで「選択枠」解除 =====
+  document.addEventListener("pointerdown", (e) => {
+    // モーダル中は無視
+    if (displayModalEl.classList.contains("isOpen")) return;
+
+    // 操作系を触ったときは無視
+    if (e.target.closest(
+      ".slot,.benchItem,.card," +
+      "button,select,input,label," +
+      ".optionsPanel,.belowBenchControls," +
+      ".rankBar,.bar," +
+      ".modal,.modalOverlay"
+    )) return;
+
+    clearActiveSelection();
+  }, { passive: true });
+
   window.addEventListener("resize", () => {
     updateSlotSize();
     renderPyramid();
@@ -1493,25 +1499,24 @@ function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
     const { header, rows } = parseCsvWithHeader(text);
 
     state.header = header;
-// CSV列名ゆらぎ吸収（ここ重要）
-RAW_CLASS_COL = resolveHeaderKey(header, "D:シグナルソングクラス", [
-  (h)=> normalizeKey(h).includes(normalizeKey("D:シグナルソングクラス")),
-  (h)=> normalizeKey(h).includes("シグナルソングクラス"),
-]);
 
-RAW_BIRTH_COL = resolveHeaderKey(header, "S:生まれ年(00-10)", [
-  (h)=> normalizeKey(h).startsWith(normalizeKey("S:生まれ年")),
-  (h)=> normalizeKey(h).includes("生まれ年"),
-  (h)=> normalizeKey(h).includes("birth"),
-]);
+    // ヘッダーゆらぎ吸収して列名確定（ここ重要）
+    RAW_CLASS_COL = resolveHeaderKey(header, "D:シグナルソングA-F ", [
+      (h)=> normalizeKey(h).includes(normalizeKey("D:シグナルソングA-F ")),
+      (h)=> normalizeKey(h).includes("シグナルソングA-F "),
+    ]);
+    RAW_BIRTH_COL = resolveHeaderKey(header, "S:生まれ年(00-10)", [
+      (h)=> normalizeKey(h).startsWith(normalizeKey("S:生まれ年")),
+      (h)=> normalizeKey(h).includes("生まれ年"),
+      (h)=> normalizeKey(h).includes("birth"),
+    ]);
+    RAW_HEIGHT_COL = resolveHeaderKey(header, "S:身長(cm)", [
+      (h)=> normalizeKey(h).startsWith(normalizeKey("S:身長")),
+      (h)=> normalizeKey(h).includes("身長"),
+      (h)=> normalizeKey(h).includes("height"),
+    ]);
 
-RAW_HEIGHT_COL = resolveHeaderKey(header, "S:身長(cm)", [
-  (h)=> normalizeKey(h).startsWith(normalizeKey("S:身長")),
-  (h)=> normalizeKey(h).includes("身長"),
-  (h)=> normalizeKey(h).includes("height"),
-]);
-    // 表示候補（D:***）
-    state.displayKeys = buildDisplayKeysFromHeader(header);
+    state.displayKeys = header.filter(h => h && !EXCLUDE_KEYS.has(h));
     for (const k of state.displayKeys){
       if (!(k in state.show)) state.show[k] = false;
     }
@@ -1519,15 +1524,13 @@ RAW_HEIGHT_COL = resolveHeaderKey(header, "S:身長(cm)", [
       if (!state.displayKeys.includes(k)) delete state.show[k];
     }
 
-    // 並び替え候補（S:***）
-    state.sortKeys = buildSortKeysFromHeader(header);
+    state.sortKeys = buildSortKeys(header);
     sortKeyEl.innerHTML = state.sortKeys.map(k =>
       `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`
     ).join("");
 
-    // 初期ソート：Name（A-Z）>フルネーム（あいうえお順）>先頭
-    if (state.sortKeys.includes("Name（A-Z）")) sortKeyEl.value = "Name（A-Z）";
-    else if (state.sortKeys.includes("フルネーム（あいうえお順）")) sortKeyEl.value = "フルネーム（あいうえお順）";
+    if (state.sortKeys.includes("Name")) sortKeyEl.value = "Name";
+    else if (state.sortKeys.includes("名前")) sortKeyEl.value = "名前";
     else sortKeyEl.value = state.sortKeys[0] || "";
 
     if (state._savedSortKey && state.sortKeys.includes(state._savedSortKey)){
