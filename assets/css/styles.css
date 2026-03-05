@@ -1,3 +1,4 @@
+/* assets/css/styles.css */
 :root{
   --bg:#ffffff;
   --bg2:#f7fbff;
@@ -8,7 +9,7 @@
 
   --line:#cfe1ff;           /* 青っぽい線 */
   --lineStrong:#a9c8ff;     /* 少し濃い線 */
-  --shadow: 0 14px 34px rgba(10,35,90,.10);
+  --shadow: none;
 
   --r:16px;
 
@@ -32,10 +33,7 @@ body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(900px 520px at 15% -10%, rgba(10,96,255,.10), transparent 60%),
-    radial-gradient(900px 520px at 85% 0%, rgba(26,167,255,.10), transparent 55%),
-    linear-gradient(180deg, var(--bg), var(--bg2));
+  background: var(--bg);
 }
 
 header{
@@ -89,7 +87,6 @@ button:active{transform: translateY(1px)}
   background: var(--panel);          /* 透けない */
   border:1px solid var(--line);
   border-radius: var(--r);
-  box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
 }
@@ -179,23 +176,22 @@ button:active{transform: translateY(1px)}
 .rankNo{
   position:absolute;
   left: 50%;
-  bottom: 6px;            /* 見切れ対策：円の内側に入れる */
+  bottom: 1px;
   transform: translateX(-50%);
-  min-width: 22px;
-  height: 18px;
-  padding: 0 7px;
+  min-width: 18px;
+  height: 14px;
+  padding: 0 5px;
   border-radius: 999px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 900;
   letter-spacing: .2px;
 
   color: var(--accent);                 /* 青文字 */
   background: #ffffff;                  /* 白背景 */
   border: 1px solid var(--lineStrong);  /* 青っぽい縁 */
-  box-shadow: 0 8px 18px rgba(10,35,90,.12);
   pointer-events:none;
 }
 
@@ -334,7 +330,6 @@ button:active{transform: translateY(1px)}
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  box-shadow: var(--shadow);
 }
 
 .displayBtn .label{
@@ -407,7 +402,6 @@ select{
   background: #ffffff;
   border:1px solid var(--line);
   border-radius:16px;
-  box-shadow: var(--shadow);
   overflow:hidden;
   cursor:pointer;
   user-select:none;
@@ -427,23 +421,22 @@ select{
 
 .idx{
   position:absolute;
-  top:8px; left:8px;
-  height:20px;
-  padding:0 7px;
+  top:6px; left:6px;
+  height:14px;
+  padding:0 5px;
   border-radius:999px;
   display:inline-flex;
   align-items:center;
-  font-size:11px;
+  font-size:9px;
   font-weight:900;
   color: var(--accent);
   background: #ffffff;
   border:1px solid var(--lineStrong);
-  box-shadow: 0 10px 20px rgba(10,35,90,.12);
 }
 
 .card.selected,
 .card.activeRing{
-  box-shadow: 0 0 0 2px var(--ring), var(--shadow);
+  box-shadow: 0 0 0 2px var(--ring);
 }
 
 .slot.activeRing,
@@ -468,7 +461,6 @@ select{
   background: #ffffff;
   border: 1px solid var(--line);
   border-radius: 18px;
-  box-shadow: var(--shadow);
   overflow: hidden;
 }
 
