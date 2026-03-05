@@ -172,27 +172,6 @@ button:active{transform: translateY(1px)}
 .slot img{width:100%;height:100%;object-fit:cover;display:block;border-radius:999px;}
 .slot.empty{background: #fbfdff; border: 2px dashed rgba(10,96,255,.35);}
 
-.rankNo{
-  position:absolute;
-  left: 50%;
-  bottom: 1px;
-  transform: translateX(-50%);
-  min-width: 18px;
-  height: 14px;
-  padding: 0 5px;
-  border-radius: 999px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: .2px;
-
-  color: var(--accent);                 /* 青文字 */
-  background: #ffffff;                  /* 白背景 */
-  border: 1px solid var(--lineStrong);  /* 青っぽい縁 */
-  pointer-events:none;
-}
 
 .slotInfo{
   width:100%;
