@@ -391,6 +391,17 @@ select{
 @media (max-width:1100px){ .grid{ grid-template-columns: repeat(4, 1fr); } }
 @media (max-width:360px){ .grid{ grid-template-columns: repeat(3, 1fr); } }
 
+.loadError{
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #ffc9c9;
+  background: #fff5f5;
+  border-radius: 12px;
+  color: #9f1f1f;
+  font-size: 13px;
+}
+
 .card{
   position:relative;
   background: #ffffff;
