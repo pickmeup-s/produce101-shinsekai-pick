@@ -1,5 +1,6 @@
+// assets/js/app.js（差し替え）
 const CSV_PATH = "data/master.csv";
-const STORAGE_KEY = "pyramid_maker_state_v8";
+const STORAGE_KEY = "pyramid_maker_state_v9";
 
 const gridEl = document.getElementById("grid");
 const pyramidEl = document.getElementById("pyramid");
@@ -14,6 +15,7 @@ const sortDirEl = document.getElementById("sortDir");
 
 const clearBtn = document.getElementById("clear");
 const frameToggleEl = document.getElementById("frameToggle");
+const survivorOnlyEl = document.getElementById("survivorOnly");
 const benchToggleBtn = document.getElementById("toggleBench");
 const pyramidLockBtn = document.getElementById("togglePyramidLock");
 const rankStatsEl = document.getElementById("rankStats");
@@ -40,6 +42,7 @@ const EXCLUDE_KEYS = new Set([
 let RAW_CLASS_COL  = "D:シグナルソングA-F ";
 let RAW_BIRTH_COL  = "S:生まれ年(00-10)";
 let RAW_HEIGHT_COL = "S:身長(cm)";
+let RAW_SURVIVE_COL = "S:生存者";
 
 const CLASS_COLOR = {
   "A":"#ff69b4",
@@ -49,26 +52,38 @@ const CLASS_COLOR = {
   "F":"#d3d3d3"
 };
 
+const BENCH_ADD_ID = "__bench_add__";
+
 const state = {
   header: [],
   people: [],
   byId: new Map(),
+
   slots: Array(TOTAL).fill(null),
   bench: [],
+
   activeSlotIndex: null,
   activeBenchIndex: null,
+
   displayKeys: [],
   show: {},
+
   sortKeys: [],
   lastTappedId: null,
+
   benchCollapsed: false,
   classFrameOn: false,
+  survivorOnly: false,
+
   pyramidLockFull: true,
   _savedSortKey: null,
+
+  benchAddMode: false,
 };
 
 let cardElsById = new Map();
 let modalDraftShow = null;
+let allowedIds = null;
 
 function escapeHtml(s){
   return String(s ?? "")
@@ -297,12 +312,54 @@ function toSortableValue(v){
   return { type:"str", v:s };
 }
 
+function isAlive(person){
+  const v = String(person?.raw?.[RAW_SURVIVE_COL] ?? "").trim();
+  return v === "〇" || v === "○" || v.toLowerCase() === "o";
+}
+
+function computeAllowedIds(){
+  if (!state.survivorOnly){
+    allowedIds = null;
+    return;
+  }
+  const set = new Set();
+  for (const p of state.people){
+    if (isAlive(p)) set.add(p.id);
+  }
+  allowedIds = set;
+}
+
+function isAllowedId(id){
+  if (!state.survivorOnly) return true;
+  return allowedIds ? allowedIds.has(id) : false;
+}
+
+function pruneSelectionByAllowed(){
+  if (!state.survivorOnly) return;
+
+  state.slots = state.slots.map(id => (id && isAllowedId(id)) ? id : null);
+  state.bench = state.bench.filter(id => isAllowedId(id));
+
+  if (state.activeSlotIndex != null){
+    const id = state.slots[state.activeSlotIndex];
+    if (!id) state.activeSlotIndex = null;
+  }
+  if (state.activeBenchIndex != null){
+    if (state.activeBenchIndex === -1) return;
+    const id = state.bench[state.activeBenchIndex];
+    if (!id) state.activeBenchIndex = null;
+  }
+  if (state.lastTappedId && state.lastTappedId !== BENCH_ADD_ID && !isAllowedId(state.lastTappedId)){
+    state.lastTappedId = null;
+  }
+}
+
 function getSortedPeople(){
-  const arr = [...state.people];
+  const base = state.survivorOnly ? state.people.filter(p => isAllowedId(p.id)) : [...state.people];
   const key = sortKeyEl.value;
   const dir = sortDirEl.value;
 
-  arr.sort((a,b) => {
+  base.sort((a,b) => {
     const av = toSortableValue(a.raw[key]);
     const bv = toSortableValue(b.raw[key]);
 
@@ -313,7 +370,7 @@ function getSortedPeople(){
     return dir === "desc" ? -cmp : cmp;
   });
 
-  return arr;
+  return base;
 }
 
 function updateRankStats(){
@@ -402,7 +459,16 @@ function renderBench(){
     return;
   }
 
-  benchEl.innerHTML = state.bench.map((id, i) => {
+  const addActive = (state.activeBenchIndex === -1 && state.benchAddMode);
+
+  const addHtml = `
+    <div class="benchItemWrap benchAdd">
+      <div class="benchItem ${addActive ? "activeRing" : ""}" data-index="-1" data-id="${BENCH_ADD_ID}" role="button" tabindex="0"></div>
+      <div class="benchInfo"><div class="line">ベンチに追加</div></div>
+    </div>
+  `;
+
+  const itemsHtml = state.bench.map((id, i) => {
     const p = state.byId.get(id);
     const imgSrc = p?.img ? escapeHtml(p.img) : "";
     const lines = buildInfoLines(p);
@@ -429,6 +495,7 @@ function renderBench(){
     `;
   }).join("");
 
+  benchEl.innerHTML = addHtml + itemsHtml;
   updateRankStats();
 }
 
@@ -497,7 +564,7 @@ function updateGridSelectionRings(){
   let activeId = null;
   if (state.activeSlotIndex != null){
     activeId = state.slots[state.activeSlotIndex] || null;
-  } else if (state.activeBenchIndex != null){
+  } else if (state.activeBenchIndex != null && state.activeBenchIndex !== -1){
     activeId = state.bench[state.activeBenchIndex] || null;
   }
 
@@ -548,12 +615,13 @@ function parseHeightCm(v){
 function onSlotClick(slotIndex){
   const slotId = state.slots[slotIndex] || null;
 
-  if (state.activeBenchIndex != null){
+  if (state.activeBenchIndex != null && state.activeBenchIndex !== -1){
     swapSlotWithBench(slotIndex, state.activeBenchIndex);
 
     state.activeBenchIndex = null;
     state.activeSlotIndex = null;
     state.lastTappedId = null;
+    state.benchAddMode = false;
 
     renderPyramid();
     renderBench();
@@ -567,6 +635,8 @@ function onSlotClick(slotIndex){
 
     state.activeSlotIndex = null;
     state.lastTappedId = null;
+    state.benchAddMode = false;
+    state.activeBenchIndex = null;
 
     renderPyramid();
     updateGridSelectionRings();
@@ -579,6 +649,8 @@ function onSlotClick(slotIndex){
 
     state.activeSlotIndex = null;
     state.lastTappedId = null;
+    state.benchAddMode = false;
+    state.activeBenchIndex = null;
 
     renderPyramid();
     updateGridSelectionRings();
@@ -589,6 +661,7 @@ function onSlotClick(slotIndex){
   state.activeSlotIndex = slotIndex;
   state.activeBenchIndex = null;
   state.lastTappedId = slotId;
+  state.benchAddMode = false;
 
   renderPyramid();
   renderBench();
@@ -596,6 +669,30 @@ function onSlotClick(slotIndex){
 }
 
 function onPickId(id, fromBench=false, benchIndex=null){
+  if (state.survivorOnly && !isAllowedId(id)) return;
+
+  if (state.benchAddMode){
+    if (!isSelected(id)){
+      state.bench.push(id);
+      state.benchAddMode = false;
+      state.activeBenchIndex = null;
+      state.activeSlotIndex = null;
+      state.lastTappedId = null;
+
+      renderPyramid();
+      renderBench();
+      renderGrid();
+      applyGridClassFrames();
+      updateGridSelectionRings();
+      persistSoon();
+      return;
+    } else {
+      state.benchAddMode = false;
+      state.activeBenchIndex = null;
+      state.lastTappedId = null;
+    }
+  }
+
   if (state.lastTappedId === id && isSelected(id)){
     removeIdEverywhere(id);
 
@@ -611,7 +708,7 @@ function onPickId(id, fromBench=false, benchIndex=null){
   }
 
   if (state.activeSlotIndex != null){
-    if (fromBench && benchIndex != null){
+    if (fromBench && benchIndex != null && benchIndex !== -1){
       swapSlotWithBench(state.activeSlotIndex, benchIndex);
     } else {
       const bi = state.bench.indexOf(id);
@@ -653,7 +750,19 @@ function onPickId(id, fromBench=false, benchIndex=null){
   }
 
   if (fromBench && benchIndex != null){
-    if (state.activeBenchIndex != null && state.activeBenchIndex !== benchIndex){
+    if (benchIndex === -1){
+      state.benchAddMode = true;
+      state.activeBenchIndex = -1;
+      state.activeSlotIndex = null;
+      state.lastTappedId = BENCH_ADD_ID;
+
+      renderBench();
+      renderPyramid();
+      updateGridSelectionRings();
+      return;
+    }
+
+    if (state.activeBenchIndex != null && state.activeBenchIndex !== benchIndex && state.activeBenchIndex !== -1){
       swapBench(state.activeBenchIndex, benchIndex);
 
       state.activeBenchIndex = null;
@@ -684,11 +793,12 @@ function onPickId(id, fromBench=false, benchIndex=null){
 }
 
 function clearActiveSelection(){
-  if (state.activeSlotIndex == null && state.activeBenchIndex == null && state.lastTappedId == null) return;
+  if (state.activeSlotIndex == null && state.activeBenchIndex == null && state.lastTappedId == null && !state.benchAddMode) return;
 
   state.activeSlotIndex = null;
   state.activeBenchIndex = null;
   state.lastTappedId = null;
+  state.benchAddMode = false;
 
   renderPyramid();
   renderBench();
@@ -711,6 +821,7 @@ function persistNow(){
     benchCollapsed: state.benchCollapsed,
     classFrameOn: state.classFrameOn,
     pyramidLockFull: state.pyramidLockFull,
+    survivorOnly: state.survivorOnly,
   };
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); }catch(_){}
 }
@@ -733,6 +844,7 @@ function restoreFromStorage(){
     if (typeof p.benchCollapsed === "boolean") state.benchCollapsed = p.benchCollapsed;
     if (typeof p.classFrameOn === "boolean") state.classFrameOn = p.classFrameOn;
     if (typeof p.pyramidLockFull === "boolean") state.pyramidLockFull = p.pyramidLockFull;
+    if (typeof p.survivorOnly === "boolean") state.survivorOnly = p.survivorOnly;
 
     if (typeof p.sortDir === "string") sortDirEl.value = p.sortDir;
     state._savedSortKey = (typeof p.sortKey === "string") ? p.sortKey : null;
@@ -837,6 +949,24 @@ frameToggleEl.addEventListener("change", () => {
   persistSoon();
 });
 
+survivorOnlyEl.addEventListener("change", () => {
+  state.survivorOnly = survivorOnlyEl.checked;
+  computeAllowedIds();
+  pruneSelectionByAllowed();
+
+  state.activeSlotIndex = null;
+  state.activeBenchIndex = null;
+  state.lastTappedId = null;
+  state.benchAddMode = false;
+
+  renderPyramid();
+  renderBench();
+  renderGrid();
+  applyGridClassFrames();
+  updateGridSelectionRings();
+  persistSoon();
+});
+
 sortKeyEl.addEventListener("change", () => {
   renderGrid();
   applyGridClassFrames();
@@ -851,7 +981,7 @@ sortDirEl.addEventListener("change", () => {
 });
 
 clearBtn.addEventListener("click", () => {
-  const ok = confirm("選択を解除しますか？");
+  const ok = confirm("選択を全て解除しますか？");
   if (!ok) return;
 
   state.slots = Array(TOTAL).fill(null);
@@ -859,6 +989,7 @@ clearBtn.addEventListener("click", () => {
   state.activeSlotIndex = null;
   state.activeBenchIndex = null;
   state.lastTappedId = null;
+  state.benchAddMode = false;
 
   renderPyramid();
   renderBench();
@@ -888,7 +1019,23 @@ pyramidEl.addEventListener("click", (e) => {
 benchEl.addEventListener("click", (e) => {
   const item = e.target.closest(".benchItem");
   if (!item) return;
-  onPickId(item.dataset.id, true, Number(item.dataset.index));
+
+  const idx = Number(item.dataset.index);
+  const id = item.dataset.id;
+
+  if (idx === -1){
+    state.benchAddMode = true;
+    state.activeBenchIndex = -1;
+    state.activeSlotIndex = null;
+    state.lastTappedId = BENCH_ADD_ID;
+
+    renderBench();
+    renderPyramid();
+    updateGridSelectionRings();
+    return;
+  }
+
+  onPickId(id, true, idx);
 });
 
 gridEl.addEventListener("click", (e) => {
@@ -941,6 +1088,11 @@ async function loadData(){
     (h)=> normalizeKey(h).includes("身長"),
     (h)=> normalizeKey(h).includes("height"),
   ]);
+  RAW_SURVIVE_COL = resolveHeaderKey(header, "S:生存者", [
+    (h)=> normalizeKey(h).includes(normalizeKey("生存者")),
+    (h)=> normalizeKey(h).includes(normalizeKey("生存")),
+    (h)=> normalizeKey(h).includes("surviv"),
+  ]);
 
   state.displayKeys = header
     .filter(h => h && !EXCLUDE_KEYS.has(h))
@@ -971,11 +1123,15 @@ async function loadData(){
   state.people = normalizePeople(rows);
   state.byId = new Map(state.people.map(p => [p.id, p]));
 
-  state.slots = state.slots.map(id => (id && state.byId.has(id)) ? id : null);
-  state.bench = state.bench.filter(id => state.byId.has(id));
-
   frameToggleEl.checked = state.classFrameOn;
+  survivorOnlyEl.checked = state.survivorOnly;
   pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
+
+  computeAllowedIds();
+  pruneSelectionByAllowed();
+
+  state.slots = state.slots.map(id => (id && state.byId.has(id) && isAllowedId(id)) ? id : null);
+  state.bench = state.bench.filter(id => state.byId.has(id) && isAllowedId(id));
 
   updateSlotSize();
   renderPyramid();
