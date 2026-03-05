@@ -1,4 +1,3 @@
-/* assets/js/app.js */
 const CSV_PATH = "data/master.csv";
 const STORAGE_KEY = "pyramid_maker_state_v10";
 
@@ -43,6 +42,7 @@ let RAW_CLASS_COL  = "D:シグナルソングA-F ";
 let RAW_BIRTH_COL  = "S:生まれ年(00-10)";
 let RAW_HEIGHT_COL = "S:身長(cm)";
 let RAW_SURVIVOR_COL = "生存者";
+let RAW_DISPLAY_NAME_COL = "表示名";
 
 const CLASS_COLOR = {
   "A":"#ff69b4",
@@ -210,6 +210,11 @@ function isSKey(h){
   return n.startsWith("S:");
 }
 
+function isDNameKey(h){
+  const n = normalizeKey(h);
+  return isDKey(h) && n.includes("名前");
+}
+
 function resolveHeaderKey(header, preferredExact, fallbackMatchers = []){
   const exact = header.find(h => String(h).trim() === preferredExact);
   if (exact) return exact;
@@ -297,8 +302,15 @@ function buildInfoLines(person){
   const lines = [];
   for (const key of state.displayKeys){
     if (!state.show[key]) continue;
-    const v = (r[key] ?? "").trim();
+
+    const useDisplayName = isDNameKey(key)
+      && RAW_DISPLAY_NAME_COL
+      && String(r[RAW_DISPLAY_NAME_COL] ?? "").trim() !== "";
+
+    const sourceKey = useDisplayName ? RAW_DISPLAY_NAME_COL : key;
+    const v = String(r[sourceKey] ?? "").trim();
     if (!v) continue;
+
     lines.push(v);
     if (lines.length >= 3) break;
   }
@@ -1065,8 +1077,14 @@ async function loadData(){
     ]);
 
     RAW_SURVIVOR_COL = resolveHeaderKey(header, "生存者", [
-      (h)=> normalizeKey(h).includes("生存者"),
+      (h)=> normalizeKey(h).includes("存者"),
       (h)=> normalizeKey(h).includes("survivor"),
+    ]);
+
+    RAW_DISPLAY_NAME_COL = resolveHeaderKey(header, "表示名", [
+      (h)=> normalizeKey(h).includes("表示名"),
+      (h)=> normalizeKey(h).includes("displayname"),
+      (h)=> normalizeKey(h).includes("display_name"),
     ]);
 
     state.displayKeys = header
