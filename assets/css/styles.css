@@ -450,3 +450,31 @@ select{
 .btnGhost{
   background: rgba(10,96,255,.04);
 }
+
+.optionsPanelTight{ margin-top: 10px; }
+
+#clear{
+  width:36px;
+  padding:0;
+  justify-content:center;
+}
+
+.benchAdd .benchItem{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(10,96,255,.04);
+  border-style: dashed;
+}
+.benchAdd .benchItem::before{
+  content:"+";
+  font-size: 22px;
+  font-weight: 900;
+  color: rgba(11,16,32,.72);
+  line-height: 1;
+}
+.benchAdd .benchInfo .line{
+  -webkit-line-clamp: 1;
+  font-size: clamp(8px, 2.6vw, 10px);
+  color: rgba(11,16,32,.70);
+}
