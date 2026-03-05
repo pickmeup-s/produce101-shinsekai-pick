@@ -296,14 +296,15 @@ function selectedToggleCount(showObj = state.show){
   return c;
 }
 
-function buildInfoLines(person){
+function buildInfoLines(person, useDisplayNameForDName = true){
   if (!person) return [];
   const r = person.raw || {};
   const lines = [];
   for (const key of state.displayKeys){
     if (!state.show[key]) continue;
 
-    const useDisplayName = isDNameKey(key)
+    const useDisplayName = useDisplayNameForDName
+      && isDNameKey(key)
       && RAW_DISPLAY_NAME_COL
       && String(r[RAW_DISPLAY_NAME_COL] ?? "").trim() !== "";
 
@@ -368,7 +369,6 @@ function renderPyramid(){
         <div class="slotWrap">
           <div class="${slotCls}" ${style} data-slot="${idx}" role="button" tabindex="0">
             ${id && imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
-            <div class="rankNo">${idx+1}</div>
           </div>
           ${lines.length ? `
             <div class="slotInfo">
@@ -453,7 +453,7 @@ function renderBench(){
 }
 
 function getCardTitleAndSub(person){
-  const lines = buildInfoLines(person);
+  const lines = buildInfoLines(person, false);
 
   const fallbackNameKey = state.header.includes("Name") ? "Name"
     : state.header.includes("名前") ? "名前"
@@ -664,6 +664,25 @@ function onSlotClick(slotIndex){
 
 function onPickId(id, fromBench=false, benchIndex=null){
   if (id === BENCH_ADD_ID){
+    if (state.activeSlotIndex != null){
+      const slotId = state.slots[state.activeSlotIndex] || null;
+      if (slotId){
+        state.slots[state.activeSlotIndex] = null;
+        state.bench.push(slotId);
+
+        state.activeSlotIndex = null;
+        state.activeBenchIndex = null;
+        state.lastTappedId = null;
+        state.forceBenchAdd = false;
+
+        renderPyramid();
+        renderBench();
+        updateGridSelectionRings();
+        persistSoon();
+        return;
+      }
+    }
+
     state.forceBenchAdd = !state.forceBenchAdd;
     state.activeBenchIndex = null;
     state.activeSlotIndex = null;
@@ -1077,7 +1096,7 @@ async function loadData(){
     ]);
 
     RAW_SURVIVOR_COL = resolveHeaderKey(header, "生存者", [
-      (h)=> normalizeKey(h).includes("存者"),
+      (h)=> normalizeKey(h).includes("生存者"),
       (h)=> normalizeKey(h).includes("survivor"),
     ]);
 
