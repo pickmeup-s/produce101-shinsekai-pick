@@ -81,6 +81,14 @@ const state = {
 
 let cardElsById = new Map();
 
+function showLoadError(message){
+  const msg = escapeHtml(message || "データの読み込みに失敗しました");
+  gridEl.innerHTML = `<p class="loadError">${msg}</p>`;
+  pyramidEl.innerHTML = "";
+  benchEl.innerHTML = "";
+  rankStatsEl.textContent = "平均年齢：--　平均身長：--";
+}
+
 function escapeHtml(s){
   return String(s ?? "")
     .replaceAll("&","&amp;")
@@ -1024,79 +1032,88 @@ function applySurvivorFilterAndRebuild(){
 }
 
 async function loadData(){
-  restoreFromStorage();
-  rankDateEl.textContent = formatTodayYMD();
+  try {
+    restoreFromStorage();
+    rankDateEl.textContent = formatTodayYMD();
 
-  const res = await fetch(CSV_PATH, { cache: "no-store" });
-  const text = await res.text();
-  const { header, rows } = parseCsvWithHeader(text);
+    const res = await fetch(CSV_PATH, { cache: "no-store" });
+    if (!res.ok){
+      throw new Error(`CSV fetch failed: ${res.status}`);
+    }
 
-  state.header = header;
+    const text = await res.text();
+    const { header, rows } = parseCsvWithHeader(text);
 
-  RAW_CLASS_COL = resolveHeaderKey(header, "D:シグナルソングA-F ", [
-    (h)=> normalizeKey(h).includes(normalizeKey("D:シグナルソングA-F ")),
-    (h)=> normalizeKey(h).includes("シグナルソングA-F"),
-  ]);
+    state.header = header;
 
-  RAW_BIRTH_COL = resolveHeaderKey(header, "S:生まれ年(00-10)", [
-    (h)=> normalizeKey(h).startsWith(normalizeKey("S:生まれ年")),
-    (h)=> normalizeKey(h).includes("生まれ年"),
-    (h)=> normalizeKey(h).includes("birth"),
-  ]);
+    RAW_CLASS_COL = resolveHeaderKey(header, "D:シグナルソングA-F ", [
+      (h)=> normalizeKey(h).includes(normalizeKey("D:シグナルソングA-F ")),
+      (h)=> normalizeKey(h).includes("シグナルソングA-F"),
+    ]);
 
-  RAW_HEIGHT_COL = resolveHeaderKey(header, "S:身長(cm)", [
-    (h)=> normalizeKey(h).startsWith(normalizeKey("S:身長")),
-    (h)=> normalizeKey(h).includes("身長"),
-    (h)=> normalizeKey(h).includes("height"),
-  ]);
+    RAW_BIRTH_COL = resolveHeaderKey(header, "S:生まれ年(00-10)", [
+      (h)=> normalizeKey(h).startsWith(normalizeKey("S:生まれ年")),
+      (h)=> normalizeKey(h).includes("生まれ年"),
+      (h)=> normalizeKey(h).includes("birth"),
+    ]);
 
-  RAW_SURVIVOR_COL = resolveHeaderKey(header, "生存者", [
-    (h)=> normalizeKey(h).includes("生存者"),
-    (h)=> normalizeKey(h).includes("survivor"),
-  ]);
+    RAW_HEIGHT_COL = resolveHeaderKey(header, "S:身長(cm)", [
+      (h)=> normalizeKey(h).startsWith(normalizeKey("S:身長")),
+      (h)=> normalizeKey(h).includes("身長"),
+      (h)=> normalizeKey(h).includes("height"),
+    ]);
 
-  state.displayKeys = header
-    .filter(h => h && !EXCLUDE_KEYS.has(h))
-    .filter(h => isDKey(h));
+    RAW_SURVIVOR_COL = resolveHeaderKey(header, "生存者", [
+      (h)=> normalizeKey(h).includes("生存者"),
+      (h)=> normalizeKey(h).includes("survivor"),
+    ]);
 
-  const nextShow = {};
-  for (const k of state.displayKeys){
-    nextShow[k] = Boolean(state.show?.[k]);
-  }
-  state.show = nextShow;
+    state.displayKeys = header
+      .filter(h => h && !EXCLUDE_KEYS.has(h))
+      .filter(h => isDKey(h));
+
+    const nextShow = {};
+    for (const k of state.displayKeys){
+      nextShow[k] = Boolean(state.show?.[k]);
+    }
+    state.show = nextShow;
 
   // 並び替え：S系＋名前系だけ / 生存者は除外
-  const sortKeys = header
-    .filter(h => h && !EXCLUDE_KEYS.has(h))
-    .filter(h => isSKey(h) || h === "Name" || h === "名前")
-    .filter(h => normalizeKey(h) !== normalizeKey(RAW_SURVIVOR_COL));
+    const sortKeys = header
+      .filter(h => h && !EXCLUDE_KEYS.has(h))
+      .filter(h => isSKey(h) || h === "Name" || h === "名前")
+      .filter(h => normalizeKey(h) !== normalizeKey(RAW_SURVIVOR_COL));
 
-  state.sortKeys = sortKeys;
+    state.sortKeys = sortKeys;
 
-  sortKeyEl.innerHTML = state.sortKeys.map(k =>
-    `<option value="${escapeHtml(k)}">${escapeHtml(stripPrefixLabel(k))}</option>`
-  ).join("");
+    sortKeyEl.innerHTML = state.sortKeys.map(k =>
+      `<option value="${escapeHtml(k)}">${escapeHtml(stripPrefixLabel(k))}</option>`
+    ).join("");
 
-  if (state.sortKeys.includes("Name")) sortKeyEl.value = "Name";
-  else if (state.sortKeys.includes("名前")) sortKeyEl.value = "名前";
-  else sortKeyEl.value = state.sortKeys[0] || "";
+    if (state.sortKeys.includes("Name")) sortKeyEl.value = "Name";
+    else if (state.sortKeys.includes("名前")) sortKeyEl.value = "名前";
+    else sortKeyEl.value = state.sortKeys[0] || "";
 
-  if (state._savedSortKey && state.sortKeys.includes(state._savedSortKey)){
-    sortKeyEl.value = state._savedSortKey;
+    if (state._savedSortKey && state.sortKeys.includes(state._savedSortKey)){
+      sortKeyEl.value = state._savedSortKey;
+    }
+    state._savedSortKey = null;
+
+    state.allPeople = normalizePeople(rows);
+
+    frameToggleEl.checked = state.classFrameOn;
+    survivorOnlyEl.checked = state.survivorOnly;
+    pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
+
+    applySurvivorFilterAndRebuild();
+
+    updateSlotSize();
+    applyPyramidScrollSizing();
+    persistSoon();
+  } catch (err){
+    console.error("Failed to load data", err);
+    showLoadError("データが読み込めません。HTTPサーバー経由で開いてください。 (data/master.csv)");
   }
-  state._savedSortKey = null;
-
-  state.allPeople = normalizePeople(rows);
-
-  frameToggleEl.checked = state.classFrameOn;
-  survivorOnlyEl.checked = state.survivorOnly;
-  pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
-
-  applySurvivorFilterAndRebuild();
-
-  updateSlotSize();
-  applyPyramidScrollSizing();
-  persistSoon();
 }
 
 loadData();
