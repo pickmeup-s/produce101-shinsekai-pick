@@ -1,5 +1,5 @@
 const CSV_PATH = "data/master.csv";
-const STORAGE_KEY = "pyramid_maker_state_v9";
+const STORAGE_KEY = "pyramid_maker_state_v10";
 
 const gridEl = document.getElementById("grid");
 const pyramidEl = document.getElementById("pyramid");
@@ -26,7 +26,6 @@ const displayModalEl = document.getElementById("displayModal");
 const closeDisplayModalBtn = document.getElementById("closeDisplayModal");
 const modalTogglesEl = document.getElementById("modalToggles");
 const displayModalClearBtn = document.getElementById("displayModalClear");
-const displayModalDoneBtn = document.getElementById("displayModalDone");
 const pickedSummaryEl = document.getElementById("pickedSummary");
 
 const ROWS = [1,2,3,5];
@@ -81,7 +80,6 @@ const state = {
 };
 
 let cardElsById = new Map();
-let modalDraftShow = null;
 
 function escapeHtml(s){
   return String(s ?? "")
@@ -256,7 +254,7 @@ function applyPyramidScrollSizing(){
   const slotSize = getCssNumber("--slotSize");
   const barH = rankBarEl ? rankBarEl.offsetHeight : 44;
 
-  const infoH = 40;
+  const infoH = 44;
   const extra = 14;
   const minH = Math.round(barH + 6 + slotSize + infoH + extra);
 
@@ -298,11 +296,6 @@ function buildInfoLines(person){
   return lines;
 }
 
-function buildSortKeys(header){
-  const excludeForSort = new Set(["img","image","Image","画像","photo","Photo"]);
-  return header.filter(h => h && !excludeForSort.has(h));
-}
-
 function toSortableValue(v){
   const s = String(v ?? "").trim();
   const n = Number(s);
@@ -342,7 +335,7 @@ function renderPyramid(){
       const lines = buildInfoLines(p);
 
       const frameColor = (state.classFrameOn ? getClassColor(p) : "");
-      const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
+      const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}; border-width:3px"` : "";  // 枠太く
 
       const slotCls = [
         "slot",
@@ -413,7 +406,7 @@ function renderBench(){
     const lines = buildInfoLines(p);
 
     const frameColor = (state.classFrameOn ? getClassColor(p) : "");
-    const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
+    const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}; border-width:3px"` : ""; // 枠太く
 
     const realIndex = state.bench.indexOf(id);
     const cls = [
@@ -460,7 +453,7 @@ function renderGrid(){
     const idx = i + 1;
 
     const frameColor = (state.classFrameOn ? getClassColor(p) : "");
-    const borderStyle = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
+    const borderStyle = frameColor ? `style="border-color:${escapeHtml(frameColor)}; border-width:2px"` : "";
 
     return `
       <div class="card" ${borderStyle} data-id="${escapeHtml(p.id)}" role="button" tabindex="0">
@@ -468,8 +461,8 @@ function renderGrid(){
         ${
           imgSrc
             ? `<img class="thumb" src="${imgSrc}" alt="${escapeHtml(title)}" loading="lazy"
-                 onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div style=&quot;aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block&quot;></div>')" />`
-            : `<div style="aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block"></div>`
+                 onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div style=&quot;aspect-ratio:1/1;background:#f4f9ff;display:block&quot;></div>')" />`
+            : `<div style="aspect-ratio:1/1;background:#f4f9ff;display:block"></div>`
         }
         <div class="meta">
           <p class="name">${escapeHtml(title)}</p>
@@ -484,18 +477,26 @@ function renderGrid(){
     cardElsById.set(el.dataset.id, el);
   });
 
+  applyGridClassFrames();
   updateGridSelectionRings();
 }
 
 function applyGridClassFrames(){
   cardElsById.forEach((el, id) => {
     if (!state.classFrameOn){
-      el.style.borderColor = "rgba(255,255,255,.14)";
+      el.style.borderColor = "";
+      el.style.borderWidth = "";
       return;
     }
     const p = state.byId.get(id);
     const c = getClassColor(p);
-    el.style.borderColor = c ? c : "rgba(255,255,255,.14)";
+    if (c){
+      el.style.borderColor = c;
+      el.style.borderWidth = "2px";
+    } else {
+      el.style.borderColor = "";
+      el.style.borderWidth = "";
+    }
   });
 }
 
@@ -595,6 +596,7 @@ function onSlotClick(slotIndex){
     state.activeBenchIndex = null;
     state.activeSlotIndex = null;
     state.lastTappedId = null;
+    state.forceBenchAdd = false;
 
     renderPyramid();
     renderBench();
@@ -608,6 +610,7 @@ function onSlotClick(slotIndex){
 
     state.activeSlotIndex = null;
     state.lastTappedId = null;
+    state.forceBenchAdd = false;
 
     renderPyramid();
     updateGridSelectionRings();
@@ -620,6 +623,7 @@ function onSlotClick(slotIndex){
 
     state.activeSlotIndex = null;
     state.lastTappedId = null;
+    state.forceBenchAdd = false;
 
     renderPyramid();
     updateGridSelectionRings();
@@ -630,6 +634,7 @@ function onSlotClick(slotIndex){
   state.activeSlotIndex = slotIndex;
   state.activeBenchIndex = null;
   state.lastTappedId = slotId;
+  state.forceBenchAdd = false;
 
   renderPyramid();
   renderBench();
@@ -654,6 +659,7 @@ function onPickId(id, fromBench=false, benchIndex=null){
     state.lastTappedId = null;
     state.activeBenchIndex = null;
     state.activeSlotIndex = null;
+    state.forceBenchAdd = false;
 
     renderPyramid();
     renderBench();
@@ -811,21 +817,32 @@ function restoreFromStorage(){
   }catch(_){}
 }
 
-function getPickedKeys(showObj = state.show){
+function updatePickedSummary(){
   const picked = [];
   for (const k of state.displayKeys){
-    if (showObj[k]) picked.push(k);
+    if (state.show[k]) picked.push(k);
   }
-  return picked;
-}
-
-function updatePickedSummary(){
-  const picked = getPickedKeys(state.show);
   pickedSummaryEl.textContent = picked.length ? picked.map(stripPrefixLabel).join(" / ") : "未選択";
 }
 
+function renderModalToggles(){
+  const picked = selectedToggleCount(state.show);
+  const max = 3;
+  const disableNew = picked >= max;
+
+  modalTogglesEl.innerHTML = state.displayKeys.map(key => {
+    const checked = state.show[key] ? "checked" : "";
+    const disabled = (!state.show[key] && disableNew) ? "disabled" : "";
+    return `
+      <label class="chipToggle">
+        <input type="checkbox" data-key="${escapeHtml(key)}" ${checked} ${disabled}>
+        ${escapeHtml(stripPrefixLabel(key))}
+      </label>
+    `;
+  }).join("");
+}
+
 function openDisplayModal(){
-  modalDraftShow = { ...state.show };
   renderModalToggles();
   displayModalEl.classList.add("isOpen");
   displayModalEl.setAttribute("aria-hidden","false");
@@ -836,24 +853,6 @@ function closeDisplayModal(){
   displayModalEl.classList.remove("isOpen");
   displayModalEl.setAttribute("aria-hidden","true");
   document.body.style.overflow = "";
-  modalDraftShow = null;
-}
-
-function renderModalToggles(){
-  const picked = selectedToggleCount(modalDraftShow);
-  const max = 3;
-  const disableNew = picked >= max;
-
-  modalTogglesEl.innerHTML = state.displayKeys.map(key => {
-    const checked = modalDraftShow[key] ? "checked" : "";
-    const disabled = (!modalDraftShow[key] && disableNew) ? "disabled" : "";
-    return `
-      <label class="chipToggle">
-        <input type="checkbox" data-key="${escapeHtml(key)}" ${checked} ${disabled}>
-        ${escapeHtml(stripPrefixLabel(key))}
-      </label>
-    `;
-  }).join("");
 }
 
 modalTogglesEl.addEventListener("change", (e) => {
@@ -861,34 +860,33 @@ modalTogglesEl.addEventListener("change", (e) => {
   if (!cb) return;
   const key = cb.dataset.key;
 
-  const currentlyOn = selectedToggleCount(modalDraftShow);
-  if (!modalDraftShow[key] && cb.checked && currentlyOn >= 3){
+  const currentlyOn = selectedToggleCount(state.show);
+  if (!state.show[key] && cb.checked && currentlyOn >= 3){
     cb.checked = false;
     return;
   }
 
-  modalDraftShow[key] = cb.checked;
-  renderModalToggles();
+  state.show[key] = cb.checked;
+
+  renderModalToggles();     // 3つ制限のdisabled更新
+  updatePickedSummary();    // ボタン表示も即更新
+  renderPyramid();          // 即反映
+  renderBench();            // 即反映
+  renderGrid();             // 即反映
+  persistSoon();
 });
 
 openDisplayModalBtn.addEventListener("click", openDisplayModal);
 closeDisplayModalBtn.addEventListener("click", closeDisplayModal);
 
 displayModalClearBtn.addEventListener("click", () => {
-  for (const k of state.displayKeys) modalDraftShow[k] = false;
+  for (const k of state.displayKeys) state.show[k] = false;
+
   renderModalToggles();
-});
-
-displayModalDoneBtn.addEventListener("click", () => {
-  state.show = { ...modalDraftShow };
-  closeDisplayModal();
-
+  updatePickedSummary();
   renderPyramid();
   renderBench();
   renderGrid();
-  applyGridClassFrames();
-  updateGridSelectionRings();
-  updatePickedSummary();
   persistSoon();
 });
 
@@ -903,8 +901,7 @@ frameToggleEl.addEventListener("change", () => {
   state.classFrameOn = frameToggleEl.checked;
   renderPyramid();
   renderBench();
-  applyGridClassFrames();
-  updateGridSelectionRings();
+  renderGrid();
   persistSoon();
 });
 
@@ -916,14 +913,10 @@ survivorOnlyEl.addEventListener("change", () => {
 
 sortKeyEl.addEventListener("change", () => {
   renderGrid();
-  applyGridClassFrames();
-  updateGridSelectionRings();
   persistSoon();
 });
 sortDirEl.addEventListener("change", () => {
   renderGrid();
-  applyGridClassFrames();
-  updateGridSelectionRings();
   persistSoon();
 });
 
@@ -1027,8 +1020,6 @@ function applySurvivorFilterAndRebuild(){
   renderPyramid();
   renderBench();
   renderGrid();
-  applyGridClassFrames();
-  updateGridSelectionRings();
   updatePickedSummary();
 }
 
@@ -1074,8 +1065,13 @@ async function loadData(){
   }
   state.show = nextShow;
 
-  const baseSort = buildSortKeys(header);
-  state.sortKeys = baseSort.filter(h => isSKey(h) || h === "Name" || h === "名前");
+  // 並び替え：S系＋名前系だけ / 生存者は除外
+  const sortKeys = header
+    .filter(h => h && !EXCLUDE_KEYS.has(h))
+    .filter(h => isSKey(h) || h === "Name" || h === "名前")
+    .filter(h => normalizeKey(h) !== normalizeKey(RAW_SURVIVOR_COL));
+
+  state.sortKeys = sortKeys;
 
   sortKeyEl.innerHTML = state.sortKeys.map(k =>
     `<option value="${escapeHtml(k)}">${escapeHtml(stripPrefixLabel(k))}</option>`
