@@ -1,3 +1,4 @@
+/* assets/js/app.js */
 const CSV_PATH = "data/master.csv";
 const STORAGE_KEY = "pyramid_maker_state_v10";
 
@@ -343,7 +344,7 @@ function renderPyramid(){
       const lines = buildInfoLines(p);
 
       const frameColor = (state.classFrameOn ? getClassColor(p) : "");
-      const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}; border-width:3px"` : "";  // 枠太く
+      const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}; border-width:2px"` : "";
 
       const slotCls = [
         "slot",
@@ -414,7 +415,7 @@ function renderBench(){
     const lines = buildInfoLines(p);
 
     const frameColor = (state.classFrameOn ? getClassColor(p) : "");
-    const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}; border-width:3px"` : ""; // 枠太く
+    const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}; border-width:2px"` : "";
 
     const realIndex = state.bench.indexOf(id);
     const cls = [
