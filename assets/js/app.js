@@ -1,4 +1,3 @@
-// assets/js/app.js（差し替え）
 const CSV_PATH = "data/master.csv";
 const STORAGE_KEY = "pyramid_maker_state_v9";
 
@@ -32,6 +31,7 @@ const pickedSummaryEl = document.getElementById("pickedSummary");
 
 const ROWS = [1,2,3,5];
 const TOTAL = ROWS.reduce((a,b)=>a+b,0);
+const BENCH_ADD_ID = "__BENCH_ADD__";
 
 const EXCLUDE_KEYS = new Set([
   "id","ID","Id",
@@ -42,7 +42,7 @@ const EXCLUDE_KEYS = new Set([
 let RAW_CLASS_COL  = "D:シグナルソングA-F ";
 let RAW_BIRTH_COL  = "S:生まれ年(00-10)";
 let RAW_HEIGHT_COL = "S:身長(cm)";
-let RAW_SURVIVE_COL = "S:生存者";
+let RAW_SURVIVOR_COL = "生存者";
 
 const CLASS_COLOR = {
   "A":"#ff69b4",
@@ -52,10 +52,9 @@ const CLASS_COLOR = {
   "F":"#d3d3d3"
 };
 
-const BENCH_ADD_ID = "__bench_add__";
-
 const state = {
   header: [],
+  allPeople: [],
   people: [],
   byId: new Map(),
 
@@ -78,12 +77,11 @@ const state = {
   pyramidLockFull: true,
   _savedSortKey: null,
 
-  benchAddMode: false,
+  forceBenchAdd: false
 };
 
 let cardElsById = new Map();
 let modalDraftShow = null;
-let allowedIds = null;
 
 function escapeHtml(s){
   return String(s ?? "")
@@ -312,54 +310,12 @@ function toSortableValue(v){
   return { type:"str", v:s };
 }
 
-function isAlive(person){
-  const v = String(person?.raw?.[RAW_SURVIVE_COL] ?? "").trim();
-  return v === "〇" || v === "○" || v.toLowerCase() === "o";
-}
-
-function computeAllowedIds(){
-  if (!state.survivorOnly){
-    allowedIds = null;
-    return;
-  }
-  const set = new Set();
-  for (const p of state.people){
-    if (isAlive(p)) set.add(p.id);
-  }
-  allowedIds = set;
-}
-
-function isAllowedId(id){
-  if (!state.survivorOnly) return true;
-  return allowedIds ? allowedIds.has(id) : false;
-}
-
-function pruneSelectionByAllowed(){
-  if (!state.survivorOnly) return;
-
-  state.slots = state.slots.map(id => (id && isAllowedId(id)) ? id : null);
-  state.bench = state.bench.filter(id => isAllowedId(id));
-
-  if (state.activeSlotIndex != null){
-    const id = state.slots[state.activeSlotIndex];
-    if (!id) state.activeSlotIndex = null;
-  }
-  if (state.activeBenchIndex != null){
-    if (state.activeBenchIndex === -1) return;
-    const id = state.bench[state.activeBenchIndex];
-    if (!id) state.activeBenchIndex = null;
-  }
-  if (state.lastTappedId && state.lastTappedId !== BENCH_ADD_ID && !isAllowedId(state.lastTappedId)){
-    state.lastTappedId = null;
-  }
-}
-
 function getSortedPeople(){
-  const base = state.survivorOnly ? state.people.filter(p => isAllowedId(p.id)) : [...state.people];
+  const arr = [...state.people];
   const key = sortKeyEl.value;
   const dir = sortDirEl.value;
 
-  base.sort((a,b) => {
+  arr.sort((a,b) => {
     const av = toSortableValue(a.raw[key]);
     const bv = toSortableValue(b.raw[key]);
 
@@ -370,42 +326,7 @@ function getSortedPeople(){
     return dir === "desc" ? -cmp : cmp;
   });
 
-  return base;
-}
-
-function updateRankStats(){
-  const ids = state.slots.filter(Boolean);
-
-  let ageSum = 0, ageCnt = 0;
-  let hSum = 0, hCnt = 0;
-
-  for (const id of ids){
-    const p = state.byId.get(id);
-    if (!p) continue;
-
-    const birth = parseBirthDate(p.raw?.[RAW_BIRTH_COL]);
-    if (birth){
-      const age = calcAgeFromBirth(birth);
-      if (Number.isFinite(age)){
-        ageSum += age;
-        ageCnt++;
-      }
-    }
-
-    const h = parseHeightCm(p.raw?.[RAW_HEIGHT_COL]);
-    if (h != null){
-      hSum += h;
-      hCnt++;
-    }
-  }
-
-  const ageAvg = ageCnt ? Math.round((ageSum / ageCnt) * 10) / 10 : null;
-  const hAvg   = hCnt ? Math.round((hSum / hCnt) * 10) / 10 : null;
-
-  const ageText = (ageAvg == null) ? "--" : `${ageAvg}歳`;
-  const hText   = (hAvg   == null) ? "--" : `${hAvg}cm`;
-
-  rankStatsEl.textContent = `平均年齢：${ageText}　平均身長：${hText}`;
+  return arr;
 }
 
 function renderPyramid(){
@@ -433,6 +354,7 @@ function renderPyramid(){
         <div class="slotWrap">
           <div class="${slotCls}" ${style} data-slot="${idx}" role="button" tabindex="0">
             ${id && imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
+            <div class="rankNo">${idx+1}</div>
           </div>
           ${lines.length ? `
             <div class="slotInfo">
@@ -449,6 +371,12 @@ function renderPyramid(){
   applyPyramidScrollSizing();
 }
 
+function getBenchViewIds(){
+  const ids = [...state.bench];
+  ids.push(BENCH_ADD_ID);
+  return ids;
+}
+
 function renderBench(){
   benchPanelEl.classList.toggle("benchCollapsed", state.benchCollapsed);
   benchToggleBtn.textContent = state.benchCollapsed ? "▴" : "▾";
@@ -459,16 +387,27 @@ function renderBench(){
     return;
   }
 
-  const addActive = (state.activeBenchIndex === -1 && state.benchAddMode);
+  const viewIds = getBenchViewIds();
 
-  const addHtml = `
-    <div class="benchItemWrap benchAdd">
-      <div class="benchItem ${addActive ? "activeRing" : ""}" data-index="-1" data-id="${BENCH_ADD_ID}" role="button" tabindex="0"></div>
-      <div class="benchInfo"><div class="line">ベンチに追加</div></div>
-    </div>
-  `;
+  benchEl.innerHTML = viewIds.map((id, i) => {
+    if (id === BENCH_ADD_ID){
+      const cls = [
+        "benchItem",
+        "benchAdd",
+        (state.forceBenchAdd) ? "activeRing" : ""
+      ].filter(Boolean).join(" ");
 
-  const itemsHtml = state.bench.map((id, i) => {
+      return `
+        <div class="benchItemWrap">
+          <div class="${cls}" data-index="${i}" data-id="${escapeHtml(id)}" role="button" tabindex="0" aria-label="ベンチに追加">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      `;
+    }
+
     const p = state.byId.get(id);
     const imgSrc = p?.img ? escapeHtml(p.img) : "";
     const lines = buildInfoLines(p);
@@ -476,14 +415,15 @@ function renderBench(){
     const frameColor = (state.classFrameOn ? getClassColor(p) : "");
     const style = frameColor ? `style="border-color:${escapeHtml(frameColor)}"` : "";
 
+    const realIndex = state.bench.indexOf(id);
     const cls = [
       "benchItem",
-      (state.activeBenchIndex === i) ? "activeRing" : ""
+      (state.activeBenchIndex === realIndex) ? "activeRing" : ""
     ].filter(Boolean).join(" ");
 
     return `
       <div class="benchItemWrap">
-        <div class="${cls}" ${style} data-index="${i}" data-id="${escapeHtml(id)}" role="button" tabindex="0">
+        <div class="${cls}" ${style} data-index="${realIndex}" data-id="${escapeHtml(id)}" role="button" tabindex="0">
           ${imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" />` : ``}
         </div>
         ${lines.length ? `
@@ -495,7 +435,6 @@ function renderBench(){
     `;
   }).join("");
 
-  benchEl.innerHTML = addHtml + itemsHtml;
   updateRankStats();
 }
 
@@ -529,8 +468,8 @@ function renderGrid(){
         ${
           imgSrc
             ? `<img class="thumb" src="${imgSrc}" alt="${escapeHtml(title)}" loading="lazy"
-                 onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div style=&quot;aspect-ratio:1/1;background:rgba(10,96,255,.06);display:block&quot;></div>')" />`
-            : `<div style="aspect-ratio:1/1;background:rgba(10,96,255,.06);display:block"></div>`
+                 onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div style=&quot;aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block&quot;></div>')" />`
+            : `<div style="aspect-ratio:1/1;background:rgba(255,255,255,.06);display:block"></div>`
         }
         <div class="meta">
           <p class="name">${escapeHtml(title)}</p>
@@ -551,12 +490,12 @@ function renderGrid(){
 function applyGridClassFrames(){
   cardElsById.forEach((el, id) => {
     if (!state.classFrameOn){
-      el.style.borderColor = "rgba(10,35,90,.14)";
+      el.style.borderColor = "rgba(255,255,255,.14)";
       return;
     }
     const p = state.byId.get(id);
     const c = getClassColor(p);
-    el.style.borderColor = c ? c : "rgba(10,35,90,.14)";
+    el.style.borderColor = c ? c : "rgba(255,255,255,.14)";
   });
 }
 
@@ -564,7 +503,7 @@ function updateGridSelectionRings(){
   let activeId = null;
   if (state.activeSlotIndex != null){
     activeId = state.slots[state.activeSlotIndex] || null;
-  } else if (state.activeBenchIndex != null && state.activeBenchIndex !== -1){
+  } else if (state.activeBenchIndex != null){
     activeId = state.bench[state.activeBenchIndex] || null;
   }
 
@@ -612,16 +551,50 @@ function parseHeightCm(v){
   return Number.isFinite(n) ? n : null;
 }
 
+function updateRankStats(){
+  const ids = state.slots.filter(Boolean);
+
+  let ageSum = 0, ageCnt = 0;
+  let hSum = 0, hCnt = 0;
+
+  for (const id of ids){
+    const p = state.byId.get(id);
+    if (!p) continue;
+
+    const birth = parseBirthDate(p.raw?.[RAW_BIRTH_COL]);
+    if (birth){
+      const age = calcAgeFromBirth(birth);
+      if (Number.isFinite(age)){
+        ageSum += age;
+        ageCnt++;
+      }
+    }
+
+    const h = parseHeightCm(p.raw?.[RAW_HEIGHT_COL]);
+    if (h != null){
+      hSum += h;
+      hCnt++;
+    }
+  }
+
+  const ageAvg = ageCnt ? Math.round((ageSum / ageCnt) * 10) / 10 : null;
+  const hAvg   = hCnt ? Math.round((hSum / hCnt) * 10) / 10 : null;
+
+  const ageText = (ageAvg == null) ? "--" : `${ageAvg}歳`;
+  const hText   = (hAvg   == null) ? "--" : `${hAvg}cm`;
+
+  rankStatsEl.textContent = `平均年齢：${ageText}　平均身長：${hText}`;
+}
+
 function onSlotClick(slotIndex){
   const slotId = state.slots[slotIndex] || null;
 
-  if (state.activeBenchIndex != null && state.activeBenchIndex !== -1){
+  if (state.activeBenchIndex != null){
     swapSlotWithBench(slotIndex, state.activeBenchIndex);
 
     state.activeBenchIndex = null;
     state.activeSlotIndex = null;
     state.lastTappedId = null;
-    state.benchAddMode = false;
 
     renderPyramid();
     renderBench();
@@ -635,8 +608,6 @@ function onSlotClick(slotIndex){
 
     state.activeSlotIndex = null;
     state.lastTappedId = null;
-    state.benchAddMode = false;
-    state.activeBenchIndex = null;
 
     renderPyramid();
     updateGridSelectionRings();
@@ -649,8 +620,6 @@ function onSlotClick(slotIndex){
 
     state.activeSlotIndex = null;
     state.lastTappedId = null;
-    state.benchAddMode = false;
-    state.activeBenchIndex = null;
 
     renderPyramid();
     updateGridSelectionRings();
@@ -661,7 +630,6 @@ function onSlotClick(slotIndex){
   state.activeSlotIndex = slotIndex;
   state.activeBenchIndex = null;
   state.lastTappedId = slotId;
-  state.benchAddMode = false;
 
   renderPyramid();
   renderBench();
@@ -669,28 +637,15 @@ function onSlotClick(slotIndex){
 }
 
 function onPickId(id, fromBench=false, benchIndex=null){
-  if (state.survivorOnly && !isAllowedId(id)) return;
-
-  if (state.benchAddMode){
-    if (!isSelected(id)){
-      state.bench.push(id);
-      state.benchAddMode = false;
-      state.activeBenchIndex = null;
-      state.activeSlotIndex = null;
-      state.lastTappedId = null;
-
-      renderPyramid();
-      renderBench();
-      renderGrid();
-      applyGridClassFrames();
-      updateGridSelectionRings();
-      persistSoon();
-      return;
-    } else {
-      state.benchAddMode = false;
-      state.activeBenchIndex = null;
-      state.lastTappedId = null;
-    }
+  if (id === BENCH_ADD_ID){
+    state.forceBenchAdd = !state.forceBenchAdd;
+    state.activeBenchIndex = null;
+    state.activeSlotIndex = null;
+    state.lastTappedId = null;
+    renderBench();
+    updateGridSelectionRings();
+    persistSoon();
+    return;
   }
 
   if (state.lastTappedId === id && isSelected(id)){
@@ -708,7 +663,7 @@ function onPickId(id, fromBench=false, benchIndex=null){
   }
 
   if (state.activeSlotIndex != null){
-    if (fromBench && benchIndex != null && benchIndex !== -1){
+    if (fromBench && benchIndex != null){
       swapSlotWithBench(state.activeSlotIndex, benchIndex);
     } else {
       const bi = state.bench.indexOf(id);
@@ -724,6 +679,7 @@ function onPickId(id, fromBench=false, benchIndex=null){
     state.activeSlotIndex = null;
     state.activeBenchIndex = null;
     state.lastTappedId = null;
+    state.forceBenchAdd = false;
 
     renderPyramid();
     renderBench();
@@ -735,6 +691,19 @@ function onPickId(id, fromBench=false, benchIndex=null){
   state.lastTappedId = id;
 
   if (!isSelected(id)){
+    if (state.forceBenchAdd){
+      state.bench.push(id);
+      state.lastTappedId = null;
+      state.activeBenchIndex = null;
+      state.forceBenchAdd = false;
+
+      renderPyramid();
+      renderBench();
+      updateGridSelectionRings();
+      persistSoon();
+      return;
+    }
+
     const empty = firstEmptySlot();
     if (empty >= 0) state.slots[empty] = id;
     else state.bench.push(id);
@@ -750,19 +719,7 @@ function onPickId(id, fromBench=false, benchIndex=null){
   }
 
   if (fromBench && benchIndex != null){
-    if (benchIndex === -1){
-      state.benchAddMode = true;
-      state.activeBenchIndex = -1;
-      state.activeSlotIndex = null;
-      state.lastTappedId = BENCH_ADD_ID;
-
-      renderBench();
-      renderPyramid();
-      updateGridSelectionRings();
-      return;
-    }
-
-    if (state.activeBenchIndex != null && state.activeBenchIndex !== benchIndex && state.activeBenchIndex !== -1){
+    if (state.activeBenchIndex != null && state.activeBenchIndex !== benchIndex){
       swapBench(state.activeBenchIndex, benchIndex);
 
       state.activeBenchIndex = null;
@@ -776,6 +733,7 @@ function onPickId(id, fromBench=false, benchIndex=null){
 
     state.activeBenchIndex = benchIndex;
     state.activeSlotIndex = null;
+    state.forceBenchAdd = false;
 
     renderBench();
     renderPyramid();
@@ -786,6 +744,7 @@ function onPickId(id, fromBench=false, benchIndex=null){
   const bi = state.bench.indexOf(id);
   state.activeBenchIndex = (bi >= 0) ? bi : null;
   state.activeSlotIndex = null;
+  state.forceBenchAdd = false;
 
   renderBench();
   renderPyramid();
@@ -793,12 +752,12 @@ function onPickId(id, fromBench=false, benchIndex=null){
 }
 
 function clearActiveSelection(){
-  if (state.activeSlotIndex == null && state.activeBenchIndex == null && state.lastTappedId == null && !state.benchAddMode) return;
+  if (state.activeSlotIndex == null && state.activeBenchIndex == null && state.lastTappedId == null && !state.forceBenchAdd) return;
 
   state.activeSlotIndex = null;
   state.activeBenchIndex = null;
   state.lastTappedId = null;
-  state.benchAddMode = false;
+  state.forceBenchAdd = false;
 
   renderPyramid();
   renderBench();
@@ -821,7 +780,7 @@ function persistNow(){
     benchCollapsed: state.benchCollapsed,
     classFrameOn: state.classFrameOn,
     pyramidLockFull: state.pyramidLockFull,
-    survivorOnly: state.survivorOnly,
+    survivorOnly: state.survivorOnly
   };
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); }catch(_){}
 }
@@ -951,19 +910,7 @@ frameToggleEl.addEventListener("change", () => {
 
 survivorOnlyEl.addEventListener("change", () => {
   state.survivorOnly = survivorOnlyEl.checked;
-  computeAllowedIds();
-  pruneSelectionByAllowed();
-
-  state.activeSlotIndex = null;
-  state.activeBenchIndex = null;
-  state.lastTappedId = null;
-  state.benchAddMode = false;
-
-  renderPyramid();
-  renderBench();
-  renderGrid();
-  applyGridClassFrames();
-  updateGridSelectionRings();
+  applySurvivorFilterAndRebuild();
   persistSoon();
 });
 
@@ -989,7 +936,7 @@ clearBtn.addEventListener("click", () => {
   state.activeSlotIndex = null;
   state.activeBenchIndex = null;
   state.lastTappedId = null;
-  state.benchAddMode = false;
+  state.forceBenchAdd = false;
 
   renderPyramid();
   renderBench();
@@ -1019,23 +966,12 @@ pyramidEl.addEventListener("click", (e) => {
 benchEl.addEventListener("click", (e) => {
   const item = e.target.closest(".benchItem");
   if (!item) return;
-
-  const idx = Number(item.dataset.index);
   const id = item.dataset.id;
-
-  if (idx === -1){
-    state.benchAddMode = true;
-    state.activeBenchIndex = -1;
-    state.activeSlotIndex = null;
-    state.lastTappedId = BENCH_ADD_ID;
-
-    renderBench();
-    renderPyramid();
-    updateGridSelectionRings();
+  if (id === BENCH_ADD_ID){
+    onPickId(BENCH_ADD_ID, true, null);
     return;
   }
-
-  onPickId(id, true, idx);
+  onPickId(id, true, Number(item.dataset.index));
 });
 
 gridEl.addEventListener("click", (e) => {
@@ -1064,6 +1000,38 @@ window.addEventListener("resize", () => {
   renderBench();
 });
 
+function normalizeSurvivorValue(v){
+  const s = String(v ?? "").trim();
+  if (!s) return false;
+  if (s === "〇" || s === "○") return true;
+  if (/^(yes|y|true|1)$/i.test(s)) return true;
+  return false;
+}
+
+function applySurvivorFilterAndRebuild(){
+  const nextPeople = state.survivorOnly
+    ? state.allPeople.filter(p => normalizeSurvivorValue(p.raw?.[RAW_SURVIVOR_COL]))
+    : [...state.allPeople];
+
+  state.people = nextPeople;
+  state.byId = new Map(state.people.map(p => [p.id, p]));
+
+  state.slots = state.slots.map(id => (id && state.byId.has(id)) ? id : null);
+  state.bench = state.bench.filter(id => state.byId.has(id));
+
+  state.activeSlotIndex = null;
+  state.activeBenchIndex = null;
+  state.lastTappedId = null;
+  state.forceBenchAdd = false;
+
+  renderPyramid();
+  renderBench();
+  renderGrid();
+  applyGridClassFrames();
+  updateGridSelectionRings();
+  updatePickedSummary();
+}
+
 async function loadData(){
   restoreFromStorage();
   rankDateEl.textContent = formatTodayYMD();
@@ -1076,22 +1044,24 @@ async function loadData(){
 
   RAW_CLASS_COL = resolveHeaderKey(header, "D:シグナルソングA-F ", [
     (h)=> normalizeKey(h).includes(normalizeKey("D:シグナルソングA-F ")),
-    (h)=> normalizeKey(h).includes("シグナルソングA-F "),
+    (h)=> normalizeKey(h).includes("シグナルソングA-F"),
   ]);
+
   RAW_BIRTH_COL = resolveHeaderKey(header, "S:生まれ年(00-10)", [
     (h)=> normalizeKey(h).startsWith(normalizeKey("S:生まれ年")),
     (h)=> normalizeKey(h).includes("生まれ年"),
     (h)=> normalizeKey(h).includes("birth"),
   ]);
+
   RAW_HEIGHT_COL = resolveHeaderKey(header, "S:身長(cm)", [
     (h)=> normalizeKey(h).startsWith(normalizeKey("S:身長")),
     (h)=> normalizeKey(h).includes("身長"),
     (h)=> normalizeKey(h).includes("height"),
   ]);
-  RAW_SURVIVE_COL = resolveHeaderKey(header, "S:生存者", [
-    (h)=> normalizeKey(h).includes(normalizeKey("生存者")),
-    (h)=> normalizeKey(h).includes(normalizeKey("生存")),
-    (h)=> normalizeKey(h).includes("surviv"),
+
+  RAW_SURVIVOR_COL = resolveHeaderKey(header, "生存者", [
+    (h)=> normalizeKey(h).includes("生存者"),
+    (h)=> normalizeKey(h).includes("survivor"),
   ]);
 
   state.displayKeys = header
@@ -1120,28 +1090,16 @@ async function loadData(){
   }
   state._savedSortKey = null;
 
-  state.people = normalizePeople(rows);
-  state.byId = new Map(state.people.map(p => [p.id, p]));
+  state.allPeople = normalizePeople(rows);
 
   frameToggleEl.checked = state.classFrameOn;
   survivorOnlyEl.checked = state.survivorOnly;
   pyramidLockBtn.textContent = state.pyramidLockFull ? "▾" : "▴";
 
-  computeAllowedIds();
-  pruneSelectionByAllowed();
-
-  state.slots = state.slots.map(id => (id && state.byId.has(id) && isAllowedId(id)) ? id : null);
-  state.bench = state.bench.filter(id => state.byId.has(id) && isAllowedId(id));
+  applySurvivorFilterAndRebuild();
 
   updateSlotSize();
-  renderPyramid();
-  renderBench();
-  renderGrid();
-  applyGridClassFrames();
-  updateGridSelectionRings();
-
   applyPyramidScrollSizing();
-  updatePickedSummary();
   persistSoon();
 }
 
