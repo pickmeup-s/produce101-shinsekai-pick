@@ -1,3 +1,4 @@
+<!-- index.html（差し替え） -->
 <!doctype html>
 <html lang="ja">
 <head>
@@ -44,22 +45,26 @@
   </section>
 
   <div class="belowBenchControls">
-    <button id="clear" type="button" title="全解除">
+    <button id="clear" type="button" title="全解除" aria-label="全解除">
       <svg class="btnIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M9 3h6l1 2h5v2H3V5h5l1-2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
         <path d="M6 9v11a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         <path d="M10 12v6M14 12v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      全解除
     </button>
 
     <label class="chip">
       <input id="frameToggle" type="checkbox">
       枠色（シグナルソングA-F ）
     </label>
+
+    <label class="chip">
+      <input id="survivorOnly" type="checkbox">
+      生存者のみ
+    </label>
   </div>
 
-  <section class="optionsPanel">
+  <section class="optionsPanel optionsPanelTight">
     <button id="openDisplayModal" type="button" class="optionsTitleBtn" title="表示する項目を選ぶ">
       <strong>表示名</strong>
       <span class="right">
@@ -67,7 +72,9 @@
         <span aria-hidden="true">▾</span>
       </span>
     </button>
+  </section>
 
+  <section class="optionsPanel">
     <p class="sortTitle">並び替え</p>
     <div class="sortBox">
       <select id="sortKey"></select>
