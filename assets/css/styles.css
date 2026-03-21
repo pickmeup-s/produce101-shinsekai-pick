@@ -193,7 +193,17 @@ button:active{transform: translateY(1px)}
 
 #benchPanel{
   padding: 0;
-  overflow: visible;
+  overflow: hidden;
+  border-radius: var(--r);
+  background: #ffffff;
+}
+
+#benchPanel .bar{
+  background: #ffffff;
+  border-top-left-radius: var(--r);
+  border-top-right-radius: var(--r);
+  position: relative;   /* ← 追加 */
+  z-index: 1;           /* ← 追加 */
 }
 
 .benchRow{
