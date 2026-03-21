@@ -242,7 +242,7 @@ button:active{transform: translateY(1px)}
   align-items:center;
   justify-content:center;
   background: #fbfdff;
-  border: none !important; 
+  border: none; 
 }
 .benchAdd svg{ width:22px;height:22px; opacity:.95; color: var(--accent); }
 
