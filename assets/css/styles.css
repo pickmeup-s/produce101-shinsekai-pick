@@ -497,3 +497,86 @@ select{
 .btnGhost{
   background: #ffffff;
 }
+
+.headerWrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.site-links {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.link-toggle {
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-toggle svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.link-toggle svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.link-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(300px, calc(100vw - 32px));
+  background: #ffffff;
+  border: 1px solid #dbe6f5;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.link-menu a {
+  display: block;
+  padding: 12px 14px;
+  color: #1f3b64;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.5;
+  background: #ffffff;
+  border-bottom: 1px solid #eef4fb;
+}
+
+.link-menu a:last-child {
+  border-bottom: none;
+}
+
+.link-menu a:hover {
+  background: #f4f8ff;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .headerWrap {
+    gap: 10px;
+  }
+
+  .headerWrap h1 {
+    font-size: 16px;
+  }
+
+  .link-menu {
+    width: min(280px, calc(100vw - 24px));
+  }
+}
