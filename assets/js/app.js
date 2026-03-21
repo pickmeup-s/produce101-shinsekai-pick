@@ -1154,5 +1154,39 @@ async function loadData(){
   }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  const linkToggle = document.getElementById("linkToggle");
+  const linkMenu = document.getElementById("linkMenu");
+
+  if (!linkToggle || !linkMenu) return;
+
+  const syncExpanded = () => {
+    const isOpen = !linkMenu.classList.contains("hidden");
+    linkToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  };
+
+  linkToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    linkMenu.classList.toggle("hidden");
+    syncExpanded();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!linkMenu.contains(e.target) && !linkToggle.contains(e.target)) {
+      linkMenu.classList.add("hidden");
+      syncExpanded();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      linkMenu.classList.add("hidden");
+      syncExpanded();
+    }
+  });
+
+  syncExpanded();
+});
+
 
 loadData();
