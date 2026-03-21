@@ -497,3 +497,89 @@ select{
 .btnGhost{
   background: #ffffff;
 }
+
+.site-links {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 9999;
+}
+
+.link-toggle {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #c9d7ee;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.link-toggle:hover {
+  background: #f4f8ff;
+  border-color: #9bb8e8;
+  transform: scale(1.04);
+}
+
+.link-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: #1f3b64;
+}
+
+.link-menu {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  width: min(300px, calc(100vw - 28px));
+  background: #ffffff;
+  border: 1px solid #dbe6f5;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.link-menu a {
+  display: block;
+  padding: 12px 14px;
+  color: #1f3b64;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.5;
+  background: #ffffff;
+  border-bottom: 1px solid #eef4fb;
+}
+
+.link-menu a:last-child {
+  border-bottom: none;
+}
+
+.link-menu a:hover {
+  background: #f4f8ff;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .site-links {
+    top: 10px;
+    right: 10px;
+  }
+
+  .link-toggle {
+    width: 42px;
+    height: 42px;
+  }
+
+  .link-menu {
+    top: 48px;
+    width: min(280px, calc(100vw - 20px));
+  }
+}
