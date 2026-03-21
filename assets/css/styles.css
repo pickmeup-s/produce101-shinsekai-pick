@@ -210,7 +210,7 @@ button:active{transform: translateY(1px)}
   display:flex;
   gap: var(--gap);
   overflow-x:auto;
-  padding: 8px 4px 8px;
+  padding: 8px 6px 8px;
   -webkit-overflow-scrolling: touch;
   align-items:flex-start;
 }
