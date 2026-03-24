@@ -15,7 +15,7 @@
   --accent:#0a60ff;
   --accent2:#1aa7ff;
 
-  --gap:5px;
+  --gap:6px;
   --slotSize:72px;
   --slotMax:96px;
   --benchSize: var(--slotSize);
