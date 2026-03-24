@@ -283,7 +283,7 @@ function updateSlotSize(){
   const gap = parseFloat(root.getPropertyValue("--gap")) || 6;
   const slotMax = parseFloat(root.getPropertyValue("--slotMax")) || 96;
 
-  const size = Math.min(slotMax, Math.floor((inner - (12) - (4 * gap)) / 5));
+  const size = Math.min(slotMax, Math.floor((inner - (16) - (4 * gap)) / 5));
   document.documentElement.style.setProperty("--slotSize", Math.max(64, size) + "px");
   document.documentElement.style.setProperty("--benchSize", Math.max(64, size) + "px");
 }
