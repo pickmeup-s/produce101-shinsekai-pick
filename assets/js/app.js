@@ -28,7 +28,7 @@ const modalTogglesEl = document.getElementById("modalToggles");
 const displayModalClearBtn = document.getElementById("displayModalClear");
 const pickedSummaryEl = document.getElementById("pickedSummary");
 
-const ROWS = [1,2,3,5];
+const ROWS = [1,2,4,5];
 const TOTAL = ROWS.reduce((a,b)=>a+b,0);
 const BENCH_ADD_ID = "__BENCH_ADD__";
 
