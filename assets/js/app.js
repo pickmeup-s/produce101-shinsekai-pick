@@ -1,5 +1,5 @@
 const CSV_PATH = "data/master.csv";
-const STORAGE_KEY = "pyramid_maker_state_v10";
+const STORAGE_KEY = "pyramid_maker_state_v11";
 
 const gridEl = document.getElementById("grid");
 const pyramidEl = document.getElementById("pyramid");
