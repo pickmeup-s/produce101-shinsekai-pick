@@ -39,7 +39,7 @@ const EXCLUDE_KEYS = new Set([
 ]);
 
 let RAW_CLASS_COL  = "D:シグナルソングA-F ";
-let RAW_BIRTH_COL  = "S:生まれ年(00-10)";
+let RAW_BIRTH_COL = "S:生年月日 (yyyy.mm.dd)";
 let RAW_HEIGHT_COL = "S:身長(cm)";
 let RAW_SURVIVOR_COL = "生存者";
 let RAW_DISPLAY_NAME_COL = "表示名";
@@ -1083,11 +1083,7 @@ async function loadData(){
       (h)=> normalizeKey(h).includes("シグナルソングA-F"),
     ]);
 
-    RAW_BIRTH_COL = resolveHeaderKey(header, "S:生まれ年(00-10)", [
-      (h)=> normalizeKey(h).startsWith(normalizeKey("S:生まれ年")),
-      (h)=> normalizeKey(h).includes("生まれ年"),
-      (h)=> normalizeKey(h).includes("birth"),
-    ]);
+    RAW_BIRTH_COL = resolveHeaderKey(header, "S:生年月日 (yyyy.mm.dd)");
 
     RAW_HEIGHT_COL = resolveHeaderKey(header, "S:身長(cm)", [
       (h)=> normalizeKey(h).startsWith(normalizeKey("S:身長")),
