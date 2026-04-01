@@ -380,9 +380,17 @@ button:active{transform: translateY(1px)}
 .sortBox{
   display:flex;
   gap:10px;
-  flex-wrap:wrap;
+  flex-wrap:nowrap;
   align-items:center;
   padding-left: 2px;
+}
+#sortKey{
+  flex:1;          /* 左を伸ばす */
+  min-width:0;     /* はみ出し防止 */
+}
+
+#sortDir{
+  flex:0 0 auto;   /* 右固定 */
 }
 
 select{
