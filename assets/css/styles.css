@@ -412,6 +412,9 @@ select{
   font-size: 12px;
   font-weight: 400;
   background: var(--chipBg);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 .gridSection{margin-top:12px}
