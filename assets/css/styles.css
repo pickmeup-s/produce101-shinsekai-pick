@@ -295,7 +295,7 @@ button:active{transform: translateY(1px)}
 
 
 .belowBenchControls{
-  margin-top: 10px;
+  margin-top: 0;
   display:flex;
   gap:10px;
   align-items:center;
@@ -318,7 +318,7 @@ button:active{transform: translateY(1px)}
 .chip input{ accent-color: var(--accent); }
 
 .displayRow{
-  margin-top: 10px;
+  margin-top: 0px;
   display:flex;
 }
 
@@ -363,7 +363,7 @@ button:active{transform: translateY(1px)}
 }
 
 .optionsPanel{
-  margin-top: 8px;                 /* 余白詰め */
+  margin-top: 0px;                 /* 余白詰め */
   background: #ffffff;
   border: 1px solid var(--line);
   border-radius: var(--r);
