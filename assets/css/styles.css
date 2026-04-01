@@ -77,7 +77,7 @@ button:active{transform: translateY(1px)}
   position: sticky;
   top: 0;
   z-index: 30;
-  margin-top: 0px;
+  margin-top: 10px;
   display:flex;
   flex-direction:column;
   gap:10px;
@@ -295,7 +295,7 @@ button:active{transform: translateY(1px)}
 
 
 .belowBenchControls{
-  margin-top: 0;
+  margin-top: 10px;
   display:flex;
   gap:10px;
   align-items:center;
@@ -318,7 +318,7 @@ button:active{transform: translateY(1px)}
 .chip input{ accent-color: var(--accent); }
 
 .displayRow{
-  margin-top: 0px;
+  margin-top: 10px;
   display:flex;
 }
 
