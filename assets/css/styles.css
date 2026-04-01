@@ -331,6 +331,7 @@ button:active{transform: translateY(1px)}
   display:flex;
   align-items:center;
   gap:8px;
+  background: var(--chipBg);
 }
 
 .displayBtn .label{
@@ -410,6 +411,7 @@ select{
 .sortBox select {
   font-size: 12px;
   font-weight: 400;
+  background: var(--chipBg);
 }
 
 .gridSection{margin-top:12px}
