@@ -633,3 +633,8 @@ select{
   border: none;
   border-radius: 0;
 }
+
+.policyPage a{
+  color:var(--muted);
+  text-decoration:underline;
+}
