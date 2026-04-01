@@ -604,3 +604,26 @@ select{
     width: min(280px, calc(100vw - 24px));
   }
 }
+
+.siteFooter{
+  margin-top:28px;
+  padding:12px 0 18px;
+}
+
+.footerInner{
+  display:flex;
+  justify-content:center;
+}
+
+.privacyLink{
+  font-size:9px;
+  line-height:1;
+  color:var(--muted);
+  text-decoration:none;
+  opacity:.55;
+}
+
+.privacyLink:hover{
+  text-decoration:underline;
+  opacity:.9;
+}
