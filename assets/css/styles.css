@@ -350,7 +350,7 @@ button:active{transform: translateY(1px)}
 
 .displayBtn .picked{
   color: var(--text);
-  font-weight: 800;
+  font-weight: 400;
   max-width: 55vw;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -363,7 +363,11 @@ button:active{transform: translateY(1px)}
   border: 1px solid var(--line);
   border-radius: var(--r);
   padding: 10px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow); 
+}
+
+.optionsPanel select {
+  font-weight:400;
 }
 
 .sortTitle{
