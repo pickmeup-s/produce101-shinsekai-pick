@@ -627,3 +627,9 @@ select{
   text-decoration:underline;
   opacity:.9;
 }
+
+.policyPage .optionsPanel{
+  background: none;
+  border: none;
+  border-radius: 0;
+}
