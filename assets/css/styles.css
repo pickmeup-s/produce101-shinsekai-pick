@@ -354,7 +354,7 @@ button:active{transform: translateY(1px)}
   max-width: 55vw;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .optionsPanel{
@@ -404,7 +404,7 @@ select{
   background: #fff5f5;
   border-radius: 12px;
   color: #9f1f1f;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .card{
