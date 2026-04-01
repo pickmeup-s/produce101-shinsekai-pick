@@ -376,8 +376,9 @@ button:active{transform: translateY(1px)}
 .sortTitle{
   font-size:12px;
   font-weight:800;
+  line-height: 36px;
   color:var(--muted);
-  margin: 0 0 8px;
+  margin:0;
 }
 
 .sortBox{
