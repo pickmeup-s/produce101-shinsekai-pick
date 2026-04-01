@@ -354,6 +354,7 @@ button:active{transform: translateY(1px)}
   max-width: 55vw;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 11px;
 }
 
 .optionsPanel{
