@@ -221,7 +221,7 @@ button:active{transform: translateY(1px)}
   display:flex;
   gap: var(--gap);
   overflow-x:auto;
-  padding: 8px 6px 8px;
+  padding: 8px 10px 8px;
   -webkit-overflow-scrolling: touch;
   align-items:flex-start;
 }
@@ -258,9 +258,9 @@ button:active{transform: translateY(1px)}
 .benchAdd svg{ width:22px;height:22px; opacity:.95; color: var(--accent); }
 
 .benchInfo{
-  width:100%;
+  width: calc(100% + 2px);
   text-align:center;
-  line-height:1.05;
+  line-height:1.0;
   display:flex;
   flex-direction:column;
   gap:2px;
