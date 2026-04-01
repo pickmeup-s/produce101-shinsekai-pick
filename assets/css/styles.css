@@ -373,7 +373,13 @@ button:active{transform: translateY(1px)}
   margin: 0 0 8px;
 }
 
-.sortBox{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.sortBox{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+  padding-left: 2px;
+}
 
 select{
   height:36px;
