@@ -391,6 +391,10 @@ select{
   outline:none;
 }
 
+.sortBox select {
+  font-size: 12px;
+}
+
 .gridSection{margin-top:12px}
 .grid{display:grid;gap:10px;grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));}
 @media (max-width:1100px){ .grid{ grid-template-columns: repeat(4, 1fr); } }
