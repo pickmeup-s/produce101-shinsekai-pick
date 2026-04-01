@@ -330,7 +330,7 @@ button:active{transform: translateY(1px)}
   background: #ffffff;
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  justify-content:flex-start;
   gap:10px;
 }
 
