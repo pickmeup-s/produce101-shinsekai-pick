@@ -65,6 +65,7 @@ button:active{transform: translateY(1px)}
   width:36px;
   padding:0;
   justify-content:center;
+  background: var(--chipBg);
 }
 
 .arrowBtn{
