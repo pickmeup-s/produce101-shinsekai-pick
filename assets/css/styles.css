@@ -323,38 +323,41 @@ button:active{transform: translateY(1px)}
 
 .displayBtn{
   width:100%;
-  height: 42px;
-  padding: 0 12px;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  background: #ffffff;
+  height:42px;
+  padding:0 12px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:#ffffff;
   display:flex;
   align-items:center;
-  justify-content:flex-start;
-  gap:10px;
+  gap:8px;
 }
 
 .displayBtn .label{
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--muted);
+  font-size:12px;
+  font-weight:800;
+  color:var(--muted);
+  flex:0 0 auto;
+  white-space:nowrap;
 }
 
 .displayBtn .right{
-  display:inline-flex;
+  display:flex;
   align-items:center;
-  gap:10px;
-  color: var(--muted);
-  white-space: nowrap;
+  gap:4px;
+  flex:1 1 auto;
+  min-width:0;
 }
 
 .displayBtn .picked{
-  color: var(--text);
-  font-weight: 400;
-  max-width: 55vw;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 12px;
+  color:var(--text);
+  font-weight:400;
+  font-size:12px;
+  flex:1 1 auto;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
 .optionsPanel{
