@@ -175,7 +175,7 @@ button:active{transform: translateY(1px)}
 
 
 .slotInfo{
-  width:100%;
+  width: calc(100% + 2px);
   text-align:center;
   line-height:1.0;
   display:flex; flex-direction:column;
