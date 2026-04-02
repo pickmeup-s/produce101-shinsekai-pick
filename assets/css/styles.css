@@ -344,13 +344,14 @@ button:active{transform: translateY(1px)}
   align-items:center;
   gap:8px;
   background: var(--chipBg);
+  justify-content:flex-start;
 }
 
 .displayBtn .label{
   font-size:12px;
   font-weight:700;
   color:var(--muted);
-  flex:0 0 auto;
+  flex:1 1 auto;
   white-space:nowrap;
 }
 
@@ -358,7 +359,7 @@ button:active{transform: translateY(1px)}
   display:flex;
   align-items:center;
   gap:4px;
-  flex:0 0 auto;
+  flex:1 1 auto;
   min-width:0;
 }
 
