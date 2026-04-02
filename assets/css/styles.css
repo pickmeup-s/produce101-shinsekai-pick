@@ -339,39 +339,43 @@ button:active{transform: translateY(1px)}
   padding:0 12px;
   border-radius:14px;
   border:1px solid var(--line);
-  background:#ffffff;
   display:flex;
   align-items:center;
+  justify-content:flex-start;
   gap:8px;
   background: var(--chipBg);
-  justify-content:flex-start;
+  overflow:hidden;
 }
 
 .displayBtn .label{
   font-size:12px;
   font-weight:700;
   color:var(--muted);
-  flex:1 1 auto;
+  flex:0 0 auto;
   white-space:nowrap;
 }
 
 .displayBtn .right{
   display:flex;
   align-items:center;
+  justify-content:flex-start;
   gap:4px;
   flex:1 1 auto;
   min-width:0;
+  overflow:hidden;
 }
 
 .displayBtn .picked{
+  display:block;
   color:var(--text);
   font-weight:400;
   font-size:12px;
-  flex:0 0 auto;
   min-width:0;
+  max-width:100%;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
+  text-align:left;
 }
 
 .optionsPanel{
