@@ -1,84 +1,84 @@
 No.,D:名前,表示名,S:生存者,S:フルネーム (あいうえお順),D:Name,S:Name (A-Y),D:生まれ年 (00-10),D:生年月日 (yyyy.mm.dd),S:生年月日 (yyyy.mm.dd),D:身長 (cm),S:身長 (cm),D:出身,S:出身,D:シグナルソングA-F,S:シグナルソングA-F,D:レベル分け評価A-F-候補,S:レベル分け評価A-F-候補,D:レベル分け評価チーム名,S:レベル分け評価チーム(放送順),D:練習生-101PASS-練習生候補,S:練習生-101PASS-練習生候補,D:チッケム再生回数 (2026.03.31),S:チッケム再生回数 (2026.03.31),img
-1,アダムナガイ,アダムナガイ,〇,あだむながい,ADAM,ADAM, (07) ,2007.04.19,2007/04/19,172,172,ホノルル,CC,A,AL,(A),(A1),Atlantic Boys,101,練習生,1,60709,60709,./img/trainees/imgi_4_adamnagai.jpg
+1,アダムナガイ,アダムナガイ,〇,あだむながい,ADAM,ADAM, (07) ,2007.04.19,2007/04/19,172,172,ホノルル,CC,A,AL,(A),(A),Atlantic Boys,101,練習生,1,60709,60709,./img/trainees/imgi_4_adamnagai.jpg
 2,中丸晏寿,中丸晏寿,〇,なかまるあじゅ,AJU,AJU, (08) ,2008.01.21,2008/01/21,170,170,広島県,34,B,BB,(D),(D),無限大,143,練習生,2,71915,71915,./img/trainees/imgi_5_nakamaruaju.jpg
 3,オムスアンカワーテン,オム,〇,おむすわんかわーてん,AOM,AOM, (03) ,2003.12.20,2003/12/20,174,174,バンコク,BA,C,CH,(D),(D),Arawan,191,練習生,3,19766,19766,./img/trainees/imgi_6_aomsuungkavathin.jpg
 4,アーチャーウイ,アーチャー,〇,あーちゃーうい,ARCHER,ARCHER, (10) ,2010.09.25,2010/09/25,175,175,LA,CA,B,BK,(B),(B),Angels,221,練習生,4,60866,60866,./img/trainees/imgi_7_archeruy.jpg
 5,篠ヶ谷歩夢,篠ヶ谷歩夢,〇,しのがやあゆむ,S.AYUMU,AYUMU, (01) ,2001.07.24,2001/07/24,175,175,静岡県,22,B,BT,(C),(C),Log IN!,13,練習生,5,53814,53814,./img/trainees/imgi_8_shinogayaayumu.jpg
 6,小林千悟,小林千悟,〇,こばやしちさと,CHISATO,CHISATO, (04) ,2004.02.03,2004/02/03,173,173,東京都,13,B,BD,(B),(B),獅子舞,22,練習生,6,188837,188837,./img/trainees/imgi_9_kobayashichisato.jpg
 7,加藤大樹,加藤大樹,〇,かとうだいき,K.DAIKI,DAIKI, (04) ,2004.10.08,2004/10/08,178,178,愛知県,23,A,AD,(B),(B),RE:Shine,31,練習生,7,438056,438056,./img/trainees/imgi_10_katodaiki.jpg
-8,カクドンミン,カクドンミン,〇,かくどんみん,DONGMIN,DONGMIN, (05) ,2005.01.31,2005/01/31,176,176,キョンギド,AE,B,BG,[#2],[#2],3 UNITED,350,練習生,8,41645,41645,./img/trainees/imgi_11_kwakdongmin.jpg
+8,カクドンミン,カクドンミン,〇,かくどんみん,DONGMIN,DONGMIN, (05) ,2005.01.31,2005/01/31,176,176,キョンギド,AE,B,BG,(D),(D),3UNITED,350,練習生,8,41645,41645,./img/trainees/imgi_11_kwakdongmin.jpg
 9,末川瑛太,末川瑛太,〇,すえかわえいた,EITA,EITA, (07) ,2007.06.25,2007/06/25,174,174,沖縄県,47,C,CI,(C),(C),無限大,141,練習生,9,44218,44218,./img/trainees/imgi_12_suekawaeita.jpg
 10,保里瑛都,保里瑛都,辞退,ほりえいと,H.EITO,EITO, (06) ,2006.05.20,2006/05/20,171,171,大阪府,27,辞退,辞退,(C),(C),無限大,142,練習生,10,0,0,./img/trainees/imgi_13_horieito.jpg
-11,金田栄都,金田栄都,〇,かねだえいと,K.EITO,EITO, (04) ,2004.04.10,2004/04/10,179,179,神奈川県,14,D,DC,[#2],[#2],K-TRAINEES,300,練習生,11,19003,19003,./img/trainees/imgi_14_kanedaeito.jpg
+11,金田栄都,金田栄都,〇,かねだえいと,K.EITO,EITO, (04) ,2004.04.10,2004/04/10,179,179,神奈川県,14,D,DC,(D),(D),K-TRAINEES,300,練習生,11,19003,19003,./img/trainees/imgi_14_kanedaeito.jpg
 12,櫻井楓真,櫻井楓真,〇,さくらいふうま,FUMA,FUMA, (06) ,2006.01.05,2006/01/05,179,179,群馬県,10,C,CN,(D),(D),無限大,144,練習生,12,38704,38704,./img/trainees/imgi_15_sakuraifuma.jpg
-13,小笠原ジュゼッペ慧,ジュゼッペ,〇,おがさわらじゅぜっぺけい,GIUSEPPE,GIUSEPPE, (06) ,2006.01.13,2006/01/13,182,182,東京都,13,B,BQ,(A),(A5),Runway,201,練習生,13,48903,48903,./img/trainees/imgi_16_ogasawaragiuseppekei.jpg
+13,小笠原ジュゼッペ慧,ジュゼッペ,〇,おがさわらじゅぜっぺけい,GIUSEPPE,GIUSEPPE, (06) ,2006.01.13,2006/01/13,182,182,東京都,13,B,BQ,(A),(A),Runway,201,練習生,13,48903,48903,./img/trainees/imgi_16_ogasawaragiuseppekei.jpg
 14,倉橋吾槙,倉橋吾槙,〇,くらはしごてん,GOTEN,GOTEN, (04) ,2004.11.05,2004/11/05,172,172,愛知県,23,F,FA,(B),(B),BUZZ UP!,172,練習生,14,170778,170778,./img/trainees/imgi_17_kurahashigoten.jpg
 15,堀尾聖,堀尾聖,〇,ほりおひじり,HIJIRI,HIJIRI, (03) ,2003.09.11,2003/09/11,171,171,愛知県,23,B,BH,(C),(C),Dream Again,63,練習生,15,26330,26330,./img/trainees/imgi_18_horiohijiri.jpg
 16,瑞慶覧太都,瑞慶覧太都,〇,ずけらんひろと,HIROTO,HIROTO, (03) ,2003.02.28,2003/02/28,178,178,沖縄県,47,D,DI,(B),(B),九上昇,152,練習生,16,27865,27865,./img/trainees/imgi_19_zukeranhiroto.jpg
-17,ユヒョンスン,ユヒョンスン,〇,ゆひょんすん,HYEONSEUNG,HYEONSEUNG, (04) ,2004.01.13,2004/01/13,177,177,ソウル,AD,A,AH,(A),(AA),たなぼた,272,練習生,17,63449,63449,./img/trainees/imgi_20_yoohyeonseung.jpg
-18,岡田彪吾,岡田彪吾,〇,おかだひゅうご,HYUGO,HYUGO, (08) ,2008.03.29,2008/03/29,179,179,兵庫県,28,A,AM,[#2],[#2],ダンスファイターズ,320,練習生,18,29663,29663,./img/trainees/imgi_21_okadahyugo.jpg
-19,柳谷伊冴,柳谷伊冴,〇,やなぎやいっさ,ISSA,ISSA, (05) ,2005.03.10,2005/03/10,177,177,群馬県,10,C,CA,[#2],[#2],フルスイング,310,練習生,19,53599,53599,./img/trainees/imgi_22_yanagiyaissa.jpg
+17,ユヒョンスン,ユヒョンスン,〇,ゆひょんすん,HYEONSEUNG,HYEONSEUNG, (04) ,2004.01.13,2004/01/13,177,177,ソウル,AD,A,AH,(A),(A),たなぼた,272,練習生,17,63449,63449,./img/trainees/imgi_20_yoohyeonseung.jpg
+18,岡田彪吾,岡田彪吾,〇,おかだひゅうご,HYUGO,HYUGO, (08) ,2008.03.29,2008/03/29,179,179,兵庫県,28,A,AM,(B),(B),ダンスファイターズ,320,練習生,18,29663,29663,./img/trainees/imgi_21_okadahyugo.jpg
+19,柳谷伊冴,柳谷伊冴,〇,やなぎやいっさ,ISSA,ISSA, (05) ,2005.03.10,2005/03/10,177,177,群馬県,10,C,CA,(C),(C),フルスイング,310,練習生,19,53599,53599,./img/trainees/imgi_22_yanagiyaissa.jpg
 20,ユンジェヨン,ユンジェヨン,〇,ゆんじぇよん,JAEYONG,JAEYONG, (05) ,2005.04.03,2005/04/03,177,177,インチョン,AF,A,AP,(D),(D),たなぼた,274,練習生,20,27847,27847,./img/trainees/imgi_23_yoonjaeyong.jpg
-21,ジュアンジェイ,ジェイ,〇,じゅあんじぇい,JAY,JAY, (06) ,2006.08.17,2006/08/17,186,186,台南,AB,B,BP,[#2],[#2],我的少年時代,330,練習生,21,52850,52850,./img/trainees/imgi_24_chuangjay.jpg
-22,丸尾尋一郎,丸尾尋一郎,〇,まるおじにちろう,JINICHIRO,JINICHIRO, (07) ,2007.06.23,2007/06/23,170,170,大阪府,27,D,DP,[#2],[#2],ダンスファイターズ,320,練習生,22,28136,28136,./img/trainees/imgi_25_maruojinichiro.jpg
+21,ジュアンジェイ,ジェイ,〇,じゅあんじぇい,JAY,JAY, (06) ,2006.08.17,2006/08/17,186,186,台南,AB,B,BP,(C),(C),我的少年時代,330,練習生,21,52850,52850,./img/trainees/imgi_24_chuangjay.jpg
+22,丸尾尋一郎,丸尾尋一郎,〇,まるおじにちろう,JINICHIRO,JINICHIRO, (07) ,2007.06.23,2007/06/23,170,170,大阪府,27,D,DP,(C),(C),ダンスファイターズ,320,練習生,22,28136,28136,./img/trainees/imgi_25_maruojinichiro.jpg
 23,河邊晟,河邊晟,〇,かわべじょう,JOE,JOE, (07) ,2007.02.27,2007/02/27,177,177,東京都,13,D,DS,(D),(D),EAST FIVE,122,練習生,23,14801,14801,./img/trainees/imgi_26_kawabejoe.jpg
 24,シンジョンウク,ジョンウク,〇,しんじょんぐく,JUNGUK,JUNGUK, (07) ,2007.02.23,2007/02/23,177,177,トロント,CB,C,CQ,(C),(C),ソウルメイト,161,練習生,24,12825,12825,./img/trainees/imgi_27_shinjunguk.jpg
 25,金安純正,金安純正,〇,かねやすじゅんせい,JUNSEI,JUNSEI, (04) ,2004.04.16,2004/04/16,183,183,東京都,13,D,DM,(C),(C),Log IN!,12,練習生,25,28363,28363,./img/trainees/imgi_28_kaneyasujunsei.jpg
-26,宇野海夢,宇野海夢,〇,うのかいむ,KAIMU,KAIMU, (03) ,2003.11.20,2003/11/20,177,177,京都府,26,D,DN,[#2],[#2],ダンスファイターズ,320,練習生,26,48689,48689,./img/trainees/imgi_29_unokaimu.jpg
-27,多比奏聖,多比奏聖,〇,たびかなで,KANADE,KANADE, (07) ,2007.12.05,2007/12/05,173,173,神奈川県,14,B,BS,(A),(A3),EAST FIVE,121,練習生,27,17901,17901,./img/trainees/imgi_30_tabikanade.jpg
-28,横山奏夢,横山奏夢,〇,よこやまかなめ,KANAME,KANAME, (03) ,2003.07.29,2003/07/29,172,172,石川県,17,C,CS,[#2],[#2],Spicy兄弟,290,練習生,28,243845,243845,./img/trainees/imgi_31_yokoyamakaname.jpg
+26,宇野海夢,宇野海夢,〇,うのかいむ,KAIMU,KAIMU, (03) ,2003.11.20,2003/11/20,177,177,京都府,26,D,DN,(C),(C),ダンスファイターズ,320,練習生,26,48689,48689,./img/trainees/imgi_29_unokaimu.jpg
+27,多比奏聖,多比奏聖,〇,たびかなで,KANADE,KANADE, (07) ,2007.12.05,2007/12/05,173,173,神奈川県,14,B,BS,(A),(A),EAST FIVE,121,練習生,27,17901,17901,./img/trainees/imgi_30_tabikanade.jpg
+28,横山奏夢,横山奏夢,〇,よこやまかなめ,KANAME,KANAME, (03) ,2003.07.29,2003/07/29,172,172,石川県,17,C,CS,(A),(A),Spicy兄弟,290,練習生,28,243845,243845,./img/trainees/imgi_31_yokoyamakaname.jpg
 29,関敬次郎,関敬次郎,〇,せきけいじろう,KEIJIRO,KEIJIRO, (09) ,2009.02.23,2009/02/23,176,176,愛知県,23,B,BO,(C),(C),Dream Again,62,練習生,29,22437,22437,./img/trainees/imgi_32_sekikeijiro.jpg
 30,髙松敬祐,髙松敬祐,〇,たかまつけいすけ,KEISUKE,KEISUKE, (08) ,2008.11.08,2008/11/08,174,174,岐阜県,21,F,FB,(C),(C),BUZZ UP!,173,練習生,30,18930,18930,./img/trainees/imgi_33_takamatsukeisuke.jpg
-31,小野慶人,小野慶人,〇,おのけいと,KEITO,KEITO, (00) ,2000.07.25,2000/07/25,172,172,高知県,39,C,CK,[#2],[#2],楽,340,練習生,31,271946,271946,./img/trainees/imgi_34_onokeito.jpg
+31,小野慶人,小野慶人,〇,おのけいと,KEITO,KEITO, (00) ,2000.07.25,2000/07/25,172,172,高知県,39,C,CK,(D),(D),楽,340,練習生,31,271946,271946,./img/trainees/imgi_34_onokeito.jpg
 32,西山賢人,西山賢人,〇,にしやまけんと,KENTO,KENTO, (07) ,2007.01.29,2007/01/29,169,169,東京都,13,D,DU,(C),(C),東西南北,53,練習生,32,19473,19473,./img/trainees/imgi_35_nishiyamakento.jpg
 33,河合晃誠,河合晃誠,〇,かわいこうせい,KOSEI,KOSEI, (10) ,2010.06.04,2010/06/04,172,172,愛知県,23,D,DR,(D),(D),獅子舞,23,練習生,33,16499,16499,./img/trainees/imgi_36_kawaikosei.jpg
 34,照井康祐,照井康祐,〇,てるいこうすけ,KOSUKE,KOSUKE, (07) ,2007.12.02,2007/12/02,174,174,千葉県,12,A,AB,(C),(C),FRESH-MEN,2,練習生,34,461175,461175,./img/trainees/imgi_37_teruikosuke.jpg
-35,浅香孝太郎,浅香孝太郎,〇,あさかこうたろう,KOTARO,KOTARO, (03) ,2003.04.03,2003/04/03,177,177,大阪府,27,D,DH,[#2],[#2],Pick-a-boo,280,練習生,35,48765,48765,./img/trainees/imgi_38_asakakotaro.jpg
-36,髙谷京平,髙谷京平,〇,たかやきょうへい,KYOHEI,KYOHEI, (05) ,2005.07.17,2005/07/17,171,171,宮城県,04,F,FC,[#2],[#2],Spicy兄弟,290,練習生,36,38105,38105,./img/trainees/imgi_39_takayakyohei.jpg
-37,田中蒔,田中蒔,〇,たなかまき,MAKI,MAKI, (04) ,2004.06.06,2004/06/06,173,173,静岡県,22,F,FD,[#2],[#2],楽,340,練習生,37,147290,147290,./img/trainees/imgi_40_tanakamaki.jpg
-38,山根武蔵,山根武蔵,〇,やまねむさし,MUSASHI,MUSASHI, (05) ,2005.10.03,2005/10/03,179,179,メルボルン,DA,D,DB,[#2],[#2],3 UNITED,350,練習生,38,24447,24447,./img/trainees/imgi_41_yamanemusashi.jpg
-39,土田央修,土田央修,〇,つちだおうすけ,OSUKE,OSUKE, (03) ,2003.05.15,2003/05/15,164,164,愛知県,23,A,AE,(A),(A8),22×TEENS,231,練習生,39,212809,212809,./img/trainees/imgi_42_tsuchidaosuke.jpg
+35,浅香孝太郎,浅香孝太郎,〇,あさかこうたろう,KOTARO,KOTARO, (03) ,2003.04.03,2003/04/03,177,177,大阪府,27,D,DH,(D),(D),Pick-a-boo,280,練習生,35,48765,48765,./img/trainees/imgi_38_asakakotaro.jpg
+36,髙谷京平,髙谷京平,〇,たかやきょうへい,KYOHEI,KYOHEI, (05) ,2005.07.17,2005/07/17,171,171,宮城県,04,F,FC,(C),(C),Spicy兄弟,290,練習生,36,38105,38105,./img/trainees/imgi_39_takayakyohei.jpg
+37,田中蒔,田中蒔,〇,たなかまき,MAKI,MAKI, (04) ,2004.06.06,2004/06/06,173,173,静岡県,22,F,FD,(D),(D),楽,340,練習生,37,147290,147290,./img/trainees/imgi_40_tanakamaki.jpg
+38,山根武蔵,山根武蔵,〇,やまねむさし,MUSASHI,MUSASHI, (05) ,2005.10.03,2005/10/03,179,179,メルボルン,DA,D,DB,(D),(D),3UNITED,350,練習生,38,24447,24447,./img/trainees/imgi_41_yamanemusashi.jpg
+39,土田央修,土田央修,〇,つちだおうすけ,OSUKE,OSUKE, (03) ,2003.05.15,2003/05/15,164,164,愛知県,23,A,AE,(A),(A),22×TEENS,231,練習生,39,212809,212809,./img/trainees/imgi_42_tsuchidaosuke.jpg
 40,堀野蓮,堀野蓮,〇,ほりのれん,H.REN,REN, (07) ,2007.11.21,2007/11/21,171,171,神奈川県,14,C,CL,(B),(B),蓮蓮蓮,81,練習生,40,36598,36598,./img/trainees/imgi_43_horinoren.jpg
 41,小清水蓮,小清水蓮,〇,こしみずれん,KO.REN,REN, (06) ,2006.04.10,2006/04/10,170,170,宮崎県,45,F,FE,(C),(C),蓮蓮蓮,82,練習生,41,111574,111574,./img/trainees/imgi_44_koshimizuren.jpg
-42,チェンリッキー,リッキー,〇,ちぇんりっきー,RICKEY,RICKEY, (06) ,2006.02.09,2006/02/09,178,178,新竹,AC,D,DJ,[#2],[#2],我的少年時代,330,練習生,42,46702,46702,./img/trainees/imgi_45_chenrickey.jpg
-43,神元理丘,神元理丘,〇,かみもとりく,RIKU,RIKU, (03) ,2003.03.19,2003/03/19,176,176,京都府,26,A,AN,(A),(A2),夢神聖,111,練習生,43,19637,19637,./img/trainees/imgi_46_kamimotoriku.jpg
+42,チェンリッキー,リッキー,〇,ちぇんりっきー,RICKEY,RICKEY, (06) ,2006.02.09,2006/02/09,178,178,新竹,AC,D,DJ,(C),(C),我的少年時代,330,練習生,42,46702,46702,./img/trainees/imgi_45_chenrickey.jpg
+43,神元理丘,神元理丘,〇,かみもとりく,RIKU,RIKU, (03) ,2003.03.19,2003/03/19,176,176,京都府,26,A,AN,(A),(A),夢神聖,111,練習生,43,19637,19637,./img/trainees/imgi_46_kamimotoriku.jpg
 44,鳩場陸人,鳩場陸人,〇,はとばりくと,H.RIKUTO,RIKUTO, (09) ,2009.08.31,2009/08/31,182,182,滋賀県,25,B,BJ,(B),(B),Hi teens!,260,練習生,44,18302,18302,./img/trainees/imgi_47_hatobarikuto.jpg
-45,今江陸斗,今江陸斗,〇,いまえりくと,I.RIKUTO,RIKUTO, (05) ,2005.10.14,2005/10/14,178,178,東京都,13,D,DA,[#2],[#2],フルスイング,310,練習生,45,61012,61012,./img/trainees/imgi_48_imaerikuto.jpg
+45,今江陸斗,今江陸斗,〇,いまえりくと,I.RIKUTO,RIKUTO, (05) ,2005.10.14,2005/10/14,178,178,東京都,13,D,DA,(B),(B),フルスイング,310,練習生,45,61012,61012,./img/trainees/imgi_48_imaerikuto.jpg
 46,甲斐陸也,甲斐陸也,〇,かいりくや,RIKUYA,RIKUYA, (08) ,2008.05.27,2008/05/27,172,172,東京都,13,C,CG,(B),(B),獅子舞,21,練習生,46,31693,31693,./img/trainees/imgi_49_kairikuya.jpg
-47,大瀬凜和,大瀬凜和,〇,おおせりんと,RINTO,RINTO, (05) ,2005.03.09,2005/03/09,177,177,熊本県,43,C,CD,(A),(A4),九上昇,151,練習生,47,62355,62355,./img/trainees/imgi_50_ohserinto.jpg
+47,大瀬凜和,大瀬凜和,〇,おおせりんと,RINTO,RINTO, (05) ,2005.03.09,2005/03/09,177,177,熊本県,43,C,CD,(A),(A),九上昇,151,練習生,47,62355,62355,./img/trainees/imgi_50_ohserinto.jpg
 48,上野琉偉,上野琉偉,〇,うえのるい,U.RUI,RUI, (06) ,2006.04.22,2006/04/22,174,174,福岡県,40,C,CJ,(C),(C),博多美男,42,練習生,48,40131,40131,./img/trainees/imgi_51_uenorui.jpg
 49,飯塚亮賀,飯塚亮賀,〇,いいづかりょうが,RYOGA,RYOGA, (05) ,2005.01.21,2005/01/21,175,175,群馬県,10,F,FF,(C),(C),FRESH-MEN,4,練習生,49,182337,182337,./img/trainees/imgi_52_iizukaryoga.jpg
 50,石田亮太,石田亮太,〇,いしだりょうた,RYOTA,RYOTA, (03) ,2003.09.14,2003/09/14,170,170,神奈川県,14,A,AJ,(B),(B),Dream Again,61,練習生,50,51646,51646,./img/trainees/imgi_53_ishidaryota.jpg
-51,岡戸竜芽,岡戸竜芽,〇,おかどりゅうが,RYUGA,RYUGA, (06) ,2006.04.02,2006/04/02,171,171,埼玉県,11,C,CE,[#2],[#2],ダンスファイターズ,320,練習生,51,20436,20436,./img/trainees/imgi_54_okadoryuga.jpg
-52,杉山竜司,杉山竜司,〇,すぎやまりゅうじ,RYUJI,RYUJI, (06) ,2006.07.07,2006/07/07,182,182,埼玉県,11,B,BE,(A),(A6),Runway,202,練習生,52,86366,86366,./img/trainees/imgi_55_sugiyamaryuji.jpg
-53,香月誠太,香月誠太,〇,かつきせいた,SEITA,SEITA, (09) ,2009.06.22,2009/06/22,171,171,京都府,26,B,BL,[#2],[#2],我的少年時代,330,練習生,53,16829,16829,./img/trainees/imgi_56_katsukiseita.jpg
+51,岡戸竜芽,岡戸竜芽,〇,おかどりゅうが,RYUGA,RYUGA, (06) ,2006.04.02,2006/04/02,171,171,埼玉県,11,C,CE,(A),(A),ダンスファイターズ,320,練習生,51,20436,20436,./img/trainees/imgi_54_okadoryuga.jpg
+52,杉山竜司,杉山竜司,〇,すぎやまりゅうじ,RYUJI,RYUJI, (06) ,2006.07.07,2006/07/07,182,182,埼玉県,11,B,BE,(A),(A),Runway,202,練習生,52,86366,86366,./img/trainees/imgi_55_sugiyamaryuji.jpg
+53,香月誠太,香月誠太,〇,かつきせいた,SEITA,SEITA, (09) ,2009.06.22,2009/06/22,171,171,京都府,26,B,BL,(A),(A),我的少年時代,330,練習生,53,16829,16829,./img/trainees/imgi_56_katsukiseita.jpg
 54,澤井星名,澤井星名,〇,さわいせな,SENA,SENA, (06) ,2006.01.14,2006/01/14,180,180,静岡県,22,D,DQ,(D),(D),RE:Shine,33,練習生,54,60866,60866,./img/trainees/imgi_57_sawaisena.jpg
 55,オシンヘン,オシンヘン,〇,おしんへん,SHINHAENG,SHINHAENG, (04) ,2004.05.03,2004/05/03,177,177,モクポ,AG,A,AF,(B),(B),たなぼた,273,練習生,55,60186,60186,./img/trainees/imgi_58_ohshinhaeng.jpg
 56,岩城慎二,岩城慎二,〇,いわきしんじ,SHINJI,SHINJI, (03) ,2003.10.23,2003/10/23,180,180,東京都,13,A,AK,(B),(B),Log IN!,11,練習生,56,61198,61198,./img/trainees/imgi_59_iwakishinji.jpg
 57,宮崎真佑,宮崎真佑,〇,みやざきしんすけ,SHINSUKE,SHINSUKE, (07) ,2007.05.19,2007/05/19,179,179,岐阜県,21,D,DO,(B),(B),Hi teens!,260,練習生,57,24784,24784,./img/trainees/imgi_60_miyazakishinsuke.jpg
 58,西﨑柊,西﨑柊,〇,にしざきしゅう,N.SHU,SHU, (02) ,2002.11.05,2002/11/05,180,180,東京都,13,F,FG,(D),(D),EAST FIVE,123,練習生,58,40547,40547,./img/trainees/imgi_61_nishizakishu.jpg
 59,山下柊,山下柊,〇,やましたしゅう,Y.SHU,SHU, (06) ,2006.12.15,2006/12/15,173,173,神奈川県,14,C,CC,(C),(C),FRESH-MEN,3,練習生,59,53404,53404,./img/trainees/imgi_62_yamashitashu.jpg
-60,パクシヨン,パクシヨン,〇,ぱくしよん,SIYOUNG,SIYOUNG, (03) ,2003.05.06,2003/05/06,178,178,キョンギド,AE,A,AC,(A),(A9),たなぼた,271,練習生,60,174015,174015,./img/trainees/imgi_63_parksiyoung.jpg
+60,パクシヨン,パクシヨン,〇,ぱくしよん,SIYOUNG,SIYOUNG, (03) ,2003.05.06,2003/05/06,178,178,キョンギド,AE,A,AC,(A),(A),たなぼた,271,練習生,60,174015,174015,./img/trainees/imgi_63_parksiyoung.jpg
 61,佐藤碧空,佐藤碧空,〇,さとうそら,S.SORA,SORA, (03) ,2003.05.16,2003/05/16,170,170,長野県,20,C,CM,(D),(D),22×TEENS,232,練習生,61,25219,25219,./img/trainees/imgi_64_satosora.jpg
 62,東野蒼汰,東野蒼汰,〇,とうのそうた,SOTA,SOTA, (08) ,2008.12.15,2008/12/15,179,179,奈良県,29,B,BF,(C),(C),東西南北,51,練習生,62,21619,21619,./img/trainees/imgi_65_tonosota.jpg
-63,藤牧大雅,藤牧大雅,〇,ふじまきたいが,F.TAIGA,TAIGA, (05) ,2005.05.17,2005/05/17,181,181,東京都,13,A,AI,[#2],[#2],K-TRAINEES,300,練習生,63,204144,204144,./img/trainees/imgi_66_fujimakitaiga.jpg
+63,藤牧大雅,藤牧大雅,〇,ふじまきたいが,F.TAIGA,TAIGA, (05) ,2005.05.17,2005/05/17,181,181,東京都,13,A,AI,(B),(B),K-TRAINEES,300,練習生,63,204144,204144,./img/trainees/imgi_66_fujimakitaiga.jpg
 64,松田太雅,松田太雅,〇,まつだたいが,M.TAIGA,TAIGA, (04) ,2004.01.27,2004/01/27,178,178,愛知県,23,D,DG,(C),(C),RE:Shine,32,練習生,64,47206,47206,./img/trainees/imgi_67_matsudataiga.jpg
 65,金倉拓未,金倉拓未,〇,かなくらたくみ,TAKUMI,TAKUMI, (07) ,2007.07.07,2007/07/07,175,175,北海道,01,B,BI,(C),(C),ポトフはいかがですか？,71,練習生,65,29181,29181,./img/trainees/imgi_68_kanakuratakumi.jpg
 66,熊部拓斗,熊部拓斗,〇,くまべたくと,K.TAKUTO,TAKUTO, (04) ,2004.09.06,2004/09/06,182,182,大阪府,27,D,DF,(D),(D),慶応Guys,181,練習生,66,76076,76076,./img/trainees/imgi_69_kumabetakuto.jpg
 67,宮里拓利,宮里拓利,〇,みやざとたくと,M.TAKUTO,TAKUTO, (05) ,2005.12.09,2005/12/09,174,174,福岡県,40,C,CO,(C),(C),博多美男,41,練習生,67,29131,29131,./img/trainees/imgi_70_miyazatotakuto.jpg
 68,南平達矢,南平達矢,〇,みなみひらたつや,TATSUYA,TATSUYA, (04) ,2004.10.27,2004/10/27,180,180,東京都,13,C,CT,(C),(C),東西南北,52,練習生,68,52064,52064,./img/trainees/imgi_71_minamihiratatsuya.jpg
-69,森井輝,森井輝,〇,もりいてる,TERU,TERU, (03) ,2003.10.27,2003/10/27,171,171,神奈川県,14,C,CU,[#2],[#2],ダンスファイターズ,320,練習生,69,23010,23010,./img/trainees/imgi_72_moriiteru.jpg
+69,森井輝,森井輝,〇,もりいてる,TERU,TERU, (03) ,2003.10.27,2003/10/27,171,171,神奈川県,14,C,CU,(A),(A),ダンスファイターズ,320,練習生,69,23010,23010,./img/trainees/imgi_72_moriiteru.jpg
 70,北林天虎,北林天虎,〇,きたばやしてとら,TETORA,TETORA, (03) ,2003.06.11,2003/06/11,172,172,秋田県,05,D,DL,(D),(D),東西南北,54,練習生,70,20430,20430,./img/trainees/imgi_73_kitabayashitetora.jpg
 71,藤芳辰弥,藤芳辰弥,〇,ふじよしときや,TOKIYA,TOKIYA, (07) ,2007.01.31,2007/01/31,168,168,福岡県,40,B,BN,(D),(D),博多美男,43,練習生,71,17725,17725,./img/trainees/imgi_74_fujiyoshitokiya.jpg
 72,増田倫希,増田倫希,〇,ますだともき,TOMOKI,TOMOKI, (08) ,2008.03.26,2008/03/26,182,182,千葉県,12,F,FH,(B),(B),FRESH-MEN,1,練習生,72,27970,27970,./img/trainees/imgi_75_masudatomoki.jpg
 73,濱田永遠,濱田永遠,〇,はまだとわ,TOWA,TOWA, (07) ,2007.06.05,2007/06/05,175,175,兵庫県,28,B,BC,(B),(B),Hi teens!,260,練習生,73,78682,78682,./img/trainees/imgi_76_hamadatowa.jpg
-74,アギナルドトリスタンジェームス,トリスタン,〇,あぎなるどとりすたんじぇいむず,TRISTAN,TRISTAN, (03) ,2003.10.06,2003/10/06,175,175,リパ,BC,F,FI,[#2],[#2],3 UNITED,350,練習生,74,25735,25735,./img/trainees/imgi_77_aguinaldotristanjames.jpg
+74,アギナルドトリスタンジェームス,トリスタン,〇,あぎなるどとりすたんじぇいむず,TRISTAN,TRISTAN, (03) ,2003.10.06,2003/10/06,175,175,リパ,BC,F,FI,(C),(C),3UNITED,350,練習生,74,25735,25735,./img/trainees/imgi_77_aguinaldotristanjames.jpg
 75,リーウェイゼ,リーウェイゼ,〇,りーうぇいぜ,WEIZE,WEIZE, (03) ,2003.02.23,2003/02/23,178,178,北京,AA,D,DK,(B),(B),Li-Hao,91,練習生,75,19020,19020,./img/trainees/imgi_78_liweize.jpg
 76,ヨハンエマニュエル,ヨハン,〇,よはんえまにゅえる,YOHAN,YOHAN, (05) ,2005.08.31,2005/08/31,178,178,マニラ,BB,F,FJ,(D),(D),Arawan,192,練習生,76,15978,15978,./img/trainees/imgi_79_yohanemmanuel.jpg
-77,矢田佳暉,矢田佳暉,〇,やだよしき,YOSHIKI,YOSHIKI, (04) ,2004.06.18,2004/06/18,177,177,奈良県,29,B,BA,(A),(A7),WEST KIDS,211,練習生,77,159133,159133,./img/trainees/imgi_80_yadayoshiki.jpg
+77,矢田佳暉,矢田佳暉,〇,やだよしき,YOSHIKI,YOSHIKI, (04) ,2004.06.18,2004/06/18,177,177,奈良県,29,B,BA,(A),(A),WEST KIDS,211,練習生,77,159133,159133,./img/trainees/imgi_80_yadayoshiki.jpg
 78,後藤結,後藤結,〇,ごとうゆうき,YUKI,YUKI, (07) ,2007.12.24,2007/12/24,180,180,神奈川県,14,C,CB,(D),(D),ミスターズ＆プリンス,241,練習生,78,211885,211885,./img/trainees/imgi_81_gotoyuki.jpg
 79,岡田侑磨,岡田侑磨,〇,おかだゆうま,YUMA,YUMA, (06) ,2006.03.15,2006/03/15,177,177,埼玉県,11,D,DT,(D),(D),FRESH-MEN,5,練習生,79,68427,68427,./img/trainees/imgi_82_okadayuma.jpg
-80,安部結蘭,安部結蘭,〇,あべゆら,YURA,YURA, (05) ,2005.06.16,2005/06/16,175,175,茨城県,08,A,AA,[#2],[#2],Pick-a-boo,280,練習生,80,328518,328518,./img/trainees/imgi_83_abeyura.jpg
+80,安部結蘭,安部結蘭,〇,あべゆら,YURA,YURA, (05) ,2005.06.16,2005/06/16,175,175,茨城県,08,A,AA,(C),(C),Pick-a-boo,280,練習生,80,328518,328518,./img/trainees/imgi_83_abeyura.jpg
 81,大林悠成,大林悠成,〇,おおばやしゆうせい,O.YUSEI,YUSEI, (01) ,2001.09.07,2001/09/07,177,177,京都府,26,A,AO,(B),(B),BUZZ UP!,171,練習生,81,76589,76589,./img/trainees/imgi_84_obayashiyusei.jpg
 82,佐野由征,佐野由征,〇,さのゆうせい,S.YUSEI,YUSEI, (04) ,2004.04.20,2004/04/20,170,170,徳島県,36,C,CR,(B),(B),WEST KIDS,212,練習生,82,30634,30634,./img/trainees/imgi_85_sanoyusei.jpg
 83,板倉悠太,板倉悠太,〇,いたくらゆうた,YUTA,YUTA, (08) ,2008.11.27,2008/11/27,167,167,アムステルフェーン,EA,F,FK,(B),(B),Atlantic Boys,102,練習生,83,50495,50495,./img/trainees/imgi_86_itakurayuta.jpg
