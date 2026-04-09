@@ -45,11 +45,11 @@ let RAW_SURVIVOR_COL = "生存者";
 let RAW_DISPLAY_NAME_COL = "表示名";
 
 const CLASS_COLOR = {
-  "A":"#ff69b4",
-  "B":"#ffa500",
-  "C":"#7fffd4",
-  "D":"#080000",
-  "F":"#d3d3d3"
+  "A":"#fd4d87",
+  "B":"#fd8b11",
+  "C":"#28ccc6",
+  "D":"#1e3498",
+  "F":"#747474"
 };
 
 const state = {
